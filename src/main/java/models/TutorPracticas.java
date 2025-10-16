@@ -49,7 +49,7 @@ public class TutorPracticas {
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_tutorPracticas_empresa")
     )
-    private Empresa empresaId;
+    private Empresa empresa;
     
     @Column(length = 200)
     private String horario;
@@ -76,7 +76,7 @@ public class TutorPracticas {
     }
 
 	public Empresa getEmpresa() {	
-		return empresaId;
+		return empresa;
 	}
 	
 	public Long getId() {

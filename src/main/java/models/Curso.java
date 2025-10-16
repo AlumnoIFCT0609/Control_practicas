@@ -52,7 +52,7 @@ public class Curso {
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_curso_tutor")
     )
-    private TutorCurso tutorCursoId;
+    private TutorCurso tutorCurso;
     
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
     private List<Alumno> alumnos = new ArrayList<>();
@@ -103,11 +103,11 @@ public class Curso {
 	}
 
 	public TutorCurso getTutorCurso() {
-		return tutorCursoId;
+		return tutorCurso;
 	}
 
-	public void setTutorCurso(TutorCurso tutorCursoId) {
-		this.tutorCursoId = tutorCursoId;
+	public void setTutorCurso(TutorCurso tutorCurso) {
+		this.tutorCurso = tutorCurso;
 	}
 
 	public List<Alumno> getAlumnos() {

@@ -58,6 +58,7 @@ public class TutorCurso {
     
     @Column(nullable = false)
     private Boolean activo = true;
+   
     
     public LocalDateTime getUltimoAcceso() {
 		return fechaActualizacion;

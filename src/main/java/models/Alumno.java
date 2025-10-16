@@ -56,7 +56,7 @@ public class Alumno {
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_alumno_empresa")
     )
-    private Empresa empresaId;
+    private Empresa empresa;
 
     @ManyToOne
     @JoinColumn(
@@ -64,7 +64,7 @@ public class Alumno {
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_alumno_tutorPracticas")
     )
-    private TutorPracticas tutorPracticasId;
+    private TutorPracticas tutorPracticas;
 
     @Column(name = "duracionpracticas")
     private Integer duracionPracticas;
@@ -154,18 +154,18 @@ public class Alumno {
     }
 
     public Empresa getEmpresa() {
-        return empresaId;
+        return empresa;
     }
 
     public void setEmpresa(Empresa empresa) {
-        this.empresaId = empresa;
+        this.empresa = empresa;
     }
 
     public TutorPracticas getTutorPracticas() {
-        return tutorPracticasId;
+        return tutorPracticas;
     }
 
     public void setTutorPracticas(TutorPracticas tutorPracticas) {
-        this.tutorPracticasId = tutorPracticas;
+        this.tutorPracticas = tutorPracticas;
     }
 }
