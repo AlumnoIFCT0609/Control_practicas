@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="content">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="bi bi-person-workspace me-2"></i>
+                Panel del Administrador
+            </h1>
+        </div>
+    </div>
+    
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">Todos los Cursos</h6>
+                            <h2 class="mb-0" th:text="${cursos.size()}">0</h2>
+                        </div>
+                        <i class="bi bi-book fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">En Prácticas</h6>
+                            <h2 class="mb-0" th:text="${alumnosActivos}">0</h2>
+                        </div>
+                        <i class="bi bi-person-check fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">Todas Las Empresas</h6>
+                            <h2 class="mb-0" th:text="${empresas?.size ?: 0}">0</h2>
+                        </div>
+                        <i class="bi bi-building fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">Tutores de Prácticas</h6>
+                            <h2 class="mb-0" th:text="${tutoresPracticas?.size ?: 0}">0</h2>
+                        </div>
+                        <i class="bi bi-briefcase fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Accesos rápidos -->
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-3">Accesos Rápidos</h3>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-book-fill fs-1 text-primary mb-3"></i>
+                    <h5 class="card-title">Todos los Cursos</h5>
+                    <p class="card-text">Ver y gestionar todos los cursos asignados</p>
+                    <a th:href="@{/tutor-curso/cursos}" class="btn btn-primary">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Ver Cursos
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill fs-1 text-success mb-3"></i>
+                    <h5 class="card-title">Mis Alumnos</h5>
+                    <p class="card-text">Gestionar alumnos de mis cursos</p>
+                    <a th:href="@{/tutor-curso/alumnos}" class="btn btn-success">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Ver Alumnos
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-check-fill fs-1 text-warning mb-3"></i>
+                    <h5 class="card-title">Evaluaciones</h5>
+                    <p class="card-text">Evaluar alumnos y tutores</p>
+                    <a th:href="@{/tutor-curso/evaluaciones}" class="btn btn-warning">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Evaluar
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-journal-text fs-1 text-info mb-3"></i>
+                    <h5 class="card-title">Observaciones</h5>
+                    <p class="card-text">Consultar observaciones de prácticas</p>
+                    <a th:href="@{/tutor-curso/observaciones}" class="btn btn-info">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Ver Observaciones
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-building-fill fs-1 text-secondary mb-3"></i>
+                    <h5 class="card-title">Empresas</h5>
+                    <p class="card-text">Ver empresas asociadas</p>
+                    <a th:href="@{/tutor-curso/empresas}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Ver Empresas
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-graph-up fs-1 text-dark mb-3"></i>
+                    <h5 class="card-title">Reportes</h5>
+                    <p class="card-text">Generar reportes y estadísticas</p>
+                    <a th:href="@{/tutor-curso/reportes}" class="btn btn-dark">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Ver Reportes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mis Cursos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-book me-2"></i>
+                        Mis Cursos Asignados
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Ciclo</th>
+                                    <th>Alumnos</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="curso : ${cursos}">
+                                    <td th:text="${curso.codigo}">DAW01</td>
+                                    <td th:text="${curso.nombre}">Desarrollo Aplicaciones Web</td>
+                                    <td th:text="${alumno.curso?.nombre}">Curso</td>
+                                    <td>
+                                        <span class="badge bg-primary" 
+                                              th:text="${alumno.curso?.alumnos != null ? alumno.curso.alumnos.size() : 0}">0</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Activo</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/tutor-curso/cursos/{id}(id=${curso.id})}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${cursos.empty}">
+                                    <td colspan="6" class="text-center text-muted">
+                                        No tienes cursos asignados
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alumnos Recientes -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people me-2"></i>
+                        Últimos Alumnos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Curso</th>
+                                    <th>Empresa</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="alumno, stat : ${alumnos}" th:if="${stat.index < 5}">
+                                    <td th:text="${alumno.nombre + ' ' + alumno.apellidos}">Alumno</td>
+                                    <td th:text="${alumno.curso?.nombre}">Curso</td>
+                                    <td th:text="${alumno.empresa?.nombre ?: 'Sin asignar'}">Empresa</td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${alumno.empresa != null} ? 'bg-success' : 'bg-secondary'"
+                                              th:text="${alumno.empresa != null ? 'En Prácticas' : 'Sin Empresa'}">Estado</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${alumnos.empty}">
+                                    <td colspan="4" class="text-center text-muted">
+                                        No hay alumnos en tus cursos
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

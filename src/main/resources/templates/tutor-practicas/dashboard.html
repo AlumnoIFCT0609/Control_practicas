@@ -1,0 +1,122 @@
+<!-- src/main/resources/templates/tutor-practicas/dashboard.html -->
+
+<div th:fragment="content">
+    <div class="container mt-5">
+        <h1 class="mb-4">
+            <i class="bi bi-briefcase"></i> Dashboard Tutor de Practicas
+        </h1>
+        
+        <div class="alert alert-warning">
+            <h4>Bienvenido, Tutor de Practicas</h4>
+            <p th:if="${tutor != null}">
+                <strong>Nombre:</strong> <span th:text="${tutor.nombre + ' ' + tutor.apellidos}"></span><br>
+                <strong>Cargo:</strong> <span th:text="${tutor.cargo}"></span><br>
+                <strong>Empresa:</strong> <span th:text="${empresa != null ? empresa.nombre : 'Sin asignar'}"></span>
+            </p>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-people"></i> Mis Alumnos
+                        </h5>
+                        <h2 th:text="${alumnos != null ? #lists.size(alumnos) : 0}">0</h2>
+                        <p class="card-text">Alumnos bajo supervision</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-journal-text"></i> Observaciones
+                        </h5>
+                        <h2>0</h2>
+                        <p class="card-text">Registradas este mes</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-white bg-danger">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-exclamation-triangle"></i> Incidencias
+                        </h5>
+                        <h2>0</h2>
+                        <p class="card-text">Pendientes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <h5><i class="bi bi-lightning"></i> Acciones Rapidas</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-primary w-100">
+                                    <i class="bi bi-plus-circle"></i><br>Nueva Observacion
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-success w-100">
+                                    <i class="bi bi-clipboard-check"></i><br>Evaluar Alumno
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-danger w-100">
+                                    <i class="bi bi-exclamation-triangle"></i><br>Reportar Incidencia
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-table"></i> Mis Alumnos en Practicas</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Alumno</th>
+                                    <th>Curso</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Horas Completadas</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="alumno : ${alumnos}">
+                                    <td th:text="${alumno.nombre + ' ' + alumno.apellidos}"></td>
+                                    <td th:text="${alumno.curso != null ? alumno.curso.nombre : 'N/A'}"></td>
+                                    <td th:text="${alumno.fechaInicioPracticas != null ? #temporals.format(alumno.fechaInicioPracticas, 'dd/MM/yyyy') : 'N/A'}"></td>
+                                    <td th:text="${alumno.horasTotales != null ? alumno.horasTotales : 0} + ' h'"></td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-primary">Ver</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(alumnos)}">
+                                    <td colspan="5" class="text-center text-muted">No hay alumnos asignados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
