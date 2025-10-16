@@ -38,11 +38,11 @@ public class AlumnoController {
                     model.addAttribute("curso", alumno.getCurso());
                     model.addAttribute("empresa", alumno.getEmpresa());
                     model.addAttribute("tutorPracticas", alumno.getTutorPracticas());
-                    model.addAttribute("viewName", "alumno/form");
+                    model.addAttribute("viewName", "alumno/dashboard");
                 }
             }
         }
-        return "layout";
-        //return "alumno/dashboard";
+        //return "layout";
+        return "alumno/dashboard";
     }
 }
