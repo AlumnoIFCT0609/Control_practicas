@@ -24,20 +24,27 @@ public class AlumnoController {
     
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
-        Optional<User> userOpt = userRepository.findByEmail(auth.getName());
+        Optional<Usuario> userOpt = userRepository.findByEmail(auth.getName());
         
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
+            Usuario usuario = userOpt.get();
             
             // Obtener el alumno usando el referenceId
-            if (user.getReferenceId() != null) {
-                Optional<Alumno> alumnoOpt = alumnoRepository.findById(user.getReferenceId());
+            if (usuario.getReferenceId() != null) {
+                Optional<Alumno> alumnoOpt = alumnoRepository.findById(usuario.getReferenceId());
                 if (alumnoOpt.isPresent()) {
                     Alumno alumno = alumnoOpt.get();
                     model.addAttribute("alumno", alumno);
                     model.addAttribute("curso", alumno.getCurso());
                     model.addAttribute("empresa", alumno.getEmpresa());
+                    model.addAttribute("fechaInicio",alumno.getFechaInicio());
+                    model.addAttribute("fechaInicio",alumno.getFechaFin());
+                    model.addAttribute("duracionPracticas",alumno.getDuracionPracticas());
+                    model.addAttribute("horario", alumno.getHorario());
                     model.addAttribute("tutorPracticas", alumno.getTutorPracticas());
+                    
+                    
+                    
                     model.addAttribute("viewName", "alumno/dashboard");
                 }
             }

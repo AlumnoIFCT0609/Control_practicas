@@ -20,7 +20,86 @@ import org.hibernate.annotations.CreationTimestamp;
 })
 public class Alumno {
 
-    @Id
+    public String getTelefono() {
+		return telefono;
+	}
+
+
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+
+	public Integer getDuracionPracticas() {
+		return duracionPracticas;
+	}
+
+
+	public void setDuracionPracticas(Integer duracionPracticas) {
+		this.duracionPracticas = duracionPracticas;
+	}
+
+
+	public String getHorario() {
+		return horario;
+	}
+
+
+	public void setHorario(String horario) {
+		this.horario = horario;
+	}
+
+
+	public LocalDateTime getFechaInicio() {
+		return fechaInicio;
+	}
+
+
+	public void setFechaInicio(LocalDateTime fechaInicio) {
+		this.fechaInicio = fechaInicio;
+	}
+
+
+	public LocalDateTime getFechaFin() {
+		return fechaFin;
+	}
+
+
+	public void setFechaFin(LocalDateTime fechaFin) {
+		this.fechaFin = fechaFin;
+	}
+
+
+	public Boolean getActivo() {
+		return activo;
+	}
+
+
+	public void setActivo(Boolean activo) {
+		this.activo = activo;
+	}
+
+
+	public LocalDateTime getFechaActualizacion() {
+		return fechaActualizacion;
+	}
+
+
+	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
+		this.fechaActualizacion = fechaActualizacion;
+	}
+
+
+	public LocalDateTime getFechaCreacion() {
+		return fechaCreacion;
+	}
+
+
+	public void setFechaCreacion(LocalDateTime fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
+	}
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -33,7 +112,7 @@ public class Alumno {
     @Column(nullable = false, length = 20, unique = true)
     private String dni;
     
-    @Column(name = "fecha_nacimiento")
+    @Column(name = "fechanacimiento")
     private LocalDate fechaNacimiento;
 
     @Column(nullable = false, length = 100, unique = true)
@@ -44,7 +123,7 @@ public class Alumno {
  
     @ManyToOne
     @JoinColumn(
-        name = "cursoId",
+        name = "curso",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_alumno_curso")
     )
@@ -52,7 +131,7 @@ public class Alumno {
 
     @ManyToOne
     @JoinColumn(
-        name = "empresaId",
+        name = "empresa",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_alumno_empresa")
     )
@@ -60,7 +139,7 @@ public class Alumno {
 
     @ManyToOne
     @JoinColumn(
-        name = "tutorPracticasId",
+        name = "tutorpracticas",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_alumno_tutorPracticas")
     )
@@ -87,6 +166,8 @@ public class Alumno {
     @CreationTimestamp
     private LocalDateTime fechaActualizacion;
     
+  
+    
     @Column(name = "fechacreacion", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime fechaCreacion;
@@ -94,7 +175,10 @@ public class Alumno {
     @PrePersist
     protected void onCreate() {
         this.fechaCreacion = LocalDateTime.now();
-    } 
+        this.fechaActualizacion = LocalDateTime.now();
+        }
+        
+    
     // Getters y setters
 
     public Long getId() {

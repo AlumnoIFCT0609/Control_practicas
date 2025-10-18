@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Alumno</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-info">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Control de Practicas - Alumno</a>
+            <form th:action="@{/logout}" method="post" class="d-flex">
+                <button class="btn btn-outline-light" type="submit">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">
+            <i class="bi bi-person-circle"></i> Mi Panel de Alumno
+        </h1>
+        
+        <div class="alert alert-info">
+            <h4>Bienvenido</h4>
+            <p th:if="${alumno != null}">
+                <strong>Nombre:</strong> <span th:text="${alumno.nombre + ' ' + alumno.apellidos}"></span><br>
+                <strong>DNI:</strong> <span th:text="${alumno.dni}"></span>
+            </p>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-book"></i> Mi Curso</h5>
+                    </div>
+                    <div class="card-body">
+                        <p th:if="${curso != null}">
+                            <strong>Nombre:</strong><br>
+                            <span th:text="${curso.nombre}"></span><br><br>
+                            <strong>Codigo:</strong> <span th:text="${curso.codigo}"></span>
+                        </p>
+                        <p th:if="${curso == null}" class="text-muted">No asignado</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="bi bi-building"></i> Mi Empresa</h5>
+                    </div>
+                    <div class="card-body">
+                        <p th:if="${empresa != null}">
+                            <strong>Nombre:</strong><br>
+                            <span th:text="${empresa.nombre}"></span><br><br>
+                            <strong>Sector:</strong> <span th:text="${empresa.sector}"></span>
+                        </p>
+                        <p th:if="${empresa == null}" class="text-muted">No asignada</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning">
+                        <h5><i class="bi bi-person-badge"></i> Mi Tutor</h5>
+                    </div>
+                    <div class="card-body">
+                        <p th:if="${tutorPracticas != null}">
+                            <strong>Nombre:</strong><br>
+                            <span th:text="${tutorPracticas.nombre + ' ' + tutorPracticas.apellidos}"></span><br><br>
+                            <strong>Cargo:</strong> <span th:text="${tutorPracticas.cargo}"></span>
+                        </p>
+                        <p th:if="${tutorPracticas == null}" class="text-muted">No asignado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
+                        <h3 th:text="${alumno != null and alumno.horasTotales != null ? alumno.horasTotales : 0}">0</h3>
+                        <p>Horas Completadas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-journal-text" style="font-size: 2rem;"></i>
+                        <h3>0</h3>
+                        <p>Observaciones</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clipboard-check" style="font-size: 2rem;"></i>
+                        <h3>0</h3>
+                        <p>Evaluaciones</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card text-white bg-warning">
+                    <div class="card-body text-center">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                        <h3>0</h3>
+                        <p>Incidencias</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="bi bi-lightning"></i> Acciones Rapidas</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-primary w-100">
+                                    <i class="bi bi-person"></i><br>Mi Perfil
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-success w-100">
+                                    <i class="bi bi-plus-circle"></i><br>Nueva Observacion
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-info w-100">
+                                    <i class="bi bi-clipboard-check"></i><br>Mis Evaluaciones
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-warning w-100">
+                                    <i class="bi bi-calendar"></i><br>Mi Horario
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-info-circle"></i> Informacion de Practicas</h5>
+                    </div>
+                    <div class="card-body" th:if="${alumno != null}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Fecha Inicio:</strong> 
+                                   <span th:text="${alumno.fechaInicioPracticas != null ? #temporals.format(alumno.fechaInicioPracticas, 'dd/MM/yyyy') : 'No iniciadas'}"></span>
+                                </p>
+                                <p><strong>Fecha Fin:</strong> 
+                                   <span th:text="${alumno.fechaFinPracticas != null ? #temporals.format(alumno.fechaFinPracticas, 'dd/MM/yyyy') : 'En curso'}"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Horas Totales:</strong> 
+                                   <span th:text="${alumno.horasTotales != null ? alumno.horasTotales + ' h' : '0 h'}"></span>
+                                </p>
+                                <p><strong>Horas Requeridas:</strong> 
+                                   <span th:text="${curso != null and curso.horasPracticas != null ? curso.horasPracticas + ' h' : 'N/A'}"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

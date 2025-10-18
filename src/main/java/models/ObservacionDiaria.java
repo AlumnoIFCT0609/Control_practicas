@@ -14,7 +14,7 @@ public class ObservacionDiaria {
 
     @ManyToOne
     @JoinColumn(
-        name = "alumnoId",
+        name = "alumno",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_observacion_alumno")
     )

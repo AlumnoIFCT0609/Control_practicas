@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 //@Data
 //@NoArgsConstructor
 //@AllArgsConstructor
-public class User {
+public class Usuario {
     
    
 	@Id
@@ -28,7 +28,7 @@ public class User {
     @Column(nullable = false, length = 20)
     private Rol rol;
     
-    @Column(name = "reference_id")
+    @Column(name = "referenceid")
     private Long referenceId;
     
     @Column(nullable = false)
@@ -57,13 +57,13 @@ public class User {
     }
     
     // Constructor personalizado
-    public User(String email, String password, Rol rol) {
+    public Usuario(String email, String password, Rol rol) {
         this.email = email;
         this.password = password;
         this.rol = rol;
         this.activo = true;
     }
-    public User() {}
+    public Usuario() {}
     
     public void setEmail(String email) {
     	this.email=email;
@@ -73,7 +73,7 @@ public class User {
     }
     
     public void setActivo(boolean activo) {
-    	this.activo=activo;
+    	this.activo=activo; 
     }
     
     public boolean getActivo() {

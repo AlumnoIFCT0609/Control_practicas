@@ -33,7 +33,7 @@ public class TutorCursoController {
 
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
-        Optional<User> userOpt = userRepository.findByEmail(auth.getName());
+        Optional<Usuario> userOpt = userRepository.findByEmail(auth.getName());
 
         List<Curso> cursos = List.of();
         List<Alumno> alumnos = List.of();
@@ -42,10 +42,10 @@ public class TutorCursoController {
         long alumnosConPracticas = 0;
 
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
+            Usuario usuario = userOpt.get();
 
-            if (user.getReferenceId() != null) {
-                Optional<TutorCurso> tutorOpt = tutorCursoRepository.findById(user.getReferenceId());
+            if (usuario.getReferenceId() != null) {
+                Optional<TutorCurso> tutorOpt = tutorCursoRepository.findById(usuario.getReferenceId());
                 if (tutorOpt.isPresent()) {
                     TutorCurso tutor = tutorOpt.get();
                     model.addAttribute("tutor", tutor);

@@ -28,14 +28,14 @@ public class TutorPracticasController {
     
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
-        Optional<User> userOpt = userRepository.findByEmail(auth.getName());
+        Optional<Usuario> userOpt = userRepository.findByEmail(auth.getName());
         
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
+            Usuario usuario = userOpt.get();
             
             // Obtener el tutor de prácticas usando el referenceId
-            if (user.getReferenceId() != null) {
-                Optional<TutorPracticas> tutorOpt = tutorPracticasRepository.findById(user.getReferenceId());
+            if (usuario.getReferenceId() != null) {
+                Optional<TutorPracticas> tutorOpt = tutorPracticasRepository.findById(usuario.getReferenceId());
                 if (tutorOpt.isPresent()) {
                     TutorPracticas tutor = tutorOpt.get();
                     model.addAttribute("tutor", tutor);

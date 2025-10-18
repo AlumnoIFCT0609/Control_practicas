@@ -1,0 +1,42 @@
+<div th:fragment="content">
+    <div class="container-fluid mt-4">
+        <h1 class="mb-4">Gestión de Usuarios</h1>
+
+        <a th:href="@{/admin/users/nuevo}" class="btn btn-success mb-3">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo Usuario
+        </a>
+
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.id}">1</td>
+                    <td th:text="${u.email}">correo@ejemplo.com</td>
+                    <td th:text="${u.rol}">ADMIN</td>
+                    <td>
+                        <span th:text="${u.activo} ? 'Sí' : 'No'" 
+                              th:classappend="${u.activo} ? 'text-success' : 'text-danger'"></span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/admin/users/editar/' + ${u.id}}" class="btn btn-sm btn-primary me-1">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a th:href="@{'/admin/users/eliminar/' + ${u.id}}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('¿Eliminar este usuario?')">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

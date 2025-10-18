@@ -14,7 +14,7 @@ public class EvaluacionTutor {
 
     @ManyToOne
     @JoinColumn(
-        name = "tutorPracticasId",
+        name = "tutorPracticas",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_evalTutor_tutorPracticas")
     )
@@ -22,7 +22,7 @@ public class EvaluacionTutor {
 
     @ManyToOne
     @JoinColumn(
-        name = "tutorCursoId",
+        name = "tutorCurso",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_evalTutor_tutorCurso")
     )

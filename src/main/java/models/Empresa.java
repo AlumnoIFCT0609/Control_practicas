@@ -39,10 +39,10 @@ public class Empresa {
     @Column(length = 100)
     private String sector;
     
-    @Column(length = 500)
-    private String descripcion;
+    @Column(length = 100,name = "personacontacto")
+    private String personaContacto;
     
-    @Column(name = "fecha_creacion", updatable = false)
+    @Column(name = "fechacreacion", updatable = false)
     private LocalDate fechaCreacion;
 
     @PrePersist
@@ -116,12 +116,14 @@ public class Empresa {
 		this.sector = sector;
 	}
 
-	public String getDescripcion() {
-		return descripcion;
+
+
+	public String getPersonaContacto() {
+		return personaContacto;
 	}
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
+	public void setPersonaContacto(String personaContacto) {
+		this.personaContacto = personaContacto;
 	}
 
 	public LocalDate getFechaCreacion() {

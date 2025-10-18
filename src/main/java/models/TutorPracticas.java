@@ -13,7 +13,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "tutorpractica")
+@Table(name = "tutorpracticas")
 //@Data
 //@NoArgsConstructor
 //@AllArgsConstructor
@@ -45,7 +45,7 @@ public class TutorPracticas {
     
     @ManyToOne
     @JoinColumn(
-        name = "empresaId",
+        name = "empresa",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_tutorPracticas_empresa")
     )

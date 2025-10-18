@@ -1,7 +1,7 @@
 package services;
 
 
-import models.User;
+import models.Usuario;
 import repositories.UserRepository;
 //import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,55 +19,55 @@ public class UserService {
     private final PasswordEncoder passwordEncoder=null;
     
     @Transactional
-    public User crearUsuario(String email, String password, User.Rol rol, Long referenceId) {
+    public Usuario crearUsuario(String email, String password, Usuario.Rol rol, Long referenceId) {
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("El email ya está registrado");
         }
         
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setRol(rol);
-        user.setReferenceId(referenceId);
-        user.setActivo(true);
+        Usuario usuario = new Usuario();
+        usuario.setEmail(email);
+        usuario.setPassword(passwordEncoder.encode(password));
+        usuario.setRol(rol);
+        usuario.setReferenceId(referenceId);
+        usuario.setActivo(true);
         
-        return userRepository.save(user);
+        return userRepository.save(usuario);
     }
     
-    public Optional<User> buscarPorEmail(String email) {
+    public Optional<Usuario> buscarPorEmail(String email) {
         return userRepository.findByEmail(email);
     }
     
-    public Optional<User> buscarPorId(Long id) {
+    public Optional<Usuario> buscarPorId(Long id) {
         return userRepository.findById(id);
     }
     
-    public List<User> listarTodos() {
+    public List<Usuario> listarTodos() {
         return userRepository.findAll();
     }
     
-    public List<User> listarActivos() {
+    public List<Usuario> listarActivos() {
         return userRepository.findByActivoTrue();
     }
     
-    public List<User> listarPorRol(User.Rol rol) {
+    public List<Usuario> listarPorRol(Usuario.Rol rol) {
         return userRepository.findByRol(rol);
     }
     
     @Transactional
     public void cambiarPassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId)
+        Usuario usuario = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        usuario.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(usuario);
     }
     
     @Transactional
     public void activarDesactivar(Long userId, boolean activo) {
-        User user = userRepository.findById(userId)
+        Usuario usuario = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        user.setActivo(activo);
-        userRepository.save(user);
+        usuario.setActivo(activo);
+        userRepository.save(usuario);
     }
     
     @Transactional

@@ -43,6 +43,10 @@ public class TutorCurso {
     @CreationTimestamp
     private LocalDateTime fechaActualizacion;
     
+    @PreUpdate
+    protected void onUpdate() {
+        this.fechaActualizacion = LocalDateTime.now();
+    }
     
     @Column(name = "fechacreacion", nullable = false, updatable = false)
     @CreationTimestamp

@@ -1,0 +1,49 @@
+<div th:fragment="content">
+    <div class="container-fluid mt-4">
+        <h1 class="mb-4">Nuevo Usuario</h1>
+		<p th:text="${nuevoUsuario.getClass().getName()}"></p>
+        <form th:action="@{/admin/users/guardar}" th:object="${nuevoUsuario}" method="post" class="row g-3" autocomplete="off">
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" th:field="*{email}" class="form-control" id="email" required />
+            </div>
+
+            <div class="col-md-6">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" th:field="*{password}" class="form-control" id="password" required />
+            </div>
+
+            <div class="col-md-6">
+                <label for="rol" class="form-label">Rol</label>
+                <select th:field="*{rol}" class="form-select" id="rol">
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="TUTOR_CURSO">TUTOR_CURSO</option>
+                    <option value="TUTOR_PRACTICAS">TUTOR_PRACTICAS</option>
+                    <option value="ALUMNO">ALUMNO</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label for="referenceId" class="form-label">Reference ID</label>
+                <input type="number" th:field="*{referenceId}" class="form-control" id="referenceId" />
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-check mt-4">
+                    <input type="checkbox" th:field="*{activo}" class="form-check-input" id="activo" />
+                    <label class="form-check-label" for="activo">Activo</label>
+                </div>
+            </div>
+
+            <input type="hidden" th:field="*{fechaCreacion}" />
+            <input type="hidden" th:field="*{ultimoAcceso}" />
+
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary">Crear Usuario</button>
+                <a th:href="@{/admin/users}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

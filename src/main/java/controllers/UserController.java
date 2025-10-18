@@ -1,6 +1,6 @@
 package controllers;
 
-import models.User;
+import models.Usuario;
 import repositories.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,8 +27,8 @@ public class UserController {
 
     @GetMapping
     public String listarUsuarios(Model model) {
-        List<User> users = userRepository.findAll();
-        model.addAttribute("users", users);
+        List<Usuario> usuarios = userRepository.findAll();
+        model.addAttribute("users", usuarios);
         model.addAttribute("pageTitle", "Gestión de Usuarios");
         model.addAttribute("viewName", "admin/users/list");
         return "layout";
@@ -37,7 +37,7 @@ public class UserController {
     @GetMapping("/nuevo")
     public String nuevoUsuario(Model model) {
         //model.addAttribute("user", new User());
-    	User newUser = new User();
+    	Usuario newUser = new Usuario();
         /*user.setEmail("");
         user.setPassword("");
         user.setRol(null);
@@ -49,20 +49,20 @@ public class UserController {
     }
 
     @PostMapping("/guardar")
-    public String guardarUsuario(@ModelAttribute User user) {
-        if (user.getId() == null) {
-            user.setFechaCreacion();
+    public String guardarUsuario(@ModelAttribute Usuario usuario) {
+        if (usuario.getId() == null) {
+            usuario.setFechaCreacion();
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setUltimoAcceso();
-        userRepository.save(user);
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setUltimoAcceso();
+        userRepository.save(usuario);
         return "redirect:/admin/users";
     }
 
     @GetMapping("/editar/{id}")
     public String editarUsuario(@PathVariable Long id, Model model) {
-        User user = userRepository.findById(id).orElseThrow();
-        model.addAttribute("user", user);
+        Usuario usuario = userRepository.findById(id).orElseThrow();
+        model.addAttribute("user", usuario);
         model.addAttribute("pageTitle", "Editar Usuario");
         model.addAttribute("viewName", "admin/users/form");
         return "layout";

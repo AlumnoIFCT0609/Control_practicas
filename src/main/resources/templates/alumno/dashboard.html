@@ -28,7 +28,9 @@
             <h4>Bienvenido</h4>
             <p th:if="${alumno != null}">
                 <strong>Nombre:</strong> <span th:text="${alumno.nombre + ' ' + alumno.apellidos}"></span><br>
-                <strong>DNI:</strong> <span th:text="${alumno.dni}"></span>
+                <strong>DNI:</strong> <span th:text="${alumno.dni}"></span><br>
+                <strong>Email:</strong> <span th:text="${alumno.email}"></span><br>
+                <strong>Teléfono:</strong> <span th:text="${alumno.telefono != null ? alumno.telefono : 'No especificado'}"></span>
             </p>
         </div>
 
@@ -87,8 +89,8 @@
                 <div class="card text-white bg-info">
                     <div class="card-body text-center">
                         <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
-                        <h3 th:text="${alumno != null and alumno.horasTotales != null ? alumno.horasTotales : 0}">0</h3>
-                        <p>Horas Completadas</p>
+                        <h3 th:text="${alumno != null and alumno.duracionPracticas != null ? alumno.duracionPracticas : 0}">0</h3>
+                        <p>Duración Prácticas (días)</p>
                     </div>
                 </div>
             </div>
@@ -117,8 +119,8 @@
                 <div class="card text-white bg-warning">
                     <div class="card-body text-center">
                         <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
-                        <h3>0</h3>
-                        <p>Incidencias</p>
+                        <h3 th:text="${alumno != null and alumno.activo ? 'Activo' : 'Inactivo'}">Estado</h3>
+                        <p>Estado</p>
                     </div>
                 </div>
             </div>
@@ -168,19 +170,23 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <p><strong>Fecha Inicio:</strong> 
-                                   <span th:text="${alumno.fechaInicioPracticas != null ? #temporals.format(alumno.fechaInicioPracticas, 'dd/MM/yyyy') : 'No iniciadas'}"></span>
+                                   <span th:text="${alumno.fechaInicio != null ? #temporals.format(alumno.fechaInicio, 'dd/MM/yyyy') : 'No iniciadas'}"></span>
                                 </p>
                                 <p><strong>Fecha Fin:</strong> 
-                                   <span th:text="${alumno.fechaFinPracticas != null ? #temporals.format(alumno.fechaFinPracticas, 'dd/MM/yyyy') : 'En curso'}"></span>
+                                   <span th:text="${alumno.fechaFin != null ? #temporals.format(alumno.fechaFin, 'dd/MM/yyyy') : 'En curso'}"></span>
                                 </p>
+                               
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Horas Totales:</strong> 
-                                   <span th:text="${alumno.horasTotales != null ? alumno.horasTotales + ' h' : '0 h'}"></span>
+                                <p><strong>Duración Prácticas:</strong> 
+                                   <span th:text="${alumno.duracionPracticas != null ? alumno.duracionPracticas + ' días' : 'No especificada'}"></span>
                                 </p>
-                                <p><strong>Horas Requeridas:</strong> 
-                                   <span th:text="${curso != null and curso.horasPracticas != null ? curso.horasPracticas + ' h' : 'N/A'}"></span>
+                                <p><strong>Horario:</strong> 
+                                   <span th:text="${alumno.horario != null ? alumno.horario : 'No especificado'}"></span>
                                 </p>
+								<p><strong>Duración Curso:</strong> 
+								   <span th:text="${curso != null and curso.duracion != null ? curso.duracion + ' días' : 'N/A'}"></span>
+								</p>
                             </div>
                         </div>
                     </div>

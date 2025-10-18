@@ -18,8 +18,18 @@ public class CriterioEvaluacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name="nombre", length = 100)
+    private String nombre;
     
-    @Column(name="descripcion", length = 1000)
+    public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	@Column(name="descripcion", length = 1000)
     private String descripcion;
     
     @Column(name = "peso")

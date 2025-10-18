@@ -29,26 +29,27 @@ public class Curso {
     @Column(length = 500)
     private String descripcion;
     
-    @Column(name = "fecha_inicio")
+    @Column(name = "fechainicio")
     private LocalDate fechaInicio;
     
-    @Column(name = "fecha_fin")
+    @Column(name = "fechafin")
     private LocalDate fechaFin;
     
     @Column(name = "duracion")
     private Integer duracion;
     
-    @Column(name = "fecha_creacion", updatable = false)
+    @Column(name = "fechacreacion", updatable = false)
     private LocalDateTime fechaCreacion;
 
     @PrePersist
     protected void onCreate() {
         this.fechaCreacion = LocalDateTime.now();
+        
     }
     
     @ManyToOne
     @JoinColumn(
-        name = "tutorCursoId",
+        name = "tutorcurso",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_curso_tutor")
     )

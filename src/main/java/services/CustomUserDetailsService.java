@@ -1,6 +1,6 @@
 package services;
 
-import models.User;
+import models.Usuario;
 import repositories.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,30 +27,30 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        Usuario usuario = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
         
-        if (!user.getActivo()) {
+        if (!usuario.getActivo()) {
             throw new UsernameNotFoundException("Usuario inactivo: " + email);
         }
         
-        user.setUltimoAcceso();
-        userRepository.save(user);
+        usuario.setUltimoAcceso();
+        userRepository.save(usuario);
         
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                user.getActivo(),
+                usuario.getEmail(),
+                usuario.getPassword(),
+                usuario.getActivo(),
                 true,
                 true,
                 true,
-                getAuthorities(user)
+                getAuthorities(usuario)
         );
     }
     
-    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
+    private Collection<? extends GrantedAuthority> getAuthorities(Usuario usuario) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRol().name()));
+        authorities.add(new SimpleGrantedAuthority(usuario.getRol().name()));
         return authorities;
     }
 }

@@ -22,7 +22,7 @@ public class Incidencia {
 
     @ManyToOne
     @JoinColumn(
-        name = "alumnoId",
+        name = "alumno",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_incidencia_alumno")
     )
@@ -30,11 +30,11 @@ public class Incidencia {
 
     @ManyToOne
     @JoinColumn(
-        name = "tutorPracticasId",
+        name = "tutorPracticas",
         referencedColumnName = "id",
         foreignKey = @ForeignKey(name = "fk_incidencia_tutorPracticas")
     )
-    private TutorPracticas tutorPracticasId;
+    private TutorPracticas tutorPracticas;
 
     @Column(nullable = false)
     private LocalDate fecha;
@@ -83,11 +83,11 @@ public class Incidencia {
     }
 
     public TutorPracticas getTutorPracticas() {
-        return tutorPracticasId;
+        return tutorPracticas;
     }
 
-    public void setTutorPracticas(TutorPracticas tutorPracticasId) {
-        this.tutorPracticasId = tutorPracticasId;
+    public void setTutorPracticas(TutorPracticas tutorPracticas) {
+        this.tutorPracticas = tutorPracticas;
     }
 
     public LocalDate getFecha() {

@@ -20,11 +20,11 @@ public class CapacidadEvaluacion {
 
 	 @ManyToOne
 	    @JoinColumn(
-	        name = "criterioId",
+	        name = "criterio",
 	        referencedColumnName = "id",
 	        foreignKey = @ForeignKey(name = "fk_capacidad_criterio")
 	    )
-	    private CriterioEvaluacion criterioId;
+	    private CriterioEvaluacion criterio;
 
 	    @Column(name = "nombre", length = 100, nullable = false)
 	    private String nombre;
@@ -32,20 +32,20 @@ public class CapacidadEvaluacion {
 	    @Column(name = "descripcion", columnDefinition = "TEXT")
 	    private String descripcion;
 
-	    @Column(name = "puntuacionMaxima")
+	    @Column(name = "puntuacionmaxima")
 	    private Integer puntuacionMaxima = 10;
 
 	    @Column(name = "activo")
 	    private Boolean activo = true;
 	    
 	    @CreationTimestamp
-	    @Column(name = "fecha_creacion", updatable = false)
+	    @Column(name = "fechacreacion", updatable = false)
 	    private LocalDateTime fechaCreacion;
 	    
 	    @PrePersist
 	    protected void onCreate() {
 	        this.fechaCreacion = LocalDateTime.now();
-	    } 
+	        } 
 	    
 	    // Getters y setters
 
@@ -58,11 +58,11 @@ public class CapacidadEvaluacion {
 	    }
 
 	    public CriterioEvaluacion getCriterio() {
-	        return criterioId;
+	        return criterio;
 	    }
 
-	    public void setCriterio(CriterioEvaluacion criterioId) {
-	        this.criterioId = criterioId;
+	    public void setCriterio(CriterioEvaluacion criterio) {
+	        this.criterio = criterio;
 	    }
 
 	    public String getNombre() {

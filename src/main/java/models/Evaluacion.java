@@ -17,15 +17,15 @@ public class Evaluacion {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "alumnoId", referencedColumnName = "id")
+    @JoinColumn(name = "alumno", referencedColumnName = "id")
     private Alumno alumno;
 
     @ManyToOne
-    @JoinColumn(name = "tutorPracticasId", referencedColumnName = "id")
+    @JoinColumn(name = "tutorPracticas", referencedColumnName = "id")
     private TutorPracticas tutorPracticas;
 
     @ManyToOne
-    @JoinColumn(name = "capacidadId", referencedColumnName = "id")
+    @JoinColumn(name = "capacidad", referencedColumnName = "id")
     private CapacidadEvaluacion capacidad;
 
     @Column(name = "puntuacion", precision = 4, scale = 2)
