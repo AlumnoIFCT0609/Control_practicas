@@ -99,10 +99,7 @@ public class Curso {
 		return fechaCreacion;
 	}
 
-	public void setFechaCreacion(LocalDateTime fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
+	
 	public TutorCurso getTutorCurso() {
 		return tutorCurso;
 	}
@@ -153,6 +150,11 @@ public class Curso {
 	public void setId(Long id) {
 		// TODO Auto-generated method stub
 		//no va a hacer nada
+	}
+
+	public void setFechaCreacion() {
+		this.fechaCreacion=LocalDateTime.now();
+		
 	}
 	
 	

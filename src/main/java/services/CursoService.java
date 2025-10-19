@@ -2,6 +2,8 @@ package services;
 
 import models.Curso;
 import repositories.CursoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 //import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +15,14 @@ import java.util.Optional;
 //@RequiredArgsConstructor
 public class CursoService {
     
-    private final CursoRepository cursoRepository=null;
-    
+	@Autowired
+    private final CursoRepository cursoRepository;
+	
+	public CursoService(CursoRepository cursoRepository) {
+        this.cursoRepository = cursoRepository;
+    }
+	
+	
     @Transactional
     public Curso guardar(Curso curso) {
         return cursoRepository.save(curso);

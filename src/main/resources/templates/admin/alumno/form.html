@@ -1,189 +1,190 @@
+<!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> -->
+
 <div th:fragment="content">
-    <div class="container-fluid mt-4">
-        <h1 class="mb-4">
-           <!--  <i class="bi bi-house-door me-2"></i>Bienvenido, <span th:text="${alumno.nombre}"></span> -->
-        </h1>
-        
-        <!-- Información Personal -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card border-primary">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Información Personal</h5>
+                        <h3 class="mb-0">
+                            <i class="bi bi-person-plus"></i>
+                            <span th:text="${alumno.id == null ? 'Nuevo Alumno' : 'Editar Alumno'}">Nuevo Alumno</span>
+                        </h3>
                     </div>
                     <div class="card-body">
-                        <p><strong>Nombre Completo:</strong><br>
-                           <span th:text="${alumno.nombre + ' ' + alumno.apellidos}"></span></p>
-                        <p><strong>DNI:</strong> <span th:text="${alumno.dni}"></span></p>
-                        <p><strong>Teléfono:</strong> <span th:text="${alumno.telefono}"></span></p>
-                        <p><strong>Email:</strong> <span th:text="${alumno.dni + '@alumno.com'}"></span></p>
-                        <a th:href="@{/alumno/perfil}" class="btn btn-primary btn-sm w-100">
-                            <i class="bi bi-pencil me-2"></i>Editar Perfil
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card border-success">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0"><i class="bi bi-book me-2"></i>Información del Curso</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Curso:</strong><br>
-                           <span th:text="${alumno.curso.nombre}"></span></p>
-                        <p><strong>Código:</strong> <span th:text="${alumno.curso.codigo}"></span></p>
-                        <p><strong>Tutor del Curso:</strong><br>
-                           <span th:if="${alumno.curso.tutorCurso != null}"
-                                 th:text="${alumno.curso.tutorCurso.nombre + ' ' + alumno.curso.tutorCurso.apellidos}"></span>
-                           <span th:unless="${alumno.curso.tutorCurso != null}" class="text-muted">No asignado</span>
-                        </p>
-                        <p><strong>Horas de Prácticas:</strong> 
-                           <span th:text="${alumno.curso.horasPracticas + ' horas'}"></span></p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card border-warning">
-                    <div class="card-header bg-warning text-white">
-                        <h5 class="mb-0"><i class="bi bi-building me-2"></i>Información de Prácticas</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Empresa:</strong><br>
-                           <span th:if="${alumno.empresa != null}" th:text="${alumno.empresa.nombre}"></span>
-                           <span th:unless="${alumno.empresa != null}" class="text-muted">No asignada</span>
-                        </p>
-                        <p><strong>Tutor de Prácticas:</strong><br>
-                           <span th:if="${alumno.tutorPracticas != null}"
-                                 th:text="${alumno.tutorPracticas.nombre + ' ' + alumno.tutorPracticas.apellidos}"></span>
-                           <span th:unless="${alumno.tutorPracticas != null}" class="text-muted">No asignado</span>
-                        </p>
-                        <p><strong>Período:</strong><br>
-                           <span th:if="${alumno.fechaInicioPracticas != null}"
-                                 th:text="${#temporals.format(alumno.fechaInicioPracticas, 'dd/MM/yyyy') + ' - ' + 
-                                          (alumno.fechaFinPracticas != null ? #temporals.format(alumno.fechaFinPracticas, 'dd/MM/yyyy') : 'En curso')}"></span>
-                           <span th:unless="${alumno.fechaInicioPracticas != null}" class="text-muted">No iniciadas</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Estadísticas -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card bg-info text-white">
-                    <div class="card-body text-center">
-                        <i class="bi bi-journal-text fs-1"></i>
-                        <h3 class="mt-2" th:text="${#lists.size(observaciones)}">0</h3>
-                        <p class="mb-0">Observaciones Registradas</p>
-                        <a th:href="@{/alumno/observaciones}" class="btn btn-light btn-sm mt-2">Ver todas</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card bg-success text-white">
-                    <div class="card-body text-center">
-                        <i class="bi bi-clipboard-check fs-1"></i>
-                        <h3 class="mt-2" th:text="${#lists.size(evaluaciones)}">0</h3>
-                        <p class="mb-0">Evaluaciones Recibidas</p>
-                        <a th:href="@{/alumno/evaluaciones}" class="btn btn-light btn-sm mt-2">Ver todas</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card bg-warning text-white">
-                    <div class="card-body text-center">
-                        <i class="bi bi-calendar-check fs-1"></i>
-                        <h3 class="mt-2" th:text="${alumno.horasTotales != null ? alumno.horasTotales : 0}">0</h3>
-                        <p class="mb-0">Horas Completadas</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Acciones Rápidas -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="mb-0"><i class="bi bi-lightning-fill me-2"></i>Acciones Rápidas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3 mb-2">
-                                <a th:href="@{/alumno/observaciones/nueva}" class="btn btn-primary w-100">
-                                    <i class="bi bi-plus-circle me-2"></i>Nueva Observación
-                                </a>
+                        <form th:action="@{/admin/alumno/guardar}" th:object="${alumno}" method="post">
+                            <input type="hidden" th:field="*{id}">
+                            
+                            <!-- Datos personales -->
+                            <h5 class="border-bottom pb-2 mb-3">Datos Personales</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="dni" class="form-label">DNI <span class="text-danger">*</span></label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="dni" 
+                                           th:field="*{dni}" 
+                                           placeholder="12345678A"
+                                           required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" 
+                                           class="form-control" 
+                                           id="email" 
+                                           th:field="*{email}" 
+                                           placeholder="alumno@ejemplo.com"
+                                           required>
+                                </div>
                             </div>
-                            <div class="col-md-3 mb-2">
-                                <a th:href="@{/alumno/evaluaciones}" class="btn btn-success w-100">
-                                    <i class="bi bi-clipboard-check me-2"></i>Ver Evaluaciones
-                                </a>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="nombre" 
+                                           th:field="*{nombre}" 
+                                           required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellidos" class="form-label">Apellidos <span class="text-danger">*</span></label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="apellidos" 
+                                           th:field="*{apellidos}" 
+                                           required>
+                                </div>
                             </div>
-                            <div class="col-md-3 mb-2">
-                                <a th:href="@{/alumno/observaciones}" class="btn btn-info w-100">
-                                    <i class="bi bi-journal-text me-2"></i>Mis Observaciones
-                                </a>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           id="fechaNacimiento" 
+                                           th:field="*{fechaNacimiento}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="tel" 
+                                           class="form-control" 
+                                           id="telefono" 
+                                           th:field="*{telefono}"
+                                           placeholder="600123456">
+                                </div>
                             </div>
-                            <div class="col-md-3 mb-2">
-                                <a th:href="@{/alumno/perfil}" class="btn btn-secondary w-100">
-                                    <i class="bi bi-person me-2"></i>Mi Perfil
-                                </a>
+
+                            <!-- Datos académicos y de prácticas -->
+                            <h5 class="border-bottom pb-2 mb-3 mt-4">Datos Académicos y Prácticas</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="curso" class="form-label">Curso <span class="text-danger">*</span></label>
+                                    <select class="form-select" 
+                                            id="curso" 
+                                            th:field="*{curso.id}" 
+                                            required>
+                                        <option value="">Seleccione un curso</option>
+                                        <option th:each="curso : ${cursos}" 
+                                                th:value="${curso.id}" 
+                                                th:text="${curso.nombre}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="empresa" class="form-label">Empresa</label>
+                                    <select class="form-select" 
+                                            id="empresa" 
+                                            th:field="*{empresa.id}">
+                                        <option value="">Seleccione una empresa</option>
+                                        <option th:each="empresa : ${empresas}" 
+                                                th:value="${empresa.id}" 
+                                                th:text="${empresa.nombre}">
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Últimas Evaluaciones -->
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>Últimas Evaluaciones</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Tipo</th>
-                                        <th>Evaluador</th>
-                                        <th>Calificación</th>
-                                        <th>Comentarios</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="evaluacion : ${evaluaciones}" th:if="${evaluacionStat.index < 5}">
-                                        <td th:text="${#temporals.format(evaluacion.fecha, 'dd/MM/yyyy')}"></td>
-                                        <td>
-                                            <span class="badge bg-primary" th:text="${evaluacion.tipo}"></span>
-                                        </td>
-                                        <td th:text="${evaluacion.evaluadorNombre}"></td>
-                                        <td>
-                                            <span class="badge" 
-                                                  th:classappend="${evaluacion.calificacion >= 7} ? 'bg-success' : 
-                                                                 ${evaluacion.calificacion >= 5} ? 'bg-warning' : 'bg-danger'"
-                                                  th:text="${evaluacion.calificacion}"></span>
-                                        </td>
-                                        <td th:text="${evaluacion.comentarios}"></td>
-                                    </tr>
-                                    <tr th:if="${#lists.isEmpty(evaluaciones)}">
-                                        <td colspan="5" class="text-center text-muted">No hay evaluaciones registradas</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tutorPracticas" class="form-label">Tutor de Prácticas</label>
+                                    <select class="form-select" 
+                                            id="tutorPracticas" 
+                                            th:field="*{tutorPracticas.id}">
+                                        <option value="">Seleccione un tutor</option>
+                                        <option th:each="tutor : ${tutores}" 
+                                                th:value="${tutor.id}" 
+                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="duracionPracticas" class="form-label">Duración Prácticas (horas)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="duracionPracticas" 
+                                           th:field="*{duracionPracticas}"
+                                           placeholder="80">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="horario" class="form-label">Horario <span class="text-danger">*</span></label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="horario" 
+                                       th:field="*{horario}"
+                                       placeholder="Lunes a Viernes: 9:00 - 14:00"
+                                       required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaInicio" class="form-label">Fecha Inicio <span class="text-danger">*</span></label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           id="fechaInicio" 
+                                           th:field="*{fechaInicio}"
+                                           required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaFin" class="form-label">Fecha Fin <span class="text-danger">*</span></label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           id="fechaFin" 
+                                           th:field="*{fechaFin}"
+                                           required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="activo" 
+                                           th:field="*{activo}">
+                                    <label class="form-check-label" for="activo">
+                                        Activo
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/admin/alumno/listar}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+</html>

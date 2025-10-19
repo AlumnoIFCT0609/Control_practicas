@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> -->
 
 <div th:fragment="content">
     <div class="row">
@@ -47,7 +47,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-title mb-1">Todas Las Empresas</h6>
-                            <h2 class="mb-0" th:text="${empresas?.size ?: 0}">0</h2>
+                            <h2 class="mb-0" th:text="${empresas != null ? empresas.size() : 0}">0</h2>
                         </div>
                         <i class="bi bi-building fs-1 opacity-50"></i>
                     </div>
@@ -61,7 +61,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-title mb-1">Tutores de Prácticas</h6>
-                            <h2 class="mb-0" th:text="${tutoresPracticas?.size ?: 0}">0</h2>
+                            <h2 class="mb-0" th:text="${tutoresPracticas != null ? tutoresPracticas.size() : 0}">0</h2>
                         </div>
                         <i class="bi bi-briefcase fs-1 opacity-50"></i>
                     </div>
@@ -172,7 +172,7 @@
                                 <tr>
                                     <th>Código</th>
                                     <th>Nombre</th>
-                                    <th>Ciclo</th>
+                                    <th>Duración</th>
                                     <th>Alumnos</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
@@ -182,13 +182,14 @@
                                 <tr th:each="curso : ${cursos}">
                                     <td th:text="${curso.codigo}">DAW01</td>
                                     <td th:text="${curso.nombre}">Desarrollo Aplicaciones Web</td>
-                                    <td th:text="${alumno.curso?.nombre}">Curso</td>
+                                    <td th:text="${curso.duracion != null ? curso.duracion + ' horas' : 'N/A'}">2000 horas</td>
                                     <td>
-                                        <span class="badge bg-primary" 
-                                              th:text="${alumno.curso?.alumnos != null ? alumno.curso.alumnos.size() : 0}">0</span>
+                                        <span class="badge bg-primary">0</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-success">Activo</span>
+                                        <span class="badge" 
+                                              th:classappend="${curso.activo} ? 'bg-success' : 'bg-secondary'"
+                                              th:text="${curso.activo ? 'Activo' : 'Inactivo'}">Activo</span>
                                     </td>
                                     <td>
                                         <a th:href="@{/tutor-curso/cursos/{id}(id=${curso.id})}" 
@@ -234,15 +235,21 @@
                             <tbody>
                                 <tr th:each="alumno, stat : ${alumnos}" th:if="${stat.index < 5}">
                                     <td th:text="${alumno.nombre + ' ' + alumno.apellidos}">Alumno</td>
-                                    <td th:text="${alumno.curso?.nombre}">Curso</td>
-                                    <td th:text="${alumno.empresa?.nombre ?: 'Sin asignar'}">Empresa</td>
+                                    <td>
+                                        <span th:if="${alumno.curso != null}" th:text="${alumno.curso.nombre}">Curso</span>
+                                        <span th:if="${alumno.curso == null}" class="text-muted">Sin asignar</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alumno.empresa != null}" th:text="${alumno.empresa.nombre}">Empresa</span>
+                                        <span th:if="${alumno.empresa == null}" class="text-muted">Sin asignar</span>
+                                    </td>
                                     <td>
                                         <span class="badge" 
                                               th:classappend="${alumno.empresa != null} ? 'bg-success' : 'bg-secondary'"
                                               th:text="${alumno.empresa != null ? 'En Prácticas' : 'Sin Empresa'}">Estado</span>
                                     </td>
                                 </tr>
-                                <tr th:if="${alumnos.empty}">
+                                <tr th:if="${alumnos == null || alumnos.empty}">
                                     <td colspan="4" class="text-center text-muted">
                                         No hay alumnos en tus cursos
                                     </td>

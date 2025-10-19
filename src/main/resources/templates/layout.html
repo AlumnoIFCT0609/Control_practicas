@@ -79,10 +79,10 @@
                 <a class="nav-link" th:href="@{/admin/users}">
     				<i class="bi bi-people me-2"></i> Usuarios
 				</a>
-                <a class="nav-link" th:href="@{/alumnos}">
+                <a class="nav-link" th:href="@{/admin/alumno/listar}">
                     <i class="bi bi-person-badge me-2"></i>Alumnos
                 </a>
-                <a class="nav-link" th:href="@{/cursos}">
+                <a class="nav-link" th:href="@{/admin/curso/listar}">
                     <i class="bi bi-book me-2"></i>Cursos
                 </a>
                 <a class="nav-link" th:href="@{/empresas}">
@@ -171,13 +171,16 @@
             <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        
-        <!-- Content <div th:insert="~{${viewName} :: content}"></div>
-        <div th:replace="${content}"></div>-->
-         <div th:if="${viewName != null}" th:insert="${viewName} :: content"></div>
-    		<div th:unless="${viewName != null}">
-        		<p>Error: viewName no está definido</p>
-    		</div>
+        <!--
+         Content <div th:insert="~{${viewName} :: content}"></div>
+        <div th:replace="${content}"></div>
+			<div th:unless="${viewName != null}">
+		    <p>Error: viewName no está definido</p>
+		</div>
+		-->
+		<div th:if="${viewName != null}" th:replace="~{${viewName} :: content}"></div>
+	
+
 
     </div>
     

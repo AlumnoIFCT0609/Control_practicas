@@ -50,22 +50,22 @@ public class Alumno {
 	}
 
 
-	public LocalDateTime getFechaInicio() {
+	public LocalDate getFechaInicio() {
 		return fechaInicio;
 	}
 
 
-	public void setFechaInicio(LocalDateTime fechaInicio) {
+	public void setFechaInicio(LocalDate fechaInicio) {
 		this.fechaInicio = fechaInicio;
 	}
 
 
-	public LocalDateTime getFechaFin() {
+	public LocalDate getFechaFin() {
 		return fechaFin;
 	}
 
 
-	public void setFechaFin(LocalDateTime fechaFin) {
+	public void setFechaFin(LocalDate fechaFin) {
 		this.fechaFin = fechaFin;
 	}
 
@@ -153,11 +153,11 @@ public class Alumno {
 
     @Column(name = "fechainicio", nullable = false)
     @CreationTimestamp
-    private LocalDateTime fechaInicio;
+    private LocalDate fechaInicio;
     
     @Column(name = "fechafin", nullable = false)
     @CreationTimestamp
-    private LocalDateTime fechaFin;
+    private LocalDate fechaFin;
     
     @Column(nullable = false)
     private Boolean activo = true;
@@ -252,4 +252,6 @@ public class Alumno {
     public void setTutorPracticas(TutorPracticas tutorPracticas) {
         this.tutorPracticas = tutorPracticas;
     }
+
+
 }

@@ -1,0 +1,92 @@
+<!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> -->
+
+<div th:fragment="content">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="bi bi-people-fill me-2"></i>
+                Gestión de Alumnos
+            </h2>
+            <a th:href="@{/admin/alumno/nuevo}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Alumno
+            </a>
+        </div>
+
+        <!-- Mensajes de feedback -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Tabla de alumnos -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>DNI</th>
+                                <th>Nombre</th>
+                                <th>Apellidos</th>
+                                <th>Email</th>
+                                <th>Curso</th>
+                                <th>Empresa</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${alumnos == null || alumnos.isEmpty()}">
+                                <td colspan="8" class="text-center text-muted">
+                                    <i class="bi bi-inbox"></i> No hay alumnos registrados
+                                </td>
+                            </tr>
+                            <tr th:each="alumno : ${alumnos}">
+                                <td th:text="${alumno.dni}">12345678A</td>
+                                <td th:text="${alumno.nombre}">Juan</td>
+                                <td th:text="${alumno.apellidos}">García</td>
+                                <td th:text="${alumno.email}">juan@example.com</td>
+                                <td>
+                                    <span th:if="${alumno.curso != null}" th:text="${alumno.curso.nombre}">Curso</span>
+                                    <span th:if="${alumno.curso == null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${alumno.empresa != null}" th:text="${alumno.empresa.nombre}">Empresa</span>
+                                    <span th:if="${alumno.empresa == null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${alumno.activo}" class="badge bg-success">Activo</span>
+                                    <span th:unless="${alumno.activo}" class="badge bg-secondary">Inactivo</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                       
+                                        <a th:href="@{/admin/alumno/editar/{id}(id=${alumno.id})}" 
+                                           class="btn btn-sm btn-warning" 
+                                           title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a th:href="@{/admin/alumno/eliminar/{id}(id=${alumno.id})}" 
+                                           class="btn btn-sm btn-danger" 
+                                           title="Eliminar"
+                                           onclick="return confirm('¿Está seguro de eliminar este alumno?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

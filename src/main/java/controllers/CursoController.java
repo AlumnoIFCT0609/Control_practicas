@@ -1,54 +1,95 @@
 package controllers;
 
 import models.Curso;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import repositories.TutorCursoRepository;
 import services.CursoService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/cursos")
+@Controller
+@RequestMapping("/admin/curso")
 public class CursoController {
 
-    @Autowired
-    private CursoService cursoService;
+    private final CursoService cursoService;
+    private final TutorCursoRepository tutorCursoRepository;
 
-    @GetMapping
-    public List<Curso> listarTodos() {
-        return cursoService.listarTodos();
+    public CursoController(CursoService cursoService, TutorCursoRepository tutorCursoRepository) {
+        this.cursoService = cursoService;
+        this.tutorCursoRepository = tutorCursoRepository;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Curso> obtenerPorId(@PathVariable Long id) {
-        return cursoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    // Listar todos los cursos
+    @GetMapping("/listar")
+    public String listar(Model model) {
+        List<Curso> cursos = cursoService.listarTodos();
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("viewName", "admin/curso/listar");
+        return "layout";
     }
 
-    @PostMapping
-    public Curso crear(@RequestBody Curso curso) {
-        return cursoService.guardar(curso);
+    // Mostrar formulario para crear nuevo curso
+    @GetMapping("/nuevo")
+    public String nuevo(Model model) {
+        Curso curso = new Curso();
+        curso.setActivo(true); // Por defecto activo
+        model.addAttribute("curso", curso);
+        model.addAttribute("tutores", tutorCursoRepository.findAll());
+        model.addAttribute("viewName", "admin/curso/form");
+        return "layout";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Curso> actualizar(@PathVariable Long id, @RequestBody Curso curso) {
-        return cursoService.buscarPorId(id)
-                .map(c -> {
-                    curso.setId(id);
-                    return ResponseEntity.ok(cursoService.guardar(curso));
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (cursoService.existePorId(id)) {
-            cursoService.eliminar(id);
-            return ResponseEntity.noContent().build();
+    // Mostrar formulario para editar curso existente
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Curso> cursoOpt = cursoService.buscarPorId(id);
+        
+        if (cursoOpt.isPresent()) {
+            model.addAttribute("curso", cursoOpt.get());
+            model.addAttribute("tutores", tutorCursoRepository.findAll());
+            model.addAttribute("viewName", "admin/curso/form");
+            return "layout";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Curso no encontrado");
+            return "redirect:/admin/curso/listar";
         }
-        return ResponseEntity.notFound().build();
+    }
+
+    // Guardar o actualizar curso
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Curso curso, RedirectAttributes redirectAttributes) {
+        try {
+            // Si es nuevo, establecer fecha de creación
+            if (curso.getId() == null) {
+                curso.setFechaCreacion();
+            }
+            
+            cursoService.guardar(curso);
+            redirectAttributes.addFlashAttribute("success", 
+                curso.getId() == null ? "Curso creado exitosamente" : "Curso actualizado exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el curso: " + e.getMessage());
+        }
+        return "redirect:/admin/curso/listar";
+    }
+
+    // Eliminar curso
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            if (cursoService.existePorId(id)) {
+                cursoService.eliminar(id);
+                redirectAttributes.addFlashAttribute("success", "Curso eliminado exitosamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Curso no encontrado");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar el curso: " + e.getMessage());
+        }
+        return "redirect:/admin/curso/listar";
     }
 }
-
