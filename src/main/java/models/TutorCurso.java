@@ -133,4 +133,9 @@ public class TutorCurso {
 
 	@OneToMany(mappedBy = "tutorCurso", cascade = CascadeType.ALL)
     private List<Curso> cursos = new ArrayList<>();
+
+	public void setActivo(boolean b) {
+		this.activo=b;
+		
+	}
 }

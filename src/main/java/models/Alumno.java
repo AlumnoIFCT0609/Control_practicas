@@ -85,8 +85,8 @@ public class Alumno {
 	}
 
 
-	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
+	public void setFechaActualizacion(LocalDateTime nada) {
+		this.fechaActualizacion = LocalDateTime.now();
 	}
 
 
@@ -152,30 +152,30 @@ public class Alumno {
     private String horario;
 
     @Column(name = "fechainicio", nullable = false)
-    @CreationTimestamp
     private LocalDate fechaInicio;
     
     @Column(name = "fechafin", nullable = false)
-    @CreationTimestamp
-    private LocalDate fechaFin;
+       private LocalDate fechaFin;
     
     @Column(nullable = false)
     private Boolean activo = true;
     
-    @Column(name = "fechaactualizacion", nullable = false, updatable = false)
-    @CreationTimestamp
+    @Column(name = "fechaactualizacion", nullable = false)
     private LocalDateTime fechaActualizacion;
     
+    @PreUpdate
+    protected void onUpdate() {
+        this.fechaActualizacion = LocalDateTime.now();
+    }
   
     
-    @Column(name = "fechacreacion", nullable = false, updatable = false)
+    @Column(name = "fechacreacion", nullable = false)
     @CreationTimestamp
     private LocalDateTime fechaCreacion;
     
     @PrePersist
     protected void onCreate() {
         this.fechaCreacion = LocalDateTime.now();
-        this.fechaActualizacion = LocalDateTime.now();
         }
         
     

@@ -63,7 +63,6 @@ public class AlumnoController {
         return "layout";
     }
     
-    // Listar todos los alumnos
     @GetMapping("/listar")
     public String listar(Model model) {
         List<Alumno> alumnos = alumnoService.listarTodos();
@@ -72,7 +71,6 @@ public class AlumnoController {
         return "layout";
     }
     
-    // Mostrar formulario para crear nuevo alumno
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("alumno", new Alumno());
@@ -83,7 +81,6 @@ public class AlumnoController {
         return "layout";
     }
     
-    // Mostrar formulario para editar alumno existente
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Optional<Alumno> alumnoOpt = alumnoService.buscarPorId(id);
@@ -101,21 +98,53 @@ public class AlumnoController {
         }
     }
     
-    // Guardar o actualizar alumno
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
+    public String guardar(@ModelAttribute Alumno alumno, 
+                         @RequestParam(name = "curso.id", required = false) Long cursoId,
+                         @RequestParam(name = "empresa.id", required = false) Long empresaId,
+                         @RequestParam(name = "tutorPracticas.id", required = false) Long tutorPracticasId,
+                         RedirectAttributes redirectAttributes) {
         try {
+            // Validar curso obligatorio
+            if (cursoId == null || cursoId == 0) {
+                redirectAttributes.addFlashAttribute("error", "Debe seleccionar un curso");
+                return "redirect:/admin/alumno/nuevo";
+            }
+            
+            // Crear y asignar el curso
+            Curso curso = new Curso();
+            curso.setId(cursoId);
+            alumno.setCurso(curso);
+            
+            // Crear y asignar la empresa si existe
+            if (empresaId != null && empresaId > 0) {
+                Empresa empresa = new Empresa();
+                empresa.setId(empresaId);
+                alumno.setEmpresa(empresa);
+            } else {
+                alumno.setEmpresa(null);
+            }
+            
+            // Crear y asignar el tutor si existe
+            if (tutorPracticasId != null && tutorPracticasId > 0) {
+                TutorPracticas tutor = new TutorPracticas();
+                tutor.setId(tutorPracticasId);
+                alumno.setTutorPracticas(tutor);
+            } else {
+                alumno.setTutorPracticas(null);
+            }
+            
             alumnoService.guardar(alumno);
             redirectAttributes.addFlashAttribute("success", 
                 alumno.getId() == null ? "Alumno creado exitosamente" : "Alumno actualizado exitosamente");
+                
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar el alumno: " + e.getMessage());
+            e.printStackTrace();
         }
         return "redirect:/admin/alumno/listar";
     }
     
-        
-    // Eliminar alumno
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

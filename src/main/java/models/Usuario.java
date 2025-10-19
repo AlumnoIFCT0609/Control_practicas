@@ -132,4 +132,6 @@ public class Usuario {
 		this.fechaCreacion= LocalDateTime.now();
 		
 	}
+	
+	
 }
