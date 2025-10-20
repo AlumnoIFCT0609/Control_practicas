@@ -138,4 +138,9 @@ public class TutorCurso {
 		this.activo=b;
 		
 	}
+
+	public boolean getActivo() {
+
+		return activo;
+	}
 }

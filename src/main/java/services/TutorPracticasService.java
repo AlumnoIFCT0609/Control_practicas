@@ -1,10 +1,8 @@
 package services;
 
-
-
 import models.TutorPracticas;
+
 import repositories.TutorPracticasRepository;
-//import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,12 +10,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-//@RequiredArgsConstructor
+@Transactional
 public class TutorPracticasService {
  
- private final TutorPracticasRepository tutorPracticasRepository=null;
+ private final TutorPracticasRepository tutorPracticasRepository;
  
- @Transactional
+ public TutorPracticasService(TutorPracticasRepository tutorPracticasRepository) {
+     this.tutorPracticasRepository = tutorPracticasRepository;
+ }
+ 
+ 
  public TutorPracticas guardar(TutorPracticas tutorPracticas) {
      return tutorPracticasRepository.save(tutorPracticas);
  }

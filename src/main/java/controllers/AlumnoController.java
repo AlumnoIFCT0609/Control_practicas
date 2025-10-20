@@ -36,7 +36,7 @@ public class AlumnoController {
         this.empresaRepository = empresaRepository;
         this.tutorPracticasRepository = tutorPracticasRepository;
     }
-    
+   /* 
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
         Optional<Usuario> userOpt = userRepository.findByEmail(auth.getName());
@@ -61,7 +61,7 @@ public class AlumnoController {
             }
         }
         return "layout";
-    }
+    }*/
     
     @GetMapping("/listar")
     public String listar(Model model) {

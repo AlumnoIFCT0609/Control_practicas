@@ -85,36 +85,36 @@
                 <a class="nav-link" th:href="@{/admin/curso/listar}">
                     <i class="bi bi-book me-2"></i>Cursos
                 </a>
-                <a class="nav-link" th:href="@{/empresas}">
+                <a class="nav-link" th:href="@{/admin/empresa/listar}">
                     <i class="bi bi-building me-2"></i>Empresas
                 </a>
-                <a class="nav-link" th:href="@{/tutores-curso}">
+                <a class="nav-link" th:href="@{/admin/tutorcurso/listar}">
                     <i class="bi bi-person-workspace me-2"></i>Tutores Curso
                 </a>
-                <a class="nav-link" th:href="@{/tutores-practicas}">
+                <a class="nav-link" th:href="@{/admin/tutorpracticas/listar}">
                     <i class="bi bi-briefcase me-2"></i>Tutores Prácticas
                 </a>
             </div>
             
             <!-- Tutor Curso Menu -->
             <div sec:authorize="hasAuthority('TUTOR_CURSO')">
-                <a class="nav-link" th:href="@{/tutor-curso/dashboard}">
+                <a class="nav-link" th:href="@{/tutorcurso/dashboard}">
                     <i class="bi bi-speedometer2 me-2"></i>Dashboard
                 </a>
-                <a class="nav-link" th:href="@{/tutor-curso/cursos}">
+                <a class="nav-link" th:href="@{/tutorcurso/cursos}">
                     <i class="bi bi-book me-2"></i>Mis Cursos
                 </a>
-                <a class="nav-link" th:href="@{/tutor-curso/observaciones}">
+                <a class="nav-link" th:href="@{/tutorcurso/observaciones}">
                     <i class="bi bi-journal-text me-2"></i>Observaciones
                 </a>
             </div>
             
             <!-- Tutor Prácticas Menu -->
             <div sec:authorize="hasAuthority('TUTOR_PRACTICAS')">
-                <a class="nav-link" th:href="@{/tutor-practicas/dashboard}">
+                <a class="nav-link" th:href="@{/tutorpracticas/dashboard}">
                     <i class="bi bi-speedometer2 me-2"></i>Dashboard
                 </a>
-                <a class="nav-link" th:href="@{/tutor-practicas/alumnos}">
+                <a class="nav-link" th:href="@{/tutorpracticas/alumnos}">
                     <i class="bi bi-person-badge me-2"></i>Mis Alumnos
                 </a>
             </div>

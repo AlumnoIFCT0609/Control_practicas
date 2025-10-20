@@ -1,0 +1,180 @@
+<!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> -->
+
+<div th:fragment="content">
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 th:text="${empresa.id != null ? 'Editar Empresa' : 'Nueva Empresa'}">
+                            <i class="fas fa-building"></i>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Mensajes de error -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="@{/admin/empresa/guardar}" th:object="${empresa}" method="post">
+                            <!-- ID oculto para edición -->
+                            <input type="hidden" th:field="*{id}">
+                            
+                            <!-- Información Básica -->
+                            <h5 class="mb-3 text-primary">
+                                <i class="fas fa-info-circle"></i> Información Básica
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="nombre" class="form-label">
+                                        Nombre de la Empresa <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="nombre" 
+                                           th:field="*{nombre}"
+                                           placeholder="Ej: Tecnologías Avanzadas S.L."
+                                           required>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="cif" class="form-label">
+                                        CIF <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="cif" 
+                                           th:field="*{cif}"
+                                           placeholder="Ej: B12345678"
+                                           maxlength="20"
+                                           required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="sector" class="form-label">
+                                        Sector
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="sector" 
+                                           th:field="*{sector}"
+                                           placeholder="Ej: Tecnología, Hostelería, etc.">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="personaContacto" class="form-label">
+                                        Persona de Contacto
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="personaContacto" 
+                                           th:field="*{personaContacto}"
+                                           placeholder="Ej: Juan Pérez">
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <!-- Datos de Contacto -->
+                            <h5 class="mb-3 text-primary">
+                                <i class="fas fa-address-book"></i> Datos de Contacto
+                            </h5>
+
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">
+                                    Dirección
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="direccion" 
+                                       th:field="*{direccion}"
+                                       placeholder="Calle, número, ciudad, código postal">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label">
+                                        Teléfono
+                                    </label>
+                                    <input type="tel" 
+                                           class="form-control" 
+                                           id="telefono" 
+                                           th:field="*{telefono}"
+                                           placeholder="Ej: 954123456"
+                                           maxlength="15">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">
+                                        Email
+                                    </label>
+                                    <input type="email" 
+                                           class="form-control" 
+                                           id="email" 
+                                           th:field="*{email}"
+                                           placeholder="contacto@empresa.com">
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <!-- Estado -->
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="activa" 
+                                           th:field="*{activa}"
+                                           checked>
+                                    <label class="form-check-label" for="activa">
+                                        <strong>Empresa Activa</strong>
+                                        <small class="text-muted d-block">
+                                            Las empresas inactivas no aparecerán disponibles para asignar
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Información adicional para edición -->
+                            <div th:if="${empresa.id != null}" class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Fecha de creación:</strong> 
+                                <span th:text="${#temporals.format(empresa.fechaCreacion, 'dd/MM/yyyy')}"></span>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/admin/empresa/listar}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> 
+                                    <span th:text="${empresa.id != null ? 'Actualizar' : 'Guardar'}"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Información de ayuda -->
+                <div class="card mt-3">
+                    <div class="card-body bg-light">
+                        <h6><i class="fas fa-lightbulb"></i> Información importante:</h6>
+                        <ul class="mb-0 small">
+                            <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+                            <li>El CIF debe ser único para cada empresa</li>
+                            <li>El email debe ser único si se proporciona</li>
+                            <li>Las empresas inactivas no aparecerán en los listados de selección</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

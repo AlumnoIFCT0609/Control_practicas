@@ -13,9 +13,9 @@ public class DashboardController {
         if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
             return "redirect:/admin/dashboard";
         } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("TUTOR_CURSO"))) {
-            return "redirect:/tutor-curso/dashboard";
+            return "redirect:/tutorcurso/dashboard";
         } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("TUTOR_PRACTICAS"))) {
-            return "redirect:/tutor-practicas/dashboard";
+            return "redirect:/tutorpracticas/dashboard";
         } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ALUMNO"))) {
             return "redirect:/alumno/dashboard";
         }

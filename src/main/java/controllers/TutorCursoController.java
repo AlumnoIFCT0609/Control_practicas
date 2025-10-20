@@ -2,92 +2,160 @@ package controllers;
 
 import models.*;
 import repositories.*;
-import org.springframework.security.core.Authentication;
+import services.TutorCursoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/tutor-curso")
+@RequestMapping("/admin/tutorcurso")
 public class TutorCursoController {
-
-    private final UserRepository userRepository;
+    
     private final TutorCursoRepository tutorCursoRepository;
-    private final CursoRepository cursoRepository;
-    private final AlumnoRepository alumnoRepository;
-
-    public TutorCursoController(UserRepository userRepository,
-                                TutorCursoRepository tutorCursoRepository,
-                                CursoRepository cursoRepository,
-                                AlumnoRepository alumnoRepository) {
-        this.userRepository = userRepository;
+    private final TutorCursoService tutorCursoService;
+    
+    public TutorCursoController(TutorCursoRepository tutorCursoRepository,
+                                TutorCursoService tutorCursoService) {
         this.tutorCursoRepository = tutorCursoRepository;
-        this.cursoRepository = cursoRepository;
-        this.alumnoRepository = alumnoRepository;
+        this.tutorCursoService = tutorCursoService;
     }
-
+    /* @GetMapping("/tutorcurso/dashboard")
+    public String dashboard(Model model) {
+        List<TutorCurso> tutores = tutorCursoService.listarTodos();
+        model.addAttribute("tutores", tutores);
+        model.addAttribute("viewName", "tutorcurso/dashboard");
+        return "layout";
+    } 
+    
     @GetMapping("/dashboard")
-    public String dashboard(Authentication auth, Model model) {
-        Optional<Usuario> userOpt = userRepository.findByEmail(auth.getName());
-
-        List<Curso> cursos = List.of();
-        List<Alumno> alumnos = List.of();
-        Set<Empresa> empresas = Set.of();
-        Set<TutorPracticas> tutoresPracticas = Set.of();
-        long alumnosConPracticas = 0;
-
-        if (userOpt.isPresent()) {
-            Usuario usuario = userOpt.get();
-
-            if (usuario.getReferenceId() != null) {
-                Optional<TutorCurso> tutorOpt = tutorCursoRepository.findById(usuario.getReferenceId());
-                if (tutorOpt.isPresent()) {
-                    TutorCurso tutor = tutorOpt.get();
-                    model.addAttribute("tutor", tutor);
-
-                    // Obtener cursos del tutor
-                    cursos = cursoRepository.findAll(); // TODO: Ajustar con findByTutorCurso(tutor) si existe
-                    
-                    // Obtener alumnos de esos cursos
-                    alumnos = alumnoRepository.findAll(); // TODO: Ajustar con findByCursoIn(cursos) si existe
-                    
-                    // Obtener empresas únicas
-                    empresas = alumnos.stream()
-                        .map(Alumno::getEmpresa)
-                        .filter(e -> e != null)
-                        .map(e -> (Empresa) e)
-                        .collect(Collectors.toSet());
-                    
-                    // Obtener tutores de prácticas únicos
-                    tutoresPracticas = alumnos.stream()
-                        .map(Alumno::getTutorPracticas)
-                        .filter(t -> t != null)
-                        .collect(Collectors.toSet());
-                    
-                    // Contar alumnos que tienen empresa asignada (están en prácticas)
-                    alumnosConPracticas = alumnos.stream()
-                        .filter(a -> a.getEmpresa() != null)
-                        .count();
+    public String dashboard(Model model) {
+    	List<TutorCurso> tutores = tutorCursoService.listarTodos();
+        model.addAttribute("pageTitle", "Dashboard - Administrador");
+        //model.addAttribute("viewName", "tutorcurso/dashboard");
+        model.addAttribute("content", "tutorcurso/dashboard");
+        return "layout";
+    }*/
+    
+    @GetMapping("/listar")
+    public String listar(Model model) {
+        List<TutorCurso> tutores = tutorCursoService.listarTodos();
+        model.addAttribute("tutores", tutores);
+        model.addAttribute("viewName", "admin/tutorcurso/listar");
+        return "layout";
+    }
+    
+    @GetMapping("/nuevo")
+    public String mostrarFormularioNuevo(Model model) {
+        model.addAttribute("tutorCurso", new TutorCurso());
+        model.addAttribute("viewName", "admin/tutorcurso/form");
+        return "layout";
+    }
+    
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<TutorCurso> tutorOpt = tutorCursoService.buscarPorId(id);
+        
+        if (tutorOpt.isPresent()) {
+            model.addAttribute("tutorCurso", tutorOpt.get());
+            model.addAttribute("viewName", "admin/tutorcurso/form");
+            return "layout";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Tutor de Curso no encontrado");
+            return "redirect:/admin/tutorcurso/listar";
+        }
+    }
+    
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute TutorCurso tutorCurso, RedirectAttributes redirectAttributes) {
+        try {
+            // Validaciones básicas
+            if (tutorCurso.getNombre() == null || tutorCurso.getNombre().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "El nombre es obligatorio");
+                return "redirect:/admin/tutorcurso/nuevo";
+            }
+            
+            if (tutorCurso.getApellidos() == null || tutorCurso.getApellidos().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Los apellidos son obligatorios");
+                return "redirect:/admin/tutorcurso/nuevo";
+            }
+            
+            if (tutorCurso.getDni() == null || tutorCurso.getDni().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "El DNI es obligatorio");
+                return "redirect:/admin/tutorcurso/nuevo";
+            }
+            
+            // Verificar si el DNI ya existe (excepto si es el mismo tutor)
+            Optional<TutorCurso> tutorExistente = tutorCursoRepository.findByDni(tutorCurso.getDni());
+            if (tutorExistente.isPresent() && !tutorExistente.get().getId().equals(tutorCurso.getId())) {
+                redirectAttributes.addFlashAttribute("error", "Ya existe un tutor con ese DNI");
+                return tutorCurso.getId() == null ? "redirect:/admin/tutorcurso/nuevo" : "redirect:/admin/tutorcurso/editar/" + tutorCurso.getId();
+            }
+            
+            // Verificar si el email ya existe (excepto si es el mismo tutor)
+            if (tutorCurso.getEmail() != null && !tutorCurso.getEmail().trim().isEmpty()) {
+                Optional<TutorCurso> tutorExistenteEmail = tutorCursoRepository.findByEmail(tutorCurso.getEmail());
+                if (tutorExistenteEmail.isPresent() && !tutorExistenteEmail.get().getId().equals(tutorCurso.getId())) {
+                    redirectAttributes.addFlashAttribute("error", "Ya existe un tutor con ese email");
+                    return tutorCurso.getId() == null ? "redirect:/admin/tutorcurso/nuevo" : "redirect:/admin/tutorcurso/editar/" + tutorCurso.getId();
                 }
             }
+            
+            tutorCursoService.guardar(tutorCurso);
+            redirectAttributes.addFlashAttribute("success", 
+                tutorCurso.getId() == null ? "Tutor de Curso creado exitosamente" : "Tutor de Curso actualizado exitosamente");
+                
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el tutor: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        // Atributos para el dashboard
-        model.addAttribute("cursos", cursos);
-        model.addAttribute("alumnos", alumnos);
-        model.addAttribute("empresas", empresas);
-        model.addAttribute("tutoresPracticas", tutoresPracticas);
-        model.addAttribute("alumnosActivos", alumnosConPracticas); // Alumnos con empresa = en prácticas activas
-        
-        // Para el layout
-        model.addAttribute("pageTitle", "Dashboard - Tutor de Curso");
-        model.addAttribute("viewName", "tutor-curso/dashboard");
-        
-        return "layout";
+        return "redirect:/admin/tutorcurso/listar";
+    }
+    
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<TutorCurso> tutorOpt = tutorCursoService.buscarPorId(id);
+            if (tutorOpt.isPresent()) {
+                TutorCurso tutor = tutorOpt.get();
+                
+                // Verificar si tiene cursos asociados
+                if (!tutor.getCursos().isEmpty()) {
+                    redirectAttributes.addFlashAttribute("error", 
+                        "No se puede eliminar el tutor porque tiene cursos asociados. Desactívelo en su lugar.");
+                    return "redirect:/admin/tutorcurso/listar";
+                }
+                
+                tutorCursoService.eliminar(id);
+                redirectAttributes.addFlashAttribute("success", "Tutor de Curso eliminado exitosamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Tutor de Curso no encontrado");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar el tutor: " + e.getMessage());
+        }
+        return "redirect:/admin/tutorcurso/listar";
+    }
+    
+    @PostMapping("/cambiar-estado/{id}")
+    public String cambiarEstado(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<TutorCurso> tutorOpt = tutorCursoService.buscarPorId(id);
+            if (tutorOpt.isPresent()) {
+                TutorCurso tutor = tutorOpt.get();
+                tutor.setActivo(!tutor.getActivo());
+                tutorCursoService.guardar(tutor);
+                redirectAttributes.addFlashAttribute("success", 
+                    tutor.getActivo() ? "Tutor activado exitosamente" : "Tutor desactivado exitosamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Tutor de Curso no encontrado");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cambiar el estado del tutor: " + e.getMessage());
+        }
+        return "redirect:/admin/tutorcurso/listar";
     }
 }
