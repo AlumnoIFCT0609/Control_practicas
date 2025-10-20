@@ -82,7 +82,7 @@
                     <i class="bi bi-book-fill fs-1 text-primary mb-3"></i>
                     <h5 class="card-title">Todos los Cursos</h5>
                     <p class="card-text">Ver y gestionar todos los cursos asignados</p>
-                    <a th:href="@{/tutor-curso/cursos}" class="btn btn-primary">
+                    <a th:href="@{/admin/curso/listar}" class="btn btn-primary">
                         <i class="bi bi-arrow-right-circle me-1"></i>Ver Cursos
                     </a>
                 </div>
@@ -94,8 +94,8 @@
                 <div class="card-body text-center">
                     <i class="bi bi-people-fill fs-1 text-success mb-3"></i>
                     <h5 class="card-title">Mis Alumnos</h5>
-                    <p class="card-text">Gestionar alumnos de mis cursos</p>
-                    <a th:href="@{/tutor-curso/alumnos}" class="btn btn-success">
+                    <p class="card-text">Gestionar alumnos de los cursos</p>
+                    <a th:href="@{/admin/alumno/listar}" class="btn btn-success">
                         <i class="bi bi-arrow-right-circle me-1"></i>Ver Alumnos
                     </a>
                 </div>
@@ -134,7 +134,7 @@
                     <i class="bi bi-building-fill fs-1 text-secondary mb-3"></i>
                     <h5 class="card-title">Empresas</h5>
                     <p class="card-text">Ver empresas asociadas</p>
-                    <a th:href="@{/tutor-curso/empresas}" class="btn btn-secondary">
+                    <a th:href="@{/admin/empresa/listar}" class="btn btn-secondary">
                         <i class="bi bi-arrow-right-circle me-1"></i>Ver Empresas
                     </a>
                 </div>
@@ -162,7 +162,7 @@
                 <div class="card-header bg-white">
                     <h5 class="mb-0">
                         <i class="bi bi-book me-2"></i>
-                        Mis Cursos Asignados
+                        Cursos Asignados
                     </h5>
                 </div>
                 <div class="card-body">
@@ -180,9 +180,9 @@
                             </thead>
                             <tbody>
                                 <tr th:each="curso : ${cursos}">
-                                    <td th:text="${curso.codigo}">DAW01</td>
-                                    <td th:text="${curso.nombre}">Desarrollo Aplicaciones Web</td>
-                                    <td th:text="${curso.duracion != null ? curso.duracion + ' horas' : 'N/A'}">2000 horas</td>
+                                    <td th:text="${curso.codigo}">Code</td>
+                                    <td th:text="${curso.nombre}">Description</td>
+                                    <td th:text="${curso.duracion != null ? curso.duracion + ' horas' : 'N/A'}"> horas</td>
                                     <td>
                                         <span class="badge bg-primary">0</span>
                                     </td>
@@ -192,7 +192,7 @@
                                               th:text="${curso.activo ? 'Activo' : 'Inactivo'}">Activo</span>
                                     </td>
                                     <td>
-                                        <a th:href="@{/tutor-curso/cursos/{id}(id=${curso.id})}" 
+                                        <a th:href="@{/admin/curso/editar/{id}(id=${curso.id})}" 
                                            class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-eye"></i> Ver
                                         </a>
@@ -200,7 +200,7 @@
                                 </tr>
                                 <tr th:if="${cursos.empty}">
                                     <td colspan="6" class="text-center text-muted">
-                                        No tienes cursos asignados
+                                        No hay cursos asignados
                                     </td>
                                 </tr>
                             </tbody>
@@ -251,7 +251,7 @@
                                 </tr>
                                 <tr th:if="${alumnos == null || alumnos.empty}">
                                     <td colspan="4" class="text-center text-muted">
-                                        No hay alumnos en tus cursos
+                                        No hay alumnos en los cursos
                                     </td>
                                 </tr>
                             </tbody>
