@@ -83,12 +83,13 @@
                                     <label for="curso" class="form-label">Curso <span class="text-danger">*</span></label>
                                     <select class="form-select" 
                                             id="curso" 
-                                            th:field="*{curso.id}" 
+                                            name="curso"
                                             required>
                                         <option value="">Seleccione un curso</option>
                                         <option th:each="curso : ${cursos}" 
                                                 th:value="${curso.id}" 
-                                                th:text="${curso.nombre}">
+                                                th:text="${curso.nombre}"
+                                                th:selected="${alumno.curso != null and alumno.curso.id == curso.id}">
                                         </option>
                                     </select>
                                 </div>
@@ -96,11 +97,12 @@
                                     <label for="empresa" class="form-label">Empresa</label>
                                     <select class="form-select" 
                                             id="empresa" 
-                                            th:field="*{empresa.id}">
+                                            name="empresa">
                                         <option value="">Seleccione una empresa</option>
                                         <option th:each="empresa : ${empresas}" 
                                                 th:value="${empresa.id}" 
-                                                th:text="${empresa.nombre}">
+                                                th:text="${empresa.nombre}"
+                                                th:selected="${alumno.empresa != null and alumno.empresa.id == empresa.id}">
                                         </option>
                                     </select>
                                 </div>
@@ -111,11 +113,12 @@
                                     <label for="tutorPracticas" class="form-label">Tutor de Prácticas</label>
                                     <select class="form-select" 
                                             id="tutorPracticas" 
-                                            th:field="*{tutorPracticas.id}">
+                                            name="tutorPracticas">
                                         <option value="">Seleccione un tutor</option>
                                         <option th:each="tutor : ${tutores}" 
                                                 th:value="${tutor.id}" 
-                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}">
+                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}"
+                                                th:selected="${alumno.tutorPracticas != null and alumno.tutorPracticas.id == tutor.id}">
                                         </option>
                                     </select>
                                 </div>
@@ -186,5 +189,3 @@
         </div>
     </div>
 </div>
-
-</html>

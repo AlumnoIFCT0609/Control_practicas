@@ -6,9 +6,11 @@ import services.AlumnoService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.beans.PropertyEditorSupport;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +38,47 @@ public class AlumnoController {
         this.empresaRepository = empresaRepository;
         this.tutorPracticasRepository = tutorPracticasRepository;
     }
-   
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Curso.class, "curso", new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.trim().isEmpty() || text.equals("0")) {
+                    setValue(null);
+                } else {
+                    Curso curso = new Curso();
+                    curso.setId(Long.parseLong(text));
+                    setValue(curso);
+                }
+            }
+        });
+        
+        binder.registerCustomEditor(Empresa.class, "empresa", new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.trim().isEmpty() || text.equals("0")) {
+                    setValue(null);
+                } else {
+                    Empresa empresa = new Empresa();
+                    empresa.setId(Long.parseLong(text));
+                    setValue(empresa);
+                }
+            }
+        });
+        
+        binder.registerCustomEditor(TutorPracticas.class, "tutorPracticas", new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.trim().isEmpty() || text.equals("0")) {
+                    setValue(null);
+                } else {
+                    TutorPracticas tutor = new TutorPracticas();
+                    tutor.setId(Long.parseLong(text));
+                    setValue(tutor);
+                }
+            }
+        });
+    }
     
     @GetMapping("/listar")
     public String listar(Model model) {
@@ -72,8 +114,47 @@ public class AlumnoController {
             return "redirect:/admin/alumno/listar";
         }
     }
-    
+   //****************************************************************************************** 
     @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
+        try {
+            // Validar curso obligatorio
+            if (alumno.getCurso() == null || alumno.getCurso().getId() == null || alumno.getCurso().getId() == 0) {
+                redirectAttributes.addFlashAttribute("error", "Debe seleccionar un curso");
+                return "redirect:/admin/alumno/nuevo";
+            }
+            
+            // Limpiar empresa si no se seleccionó
+            if (alumno.getEmpresa() != null && (alumno.getEmpresa().getId() == null || alumno.getEmpresa().getId() == 0)) {
+                alumno.setEmpresa(null);
+            }
+            
+            // Limpiar tutor si no se seleccionó
+            if (alumno.getTutorPracticas() != null && (alumno.getTutorPracticas().getId() == null || alumno.getTutorPracticas().getId() == 0)) {
+                alumno.setTutorPracticas(null);
+            }
+            
+            // Guardar a través del servicio que maneja la persistencia correctamente
+            alumnoService.guardar(alumno);
+            
+            redirectAttributes.addFlashAttribute("success", 
+                alumno.getId() == null ? "Alumno creado exitosamente" : "Alumno actualizado exitosamente");
+                
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el alumno: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Si hay error, volver al formulario correspondiente
+            if (alumno.getId() != null) {
+                return "redirect:/admin/alumno/editar/" + alumno.getId();
+            }
+            return "redirect:/admin/alumno/nuevo";
+        }
+        return "redirect:/admin/alumno/listar";
+    }
+    
+    //*****************************************************************************************
+  /*  @PostMapping("/guardar")
     public String guardar(@ModelAttribute Alumno alumno, 
                          @RequestParam(name = "curso.id", required = false) Long cursoId,
                          @RequestParam(name = "empresa.id", required = false) Long empresaId,
@@ -119,7 +200,7 @@ public class AlumnoController {
         }
         return "redirect:/admin/alumno/listar";
     }
-    
+    */
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

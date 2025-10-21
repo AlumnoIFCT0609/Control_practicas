@@ -1,59 +1,155 @@
 package controllers;
 
 import models.*;
+import models.TutorPracticas;
 import repositories.*;
+import services.TutorPracticasService;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-//import java.util.List;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+
 @Controller
-@RequestMapping("/tutor-practicas")
+@RequestMapping("/admin/tutorpracticas")
 public class TutorPracticasController {
-    
-    private final UserRepository userRepository;
+
     private final TutorPracticasRepository tutorPracticasRepository;
-    //private final AlumnoRepository alumnoRepository;
-    
-    public TutorPracticasController(UserRepository userRepository,
-                                   TutorPracticasRepository tutorPracticasRepository,
-                                   AlumnoRepository alumnoRepository) {
-        this.userRepository = userRepository;
+    private final TutorPracticasService tutorPracticasService;
+
+    public TutorPracticasController(TutorPracticasRepository tutorPracticasRepository,
+                                    TutorPracticasService tutorPracticasService) {
         this.tutorPracticasRepository = tutorPracticasRepository;
-        //this.alumnoRepository = alumnoRepository;
+        this.tutorPracticasService = tutorPracticasService;
     }
-    
-    @GetMapping("/dashboard")
-    public String dashboard(Authentication auth, Model model) {
-        Optional<Usuario> userOpt = userRepository.findByEmail(auth.getName());
-        
-        if (userOpt.isPresent()) {
-            Usuario usuario = userOpt.get();
-            
-            // Obtener el tutor de prácticas usando el referenceId
-            if (usuario.getReferenceId() != null) {
-                Optional<TutorPracticas> tutorOpt = tutorPracticasRepository.findById(usuario.getReferenceId());
-                if (tutorOpt.isPresent()) {
-                    TutorPracticas tutor = tutorOpt.get();
-                    model.addAttribute("tutor", tutor);
-                    model.addAttribute("empresa", tutor.getEmpresa());
+
+    @GetMapping("/listar")
+    public String listar(Model model) {
+        List<TutorPracticas> tutores = tutorPracticasService.listarTodos();
+        model.addAttribute("tutores", tutores);
+        model.addAttribute("viewName", "admin/tutorpracticas/listar");
+        return "layout";
+    }
+
+    @GetMapping("/nuevo")
+    public String mostrarFormularioNuevo(Model model) {
+        model.addAttribute("tutorPracticas", new TutorPracticas());
+        model.addAttribute("viewName", "admin/tutorpracticas/form");
+        return "layout";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<TutorPracticas> tutorOpt = tutorPracticasService.buscarPorId(id);
+        if (tutorOpt.isPresent()) {
+            model.addAttribute("tutorPracticas", tutorOpt.get());
+            model.addAttribute("viewName", "admin/tutorpracticas/form");
+            return "layout";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Tutor de prácticas no encontrado");
+            return "redirect:/admin/tutorpracticas/listar";
+        }
+    }
+
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute TutorPracticas tutorPracticas, RedirectAttributes redirectAttributes) {
+        try {
+            // Validaciones básicas
+        	 if (tutorPracticas.getId() != null) {
+                 Optional<TutorPracticas> existenteOpt = tutorPracticasService.buscarPorId(tutorPracticas.getId());
+                 if (existenteOpt.isPresent()) {
+                     // conservar la fecha de creación original
+                     tutorPracticas.setFechaCreacion(existenteOpt.get().getFechaCreacion());
+                 } else {
+                     redirectAttributes.addFlashAttribute("error", "No se encontró el tutor a editar");
+                     return "redirect:/admin/tutorpracticas/listar";
+                 }
+             } else {
+                 // nuevo: fijar fecha de creación si hace falta
+                 tutorPracticas.setFechaCreacion(LocalDateTime.now());
+             }
+        	
+            if (tutorPracticas.getNombre() == null || tutorPracticas.getNombre().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "El nombre es obligatorio");
+                return "redirect:/admin/tutorpracticas/nuevo";
+            }
+
+            if (tutorPracticas.getApellidos() == null || tutorPracticas.getApellidos().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Los apellidos son obligatorios");
+                return "redirect:/admin/tutorpracticas/nuevo";
+            }
+
+            if (tutorPracticas.getDni() == null || tutorPracticas.getDni().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "El DNI es obligatorio");
+                return "redirect:/admin/tutorpracticas/nuevo";
+            }
+
+            // Verificar si el DNI ya existe
+            Optional<TutorPracticas> tutorExistente = tutorPracticasRepository.findByDni(tutorPracticas.getDni());
+            if (tutorExistente.isPresent() && !tutorExistente.get().getId().equals(tutorPracticas.getId())) {
+                redirectAttributes.addFlashAttribute("error", "Ya existe un tutor de prácticas con ese DNI");
+                return tutorPracticas.getId() == null ? "redirect:/admin/tutorpracticas/nuevo" : "redirect:/admin/tutorpracticas/editar/" + tutorPracticas.getId();
+            }
+
+            // Verificar si el email ya existe
+            if (tutorPracticas.getEmail() != null && !tutorPracticas.getEmail().trim().isEmpty()) {
+                Optional<TutorPracticas> tutorExistenteEmail = tutorPracticasRepository.findByEmail(tutorPracticas.getEmail());
+                if (tutorExistenteEmail.isPresent() && !tutorExistenteEmail.get().getId().equals(tutorPracticas.getId())) {
+                    redirectAttributes.addFlashAttribute("error", "Ya existe un tutor de prácticas con ese email");
+                    return tutorPracticas.getId() == null ? "redirect:/admin/tutorpracticas/nuevo" : "redirect:/admin/tutorpracticas/editar/" + tutorPracticas.getId();
                 }
             }
-        }
-        
-        // Obtener todos los alumnos (luego se puede filtrar por tutor)
-        //List<Alumno> alumnos = alumnoRepository.findAll();
-        //model.addAttribute("alumnos", alumnos);
 
-        model.addAttribute("pageTitle", "Dashboard - Tutor de Practicas");
-        model.addAttribute("viewName", "tutor-practicas/dashboard");
-        
-        return "layout";
-        
-        
-        //return "tutor-practicas/dashboard";
+            tutorPracticasService.guardar(tutorPracticas);
+            redirectAttributes.addFlashAttribute("success",
+                    tutorPracticas.getId() == null ? "Tutor de prácticas creado exitosamente" : "Tutor de prácticas actualizado exitosamente");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el tutor: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/admin/tutorpracticas/listar";
+    }
+
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<TutorPracticas> tutorOpt = tutorPracticasService.buscarPorId(id);
+            if (tutorOpt.isPresent()) {
+                tutorPracticasService.eliminar(id);
+                redirectAttributes.addFlashAttribute("success", "Tutor de prácticas eliminado exitosamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Tutor de prácticas no encontrado");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar el tutor de prácticas: " + e.getMessage());
+        }
+        return "redirect:/admin/tutorpracticas/listar";
+    }
+
+    @PostMapping("/cambiar-estado/{id}")
+    public String cambiarEstado(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<TutorPracticas> tutorOpt = tutorPracticasService.buscarPorId(id);
+            if (tutorOpt.isPresent()) {
+                TutorPracticas tutor = tutorOpt.get();
+                tutor.setActivo(!tutor.getActivo());
+                tutorPracticasService.guardar(tutor);
+                redirectAttributes.addFlashAttribute("success",
+                        tutor.getActivo() ? "Tutor activado exitosamente" : "Tutor desactivado exitosamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Tutor de prácticas no encontrado");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cambiar el estado del tutor: " + e.getMessage());
+        }
+        return "redirect:/admin/tutorpracticas/listar";
     }
 }
+

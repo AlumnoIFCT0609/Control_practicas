@@ -173,7 +173,7 @@ public class TutorPracticas {
 	}
 
 	public void setFechaCreacion(LocalDateTime fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
+		this.fechaCreacion = LocalDateTime.now();
 	}
 
 	public void setEmpresa(Empresa empresa) {

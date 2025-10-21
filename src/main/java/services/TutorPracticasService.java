@@ -27,6 +27,9 @@ public class TutorPracticasService {
  public Optional<TutorPracticas> buscarPorId(Long id) {
      return tutorPracticasRepository.findById(id);
  }
+ public Optional<TutorPracticas> buscarPorDni(String dni) {
+     return tutorPracticasRepository.findByDni(dni);
+ }
  
  public List<TutorPracticas> listarTodos() {
      return tutorPracticasRepository.findAll();

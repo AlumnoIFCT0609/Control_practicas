@@ -1,10 +1,125 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<div th:fragment="content">
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Gestión de Tutores de Prácticas</h2>
+            <a th:href="@{/admin/tutorpracticas/nuevo}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nuevo Tutor de prácticas
+            </a>
+        </div>
 
-</body>
-</html>
+        <!-- Mensajes de éxito/error -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Tabla de tutores -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre Completo</th>
+                                <th>DNI</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Empresa</th>
+                                <th>Cargo</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${tutores.isEmpty()}">
+                                <td colspan="9" class="text-center text-muted">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    No hay tutores de prácticas registrados
+                                </td>
+                            </tr>
+                            <tr th:each="tutor : ${tutores}">
+                                <td th:text="${tutor.id}"></td>
+                                <td>
+                                    <strong th:text="${tutor.nombre + ' ' + tutor.apellidos}"></strong>
+                                </td>
+                                <td th:text="${tutor.dni}"></td>
+                                <td th:text="${tutor.email}"></td>
+                                <td th:text="${tutor.telefono}"></td>
+                                <td th:text="${tutor.empresa != null ? tutor.empresa.nombre : '-'}"></td>
+                                <td th:text="${tutor.cargo}"></td>
+                                <td>
+                                    <span th:if="${tutor.activo}" class="badge bg-success">
+                                        <i class="fas fa-check"></i> Activo
+                                    </span>
+                                    <span th:unless="${tutor.activo}" class="badge bg-secondary">
+                                        <i class="fas fa-times"></i> Inactivo
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <!-- Editar -->
+                                        <a th:href="@{/admin/tutorpracticas/editar/{id}(id=${tutor.id})}" 
+                                           class="btn btn-sm btn-warning" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <!-- Activar/Desactivar -->
+                                        <form th:action="@{/admin/tutorpracticas/cambiar-estado/{id}(id=${tutor.id})}" 
+                                              method="post" style="display: inline;">
+                                            <button type="submit" class="btn btn-sm"
+                                                    th:classappend="${tutor.activo} ? 'btn-secondary' : 'btn-success'"
+                                                    th:title="${tutor.activo} ? 'Desactivar' : 'Activar'">
+                                                <i th:class="${tutor.activo} ? 'fas fa-toggle-off' : 'fas fa-toggle-on'"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Eliminar -->
+                                        <a th:href="@{/admin/tutorpracticas/eliminar/{id}(id=${tutor.id})}" 
+                                           class="btn btn-sm btn-danger" title="Eliminar"
+                                           onclick="return confirm('¿Está seguro de eliminar este tutor?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5>Total Tutores</h5>
+                        <h2 th:text="${#lists.size(tutores)}"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5>Tutores Activos</h5>
+                        <h2 th:text="${#lists.size(tutores.?[activo == true])}"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body">
+                        <h5>Tutores Inactivos</h5>
+                        <h2 th:text="${#lists.size(tutores.?[activo == false])}"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
