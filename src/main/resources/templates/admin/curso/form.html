@@ -1,3 +1,6 @@
+<!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> -->
+
 <div th:fragment="content">
     <div class="container-fluid">
         <div class="row justify-content-center">
@@ -5,169 +8,86 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white">
                         <h3 class="mb-0">
-                            <i class="bi bi-person-plus"></i>
-                            <span th:text="${alumno.id == null ? 'Nuevo Alumno' : 'Editar Alumno'}">Nuevo Alumno</span>
+                            <i class="bi bi-book-fill"></i>
+                            <span th:text="${curso.id == null ? 'Nuevo Curso' : 'Editar Curso'}">Nuevo Curso</span>
                         </h3>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/admin/alumno/guardar}" method="post" id="alumnoForm">
-                            <!-- ID oculto para edición -->
-                            <input type="hidden" name="id" th:value="${alumno.id}">
-                            
-                            <!-- Campos hidden para los IDs de las relaciones -->
-                            <input type="hidden" name="cursoId" id="cursoIdHidden" th:value="${alumno.curso != null ? alumno.curso.id : ''}">
-                            <input type="hidden" name="empresaId" id="empresaIdHidden" th:value="${alumno.empresa != null ? alumno.empresa.id : ''}">
-                            <input type="hidden" name="tutorPracticasId" id="tutorPracticasIdHidden" th:value="${alumno.tutorPracticas != null ? alumno.tutorPracticas.id : ''}">
-                            
-                            <!-- Datos personales -->
-                            <h5 class="border-bottom pb-2 mb-3">Datos Personales</h5>
+                        <form th:action="@{/admin/curso/guardar}" th:object="${curso}" method="post">
+                            <input type="hidden" th:field="*{id}">
+                            <input type="hidden" th:field="*{fechaCreacion}">
+
+                            <!-- Información básica -->
+                            <h5 class="border-bottom pb-2 mb-3">Información Básica</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="dni" class="form-label">DNI <span class="text-danger">*</span></label>
+                                    <label for="codigo" class="form-label">Código <span class="text-danger">*</span></label>
                                     <input type="text" 
                                            class="form-control" 
-                                           id="dni" 
-                                           name="dni"
-                                           th:value="${alumno.dni}"
-                                           placeholder="12345678A"
+                                           id="codigo" 
+                                           th:field="*{codigo}" 
+                                           placeholder="DAW01"
                                            required>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" 
-                                           class="form-control" 
-                                           id="email" 
-                                           name="email"
-                                           th:value="${alumno.email}"
-                                           placeholder="alumno@ejemplo.com"
-                                           required>
-                                </div>
-                            </div>
-
-                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
                                     <input type="text" 
                                            class="form-control" 
                                            id="nombre" 
-                                           name="nombre"
-                                           th:value="${alumno.nombre}"
+                                           th:field="*{nombre}" 
+                                           placeholder="Desarrollo de Aplicaciones Web"
                                            required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="apellidos" class="form-label">Apellidos <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           class="form-control" 
-                                           id="apellidos" 
-                                           name="apellidos"
-                                           th:value="${alumno.apellidos}"
-                                           required>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
-                                    <input type="date" 
-                                           class="form-control" 
-                                           id="fechaNacimiento" 
-                                           name="fechaNacimiento"
-                                           th:value="${alumno.fechaNacimiento}">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="telefono" class="form-label">Teléfono</label>
-                                    <input type="tel" 
-                                           class="form-control" 
-                                           id="telefono" 
-                                           name="telefono"
-                                           th:value="${alumno.telefono}"
-                                           placeholder="600123456">
-                                </div>
-                            </div>
-
-                            <!-- Datos académicos y de prácticas -->
-                            <h5 class="border-bottom pb-2 mb-3 mt-4">Datos Académicos y Prácticas</h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="cursoSelect" class="form-label">Curso <span class="text-danger">*</span></label>
-                                    <select class="form-select" 
-                                            id="cursoSelect"
-                                            required>
-                                        <option value="">Seleccione un curso</option>
-                                        <option th:each="curso : ${cursos}" 
-                                                th:value="${curso.id}" 
-                                                th:text="${curso.nombre}"
-                                                th:selected="${alumno.curso != null and alumno.curso.id == curso.id}">
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="empresaSelect" class="form-label">Empresa</label>
-                                    <select class="form-select" 
-                                            id="empresaSelect">
-                                        <option value="">Ninguna</option>
-                                        <option th:each="empresa : ${empresas}" 
-                                                th:value="${empresa.id}" 
-                                                th:text="${empresa.nombre}"
-                                                th:selected="${alumno.empresa != null and alumno.empresa.id == empresa.id}">
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="tutorPracticasSelect" class="form-label">Tutor de Prácticas</label>
-                                    <select class="form-select" 
-                                            id="tutorPracticasSelect">
-                                        <option value="">Ninguno</option>
-                                        <option th:each="tutor : ${tutores}" 
-                                                th:value="${tutor.id}" 
-                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}"
-                                                th:selected="${alumno.tutorPracticas != null and alumno.tutorPracticas.id == tutor.id}">
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="duracionPracticas" class="form-label">Duración Prácticas (horas)</label>
-                                    <input type="number" 
-                                           class="form-control" 
-                                           id="duracionPracticas" 
-                                           name="duracionPracticas"
-                                           th:value="${alumno.duracionPracticas}"
-                                           placeholder="80">
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="horario" class="form-label">Horario <span class="text-danger">*</span></label>
-                                <input type="text" 
-                                       class="form-control" 
-                                       id="horario" 
-                                       name="horario"
-                                       th:value="${alumno.horario}"
-                                       placeholder="Lunes a Viernes: 9:00 - 14:00"
-                                       required>
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" 
+                                          id="descripcion" 
+                                          th:field="*{descripcion}" 
+                                          rows="3"
+                                          placeholder="Descripción del curso..."></textarea>
+                            </div>
+
+                            <!-- Datos del curso -->
+                            <h5 class="border-bottom pb-2 mb-3 mt-4">Datos del Curso</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="duracion" class="form-label">Duración (horas)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="duracion" 
+                                           th:field="*{duracion}"
+                                           placeholder="2000">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="tutorCurso" class="form-label">Tutor del Curso</label>
+                                    <select class="form-select" 
+                                            id="tutorCurso" 
+                                            th:field="*{tutorCurso.id}">
+                                        <option value="">Seleccione un tutor</option>
+                                        <option th:each="tutor : ${tutores}" 
+                                                th:value="${tutor.id}" 
+                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}">
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="fechaInicio" class="form-label">Fecha Inicio <span class="text-danger">*</span></label>
+                                    <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
                                     <input type="date" 
                                            class="form-control" 
                                            id="fechaInicio" 
-                                           name="fechaInicio"
-                                           th:value="${alumno.fechaInicio}"
-                                           required>
+                                           th:field="*{fechaInicio}">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="fechaFin" class="form-label">Fecha Fin <span class="text-danger">*</span></label>
+                                    <label for="fechaFin" class="form-label">Fecha de Fin</label>
                                     <input type="date" 
                                            class="form-control" 
                                            id="fechaFin" 
-                                           name="fechaFin"
-                                           th:value="${alumno.fechaFin}"
-                                           required>
+                                           th:field="*{fechaFin}">
                                 </div>
                             </div>
 
@@ -176,18 +96,24 @@
                                     <input class="form-check-input" 
                                            type="checkbox" 
                                            id="activo" 
-                                           name="activo"
-                                           value="true"
-                                           th:checked="${alumno.activo}">
+                                           th:field="*{activo}">
                                     <label class="form-check-label" for="activo">
-                                        Activo
+                                        Curso Activo
                                     </label>
                                 </div>
                             </div>
 
+                            <!-- Información adicional al editar -->
+                            <div th:if="${curso.id != null}" class="alert alert-info">
+                                <small>
+                                    <strong>Fecha de creación:</strong> 
+                                    <span th:text="${curso.fechaCreacion != null ? #temporals.format(curso.fechaCreacion, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2024</span>
+                                </small>
+                            </div>
+
                             <!-- Botones -->
                             <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/admin/alumno/listar}" class="btn btn-secondary">
+                                <a th:href="@{/admin/curso/listar}" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Cancelar
                                 </a>
                                 <button type="submit" class="btn btn-primary">
@@ -195,42 +121,6 @@
                                 </button>
                             </div>
                         </form>
-                        
-                        <script>
-                            // Sincronizar los selects visibles con los campos hidden
-                            document.addEventListener('DOMContentLoaded', function() {
-                                const cursoSelect = document.getElementById('cursoSelect');
-                                const empresaSelect = document.getElementById('empresaSelect');
-                                const tutorSelect = document.getElementById('tutorPracticasSelect');
-                                
-                                const cursoHidden = document.getElementById('cursoIdHidden');
-                                const empresaHidden = document.getElementById('empresaIdHidden');
-                                const tutorHidden = document.getElementById('tutorPracticasIdHidden');
-                                
-                                // Sincronizar cuando cambian los selects
-                                cursoSelect.addEventListener('change', function() {
-                                    cursoHidden.value = this.value;
-                                });
-                                
-                                empresaSelect.addEventListener('change', function() {
-                                    empresaHidden.value = this.value;
-                                });
-                                
-                                tutorSelect.addEventListener('change', function() {
-                                    tutorHidden.value = this.value;
-                                });
-                                
-                                // Validar antes de enviar
-                                document.getElementById('alumnoForm').addEventListener('submit', function(e) {
-                                    if (!cursoHidden.value || cursoHidden.value === '') {
-                                        e.preventDefault();
-                                        alert('Debe seleccionar un curso');
-                                        cursoSelect.focus();
-                                        return false;
-                                    }
-                                });
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

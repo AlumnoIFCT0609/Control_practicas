@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "tutorpracticas")
@@ -62,11 +63,11 @@ public class TutorPracticas {
     @Column(nullable = false)
     private Boolean activo = true;
     
-    @Column(name = "fechaactualizacion", nullable = false, updatable = false)
-    @CreationTimestamp
+    @Column(name = "fechaactualizacion", nullable = false, updatable = true)
+    @UpdateTimestamp
     private LocalDateTime fechaActualizacion;
     
-    @Column(name = "fechacreacion", nullable = false, updatable = false)
+    @Column(name = "fechacreacion", nullable = false, updatable = true)
     @CreationTimestamp
     private LocalDateTime fechaCreacion;
     
@@ -176,6 +177,6 @@ public class TutorPracticas {
 	}
 
 	public void setEmpresa(Empresa empresa) {
-		//this.empresa = empresa;
+		this.empresa = empresa;
 	}
 }

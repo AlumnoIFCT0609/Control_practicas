@@ -72,10 +72,10 @@
                                         <a th:href="@{/admin/empresa/editar/{id}(id=${empresa.id})}" 
                                            class="btn btn-sm btn-warning" 
                                            title="Editar">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="bi bi-pencil"></i>
                                         </a>
                                         
-                                        <!-- Botón Activar/Desactivar -->
+                                        <!-- Botón Activar/Desactivar
                                         <form th:action="@{/admin/empresa/cambiar-estado/{id}(id=${empresa.id})}" 
                                               method="post" 
                                               style="display: inline;">
@@ -85,14 +85,14 @@
                                                     th:title="${empresa.activa} ? 'Desactivar' : 'Activar'">
                                                 <i th:class="${empresa.activa} ? 'fas fa-toggle-off' : 'fas fa-toggle-on'"></i>
                                             </button>
-                                        </form>
+                                        </form>-->
                                         
                                         <!-- Botón Eliminar -->
                                         <a th:href="@{/admin/empresa/eliminar/{id}(id=${empresa.id})}" 
                                            class="btn btn-sm btn-danger" 
                                            title="Eliminar"
                                            onclick="return confirm('¿Está seguro de eliminar esta empresa?');">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
                                 </td>
