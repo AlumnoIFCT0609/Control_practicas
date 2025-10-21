@@ -1,7 +1,9 @@
 package services;
 
+import models.Alumno;
 import models.Evaluacion;
 import repositories.EvaluacionRepository;
+import repositories.AlumnoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 //import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 //import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -16,6 +19,9 @@ import java.util.List;
 public class EvaluacionService {
     @Autowired
     private EvaluacionRepository evaluacionRepository;
+    
+   
+    private AlumnoRepository alumnoRepository;
 
     public List<Evaluacion> listarTodas() {
         return evaluacionRepository.findAll();
@@ -35,5 +41,34 @@ public class EvaluacionService {
 
 	public boolean existePorId(Long id) {
 		return evaluacionRepository.existsById(id);
+	}
+
+	public Optional<Alumno> listarAlumnos(long id) {
+		return alumnoRepository.findById(id);
+	}
+
+	public List<Evaluacion> buscarPorAlumno(Long alumnoId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Evaluacion> buscarPorTutor(Long tutorId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Evaluacion> buscarPorRangoFechas(LocalDate inicio, LocalDate fin) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Object listarTutoresPracticas() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Object listarCapacidadesActivas() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

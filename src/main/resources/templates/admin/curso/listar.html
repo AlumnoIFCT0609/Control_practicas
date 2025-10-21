@@ -91,6 +91,33 @@
                 </div>
             </div>
         </div>
+		<!-- Estadísticas -->
+				        <div class="row mt-4">
+				            <div class="col-md-4">
+				                <div class="card bg-primary text-white">
+				                    <div class="card-body">
+				                        <h5>Total Cursos</h5>
+				                        <h2 th:text="${#lists.size(cursos)}"></h2>
+				                    </div>
+				                </div>
+				            </div>
+				            <div class="col-md-4">
+				                <div class="card bg-success text-white">
+				                    <div class="card-body">
+				                        <h5>Cursos Activos</h5>
+				                        <h2 th:text="${#lists.size(cursos.?[activo == true])}"></h2>
+				                    </div>
+				                </div>
+				            </div>
+				            <div class="col-md-4">
+				                <div class="card bg-secondary text-white">
+				                    <div class="card-body">
+				                        <h5>Cursos Inactivos</h5>
+				                        <h2 th:text="${#lists.size(cursos.?[activo == false])}"></h2>
+				                    </div>
+				                </div>
+				            </div>
+
     </div>
 </div>
 
