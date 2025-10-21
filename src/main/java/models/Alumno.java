@@ -254,4 +254,16 @@ public class Alumno {
     }
 
 
+    @PostLoad
+    protected void postLoad() {
+        if (this.curso == null) {
+            this.curso = new Curso();
+        }
+        if (this.empresa == null) {
+            this.empresa = new Empresa();
+        }
+        if (this.tutorPracticas == null) {
+            this.tutorPracticas = new TutorPracticas();
+        }
+    }
 }

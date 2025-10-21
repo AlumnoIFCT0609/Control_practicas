@@ -1,10 +1,115 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<div th:fragment="content">
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 th:text="${tutorPracticas.id != null ? 'Editar Tutor de Prácticas' : 'Nuevo Tutor de Prácticas'}">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Mensajes de error -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
 
-</body>
-</html>
+                        <form th:action="@{/admin/tutorpracticas/guardar}" th:object="${tutorPracticas}" method="post">
+                            <input type="hidden" th:field="*{id}">
+							<!-- hidden field para re-enviar fechaCreacion (formato compatible con datetime-local) -->
+								<input type="hidden" th:if="${tutorPracticas.id != null}" th:field="*{fechaCreacion}"
+       							th:value="${#temporals.format(tutorPracticas.fechaCreacion, 'yyyy-MM-dd''T''HH:mm')}" />
+                            <!-- Datos Personales -->
+                            <h5 class="mb-3 text-primary"><i class="fas fa-user"></i> Datos Personales</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Ej: Juan" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellidos" class="form-label">Apellidos <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="apellidos" th:field="*{apellidos}" placeholder="Ej: García Pérez" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="dni" class="form-label">DNI <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="dni" th:field="*{dni}" placeholder="Ej: 12345678A" maxlength="9" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cargo" class="form-label">Cargo</label>
+                                    <input type="text" class="form-control" id="cargo" th:field="*{cargo}" placeholder="Ej: Responsable de prácticas">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="horario" class="form-label">Horario</label>
+                                <input type="text" class="form-control" id="horario" th:field="*{horario}" placeholder="Ej: Lunes a Viernes, 9:00 - 14:00">
+                            </div>
+
+                            <!-- Empresa -->
+                            <div class="mb-3">
+                                <label for="empresa" class="form-label">Empresa</label>
+                                <select class="form-select" id="empresa" th:field="*{empresa}">
+                                    <option th:each="emp : ${empresas}" th:value="${emp}" th:text="${emp.nombre}"></option>
+                                </select>
+                            </div>
+
+                            <!-- Datos de Contacto -->
+                            <h5 class="mb-3 text-primary"><i class="fas fa-address-book"></i> Datos de Contacto</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="tutor@email.com">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" id="telefono" th:field="*{telefono}" placeholder="Ej: 954123456" maxlength="15">
+                                </div>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="activo" th:field="*{activo}">
+                                    <label class="form-check-label" for="activo">
+                                        <strong>Tutor Activo</strong>
+                                        <small class="text-muted d-block">Los tutores inactivos no aparecerán disponibles para asignar alumnos</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/admin/tutorpracticas/listar}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    <span th:text="${tutorPracticas.id != null ? 'Actualizar' : 'Guardar'}"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Información de ayuda -->
+                <div class="card mt-3">
+                    <div class="card-body bg-light">
+                        <h6><i class="fas fa-lightbulb"></i> Información importante:</h6>
+                        <ul class="mb-0 small">
+                            <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+                            <li>El DNI debe ser único para cada tutor</li>
+                            <li>El email debe ser único si se proporciona</li>
+                            <li>Los tutores inactivos no aparecerán en los listados de selección</li>
+                            <li>No se puede eliminar un tutor que tenga alumnos asignados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

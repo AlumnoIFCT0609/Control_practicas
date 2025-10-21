@@ -82,11 +82,11 @@
                                         <!-- Botón Editar -->
                                         <a th:href="@{/admin/tutorcurso/editar/{id}(id=${tutor.id})}" 
                                            class="btn btn-sm btn-warning" 
-                                           title="Editar">
-                                            <i class="fas fa-edit"></i>
+                                           title="Editar">  <i class="bi bi-pencil"></i>
+                                            
                                         </a>
                                         
-                                        <!-- Botón Activar/Desactivar -->
+                                        <!-- Botón Activar/Desactivar 
                                         <form th:action="@{/admin/tutorcurso/cambiar-estado/{id}(id=${tutor.id})}" 
                                               method="post" 
                                               style="display: inline;">
@@ -96,14 +96,14 @@
                                                     th:title="${tutor.activo} ? 'Desactivar' : 'Activar'">
                                                 <i th:class="${tutor.activo} ? 'fas fa-toggle-off' : 'fas fa-toggle-on'"></i>
                                             </button>
-                                        </form>
+                                        </form>-->
                                         
                                         <!-- Botón Eliminar -->
                                         <a th:href="@{/admin/tutorcurso/eliminar/{id}(id=${tutor.id})}" 
                                            class="btn btn-sm btn-danger" 
                                            title="Eliminar"
                                            onclick="return confirm('¿Está seguro de eliminar este tutor?');">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
                                 </td>
