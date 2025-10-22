@@ -45,7 +45,7 @@ public class TutorPracticas {
     @JoinColumn(
         name = "empresa",
         referencedColumnName = "id",
-        foreignKey = @ForeignKey(name = "fk_tutorPracticas_empresa")
+        foreignKey = @ForeignKey(name = "fk_tutorpracticas_empresa")
     )
     private Empresa empresa;
     

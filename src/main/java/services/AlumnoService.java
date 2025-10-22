@@ -73,11 +73,11 @@ public class AlumnoService {
     }
     
     public List<Alumno> listarPorCurso(Long cursoId) {
-        return alumnoRepository.findByCursoId(cursoId);
+        return alumnoRepository.findByCurso_Id(cursoId);
     }
     
     public List<Alumno> listarPorTutorPracticas(Long tutorPracticasId) {
-        return alumnoRepository.findByTutorPracticasId(tutorPracticasId);
+        return alumnoRepository.findByTutorPracticas_Id(tutorPracticasId);
     }
     
     @Transactional

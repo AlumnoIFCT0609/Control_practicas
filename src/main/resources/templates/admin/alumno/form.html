@@ -81,23 +81,21 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="curso" class="form-label">Curso <span class="text-danger">*</span></label>
-                                    <select class="form-select" 
-                                            id="curso" 
-                                            name="curso"
-                                            required>
-                                        <option value="">Seleccione un curso</option>
-                                        <option th:each="curso : ${cursos}" 
-                                                th:value="${curso.id}" 
-                                                th:text="${curso.nombre}"
-                                                th:selected="${alumno.curso != null and alumno.curso.id == curso.id}">
-                                        </option>
-                                    </select>
+<select class="form-select" id="curso" th:field="*{cursoId}" required>
+    <option value="">Seleccione un curso</option>
+    <option th:each="curso : ${cursos}"
+            th:value="${curso.id}"
+            th:text="${curso.nombre}"
+            th:selected="${alumno.curso != null and alumno.curso.id == curso.id}">
+    </option>
+</select>
+											
+				
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="empresa" class="form-label">Empresa</label>
-                                    <select class="form-select" 
-                                            id="empresa" 
-                                            name="empresa">
+                                    <select class="form-select" id="empresa" th:field="*{empresaId}">
+
                                         <option value="">Seleccione una empresa</option>
                                         <option th:each="empresa : ${empresas}" 
                                                 th:value="${empresa.id}" 
@@ -111,9 +109,8 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="tutorPracticas" class="form-label">Tutor de Prácticas</label>
-                                    <select class="form-select" 
-                                            id="tutorPracticas" 
-                                            name="tutorPracticas">
+                                    <select class="form-select" id="tutorPracticas" th:field="*{tutorPracticasId}">
+
                                         <option value="">Seleccione un tutor</option>
                                         <option th:each="tutor : ${tutores}" 
                                                 th:value="${tutor.id}" 

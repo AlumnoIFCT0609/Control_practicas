@@ -80,6 +80,7 @@ public class AlumnoController {
         });
     }
     
+    
     @GetMapping("/listar")
     public String listar(Model model) {
         List<Alumno> alumnos = alumnoService.listarTodos();
@@ -114,14 +115,67 @@ public class AlumnoController {
             return "redirect:/admin/alumno/listar";
         }
     }
-   //****************************************************************************************** 
+    
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
         try {
             // Validar curso obligatorio
-            if (alumno.getCurso() == null || alumno.getCurso().getId() == null || alumno.getCurso().getId() == 0) {
+            if (alumno.getCursoId() == null || alumno.getCursoId() == 0) {
                 redirectAttributes.addFlashAttribute("error", "Debe seleccionar un curso");
                 return "redirect:/admin/alumno/nuevo";
+            }
+
+            // Buscar y asignar el curso
+            Curso curso = cursoRepository.findById(alumno.getCursoId())
+                    .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+            alumno.setCurso(curso);
+
+            // Buscar y asignar la empresa si existe
+            if (alumno.getEmpresaId() != null && alumno.getEmpresaId() > 0) {
+                Empresa empresa = empresaRepository.findById(alumno.getEmpresaId())
+                        .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
+                alumno.setEmpresa(empresa);
+            } else {
+                alumno.setEmpresa(null);
+            }
+
+            // Buscar y asignar el tutor si existe
+            if (alumno.getTutorPracticasId() != null && alumno.getTutorPracticasId() > 0) {
+                TutorPracticas tutor = tutorPracticasRepository.findById(alumno.getTutorPracticasId())
+                        .orElseThrow(() -> new RuntimeException("Tutor no encontrado"));
+                alumno.setTutorPracticas(tutor);
+            } else {
+                alumno.setTutorPracticas(null);
+            }
+
+            alumnoService.guardar(alumno);
+            redirectAttributes.addFlashAttribute("success",
+                    alumno.getId() == null ? "Alumno creado exitosamente" : "Alumno actualizado exitosamente");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el alumno: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/admin/alumno/listar";
+    }
+   //****************************************************************************************** 
+    /*
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
+        try {
+            // Validar curso obligatorio
+        	
+        	System.out.println("Curso recibido: " + alumno.getCurso());
+        	if (alumno.getCurso() != null) {
+        	    System.out.println("Curso ID recibido: " + alumno.getCurso().getId());
+        	} else {
+        	    System.out.println("Curso es null");
+        	}
+
+        	if (alumno.getCurso() == null || alumno.getCurso().getId() == null || alumno.getCurso().getId() == 0) {
+            	
+                redirectAttributes.addFlashAttribute("error", "Debe seleccionar un curso");
+                 return "redirect:/admin/alumno/nuevo";
             }
             
             // Limpiar empresa si no se seleccionó
@@ -148,13 +202,15 @@ public class AlumnoController {
             if (alumno.getId() != null) {
                 return "redirect:/admin/alumno/editar/" + alumno.getId();
             }
+            
+            
             return "redirect:/admin/alumno/nuevo";
         }
         return "redirect:/admin/alumno/listar";
     }
     
     //*****************************************************************************************
-  /*  @PostMapping("/guardar")
+    @PostMapping("/guardar")
     public String guardar(@ModelAttribute Alumno alumno, 
                          @RequestParam(name = "curso.id", required = false) Long cursoId,
                          @RequestParam(name = "empresa.id", required = false) Long empresaId,
@@ -201,6 +257,9 @@ public class AlumnoController {
         return "redirect:/admin/alumno/listar";
     }
     */
+   
+    
+    
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

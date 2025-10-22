@@ -10,11 +10,19 @@ import java.util.Optional;
 
 @Repository
 public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
-	Optional<Alumno> findById(Long id);
-	List<Alumno> findByCurso(Curso curso);
+    
+    // Este método ya viene heredado de JpaRepository, puedes eliminarlo
+    // Optional<Alumno> findById(Long id);
+    
+    // Métodos que buscan por la entidad completa (están bien)
+    List<Alumno> findByCurso(Curso curso);
     List<Alumno> findByEmpresa(Empresa empresa);
-    List<Alumno> findByTutorPracticasId(Long tutorPracticasId);
+    
+    // Métodos que buscan por ID de relaciones (corregidos con guion bajo)
+    List<Alumno> findByTutorPracticas_Id(Long tutorPracticasId);
+    List<Alumno> findByCurso_Id(Long cursoId);
+    List<Alumno> findByEmpresa_Id(Long empresaId);
+    
+    // Búsqueda por DNI (está bien)
     Optional<Alumno> findByDni(String dni);
-    List<Alumno> findByCursoId(Long cursoId);
 }
-

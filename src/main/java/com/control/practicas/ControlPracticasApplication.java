@@ -10,9 +10,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "repositories")
 @EntityScan(basePackages = "models")
-@ComponentScan(basePackages = {"com.control.practicas", "services", "controllers"})
-
-
+@ComponentScan(basePackages = {
+		"com.control.practicas",
+		"services",
+		"controllers",
+		})
 public class ControlPracticasApplication extends SpringBootServletInitializer {
     
     public static void main(String[] args) {

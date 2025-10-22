@@ -16,7 +16,11 @@ import java.util.List;
 //@AllArgsConstructor
 public class Curso {
     
-    @Id
+    public Curso() {
+		
+	}
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     

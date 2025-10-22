@@ -69,7 +69,7 @@
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
-                                        <!-- Activar/Desactivar -->
+                                        <!-- Activar/Desactivar 
                                         <form th:action="@{/admin/tutorpracticas/cambiar-estado/{id}(id=${tutor.id})}" 
                                               method="post" style="display: inline;">
                                             <button type="submit" class="btn btn-sm"
@@ -77,7 +77,7 @@
                                                     th:title="${tutor.activo} ? 'Desactivar' : 'Activar'">
                                                 <i th:class="${tutor.activo} ? 'fas fa-toggle-off' : 'fas fa-toggle-on'"></i>
                                             </button>
-                                        </form>
+                                        </form>-->
 
                                         <!-- Eliminar -->
                                         <a th:href="@{/admin/tutorpracticas/eliminar/{id}(id=${tutor.id})}" 

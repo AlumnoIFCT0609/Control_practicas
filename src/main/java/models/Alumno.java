@@ -128,7 +128,42 @@ public class Alumno {
         foreignKey = @ForeignKey(name = "fk_alumno_curso")
     )
     private Curso curso;
+    
+ // Campos transient para el formulario
+    @Transient
+    private Long cursoId;
 
+    @Transient
+    private Long empresaId;
+
+    @Transient
+    private Long tutorPracticasId;
+
+    // Getters y setters
+    public Long getCursoId() {
+        return cursoId;
+    }
+
+    public void setCursoId(Long cursoId) {
+        this.cursoId = cursoId;
+    }
+
+    public Long getEmpresaId() {
+        return empresaId;
+    }
+
+    public void setEmpresaId(Long empresaId) {
+        this.empresaId = empresaId;
+    }
+
+    public Long getTutorPracticasId() {
+        return tutorPracticasId;
+    }
+
+    public void setTutorPracticasId(Long tutorPracticasId) {
+        this.tutorPracticasId = tutorPracticasId;
+    }
+        
     @ManyToOne
     @JoinColumn(
         name = "empresa",
@@ -141,7 +176,7 @@ public class Alumno {
     @JoinColumn(
         name = "tutorpracticas",
         referencedColumnName = "id",
-        foreignKey = @ForeignKey(name = "fk_alumno_tutorPracticas")
+        foreignKey = @ForeignKey(name = "fk_alumno_tutorpracticas")
     )
     private TutorPracticas tutorPracticas;
 
