@@ -204,7 +204,7 @@ public class Alumno {
     }
   
     
-    @Column(name = "fechacreacion", nullable = false)
+    @Column(name = "fechacreacion", nullable = false, updatable=false)
     @CreationTimestamp
     private LocalDateTime fechaCreacion;
     

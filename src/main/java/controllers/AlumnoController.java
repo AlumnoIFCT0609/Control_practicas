@@ -2,7 +2,7 @@ package controllers;
 
 import models.*;
 import repositories.*;
-import services.AlumnoService;
+import services.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +22,9 @@ public class AlumnoController {
     private final AlumnoRepository alumnoRepository;
     private final AlumnoService alumnoService;
     private final CursoRepository cursoRepository;
+    private final CursoService cursoService;
+    private final EmpresaService empresaService;
+    private final TutorPracticasService tutorPracticasService;
     private final EmpresaRepository empresaRepository;
     private final TutorPracticasRepository tutorPracticasRepository;
     
@@ -30,6 +33,9 @@ public class AlumnoController {
                           AlumnoService alumnoService,
                           CursoRepository cursoRepository,
                           EmpresaRepository empresaRepository,
+                          CursoService cursoService,
+                          EmpresaService empresaService,
+                          TutorPracticasService tutorPracticasService,
                           TutorPracticasRepository tutorPracticasRepository) {
         this.userRepository = userRepository;
         this.alumnoRepository = alumnoRepository;
@@ -37,6 +43,9 @@ public class AlumnoController {
         this.cursoRepository = cursoRepository;
         this.empresaRepository = empresaRepository;
         this.tutorPracticasRepository = tutorPracticasRepository;
+        this.cursoService= cursoService;
+        this.empresaService=empresaService;
+        this.tutorPracticasService=tutorPracticasService;
     }
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -99,23 +108,38 @@ public class AlumnoController {
         return "layout";
     }
     
-    @GetMapping("/editar/{id}")
-    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        Optional<Alumno> alumnoOpt = alumnoService.buscarPorId(id);
-        
-        if (alumnoOpt.isPresent()) {
-            model.addAttribute("alumno", alumnoOpt.get());
-            model.addAttribute("cursos", cursoRepository.findAll());
-            model.addAttribute("empresas", empresaRepository.findAll());
-            model.addAttribute("tutores", tutorPracticasRepository.findAll());
-            model.addAttribute("viewName", "admin/alumno/form");
-            return "layout";
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Alumno no encontrado");
-            return "redirect:/admin/alumno/listar";
-        }
-    }
     
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model) {
+        // Cargar primero las listas
+        List<Curso> cursos = cursoService.listarTodos();
+        List<Empresa> empresas = empresaService.listarTodas();
+        List<TutorPracticas> tutores = tutorPracticasService.listarTodos();
+        
+        // Después cargar y modificar el alumno
+        Alumno alumno = alumnoService.buscarPorId(id)
+            .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
+
+        if (alumno.getCurso() != null) {
+            alumno.setCursoId(alumno.getCurso().getId());
+        }
+        if (alumno.getEmpresa() != null) {
+            alumno.setEmpresaId(alumno.getEmpresa().getId());
+        }
+        if (alumno.getTutorPracticas() != null) {
+            alumno.setTutorPracticasId(alumno.getTutorPracticas().getId());
+        }
+        System.out.println("fechaNacimiento controlador = " + alumno.getFechaNacimiento());
+
+        model.addAttribute("alumno", alumno);
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("empresas", empresas);
+        model.addAttribute("tutores", tutores);
+        model.addAttribute("viewName", "admin/alumno/form");
+        return "layout";
+
+        //return "admin/alumno/form";
+    }
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
         try {
@@ -125,12 +149,12 @@ public class AlumnoController {
                 return "redirect:/admin/alumno/nuevo";
             }
 
-            // Buscar y asignar el curso
+            // ✅ CARGAR el curso desde la BD (no crear uno nuevo)
             Curso curso = cursoRepository.findById(alumno.getCursoId())
                     .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
             alumno.setCurso(curso);
 
-            // Buscar y asignar la empresa si existe
+            // ✅ CARGAR la empresa desde la BD si existe
             if (alumno.getEmpresaId() != null && alumno.getEmpresaId() > 0) {
                 Empresa empresa = empresaRepository.findById(alumno.getEmpresaId())
                         .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
@@ -139,7 +163,7 @@ public class AlumnoController {
                 alumno.setEmpresa(null);
             }
 
-            // Buscar y asignar el tutor si existe
+            // ✅ CARGAR el tutor desde la BD si existe
             if (alumno.getTutorPracticasId() != null && alumno.getTutorPracticasId() > 0) {
                 TutorPracticas tutor = tutorPracticasRepository.findById(alumno.getTutorPracticasId())
                         .orElseThrow(() -> new RuntimeException("Tutor no encontrado"));
@@ -157,107 +181,7 @@ public class AlumnoController {
             e.printStackTrace();
         }
         return "redirect:/admin/alumno/listar";
-    }
-   //****************************************************************************************** 
-    /*
-    @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
-        try {
-            // Validar curso obligatorio
-        	
-        	System.out.println("Curso recibido: " + alumno.getCurso());
-        	if (alumno.getCurso() != null) {
-        	    System.out.println("Curso ID recibido: " + alumno.getCurso().getId());
-        	} else {
-        	    System.out.println("Curso es null");
-        	}
-
-        	if (alumno.getCurso() == null || alumno.getCurso().getId() == null || alumno.getCurso().getId() == 0) {
-            	
-                redirectAttributes.addFlashAttribute("error", "Debe seleccionar un curso");
-                 return "redirect:/admin/alumno/nuevo";
-            }
-            
-            // Limpiar empresa si no se seleccionó
-            if (alumno.getEmpresa() != null && (alumno.getEmpresa().getId() == null || alumno.getEmpresa().getId() == 0)) {
-                alumno.setEmpresa(null);
-            }
-            
-            // Limpiar tutor si no se seleccionó
-            if (alumno.getTutorPracticas() != null && (alumno.getTutorPracticas().getId() == null || alumno.getTutorPracticas().getId() == 0)) {
-                alumno.setTutorPracticas(null);
-            }
-            
-            // Guardar a través del servicio que maneja la persistencia correctamente
-            alumnoService.guardar(alumno);
-            
-            redirectAttributes.addFlashAttribute("success", 
-                alumno.getId() == null ? "Alumno creado exitosamente" : "Alumno actualizado exitosamente");
-                
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al guardar el alumno: " + e.getMessage());
-            e.printStackTrace();
-            
-            // Si hay error, volver al formulario correspondiente
-            if (alumno.getId() != null) {
-                return "redirect:/admin/alumno/editar/" + alumno.getId();
-            }
-            
-            
-            return "redirect:/admin/alumno/nuevo";
-        }
-        return "redirect:/admin/alumno/listar";
-    }
-    
-    //*****************************************************************************************
-    @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Alumno alumno, 
-                         @RequestParam(name = "curso.id", required = false) Long cursoId,
-                         @RequestParam(name = "empresa.id", required = false) Long empresaId,
-                         @RequestParam(name = "tutorPracticas.id", required = false) Long tutorPracticasId,
-                         RedirectAttributes redirectAttributes) {
-        try {
-            // Validar curso obligatorio
-            if (cursoId == null || cursoId == 0) {
-                redirectAttributes.addFlashAttribute("error", "Debe seleccionar un curso");
-                return "redirect:/admin/alumno/nuevo";
-            }
-            
-            // Crear y asignar el curso
-            Curso curso = new Curso();
-            curso.setId(cursoId);
-            alumno.setCurso(curso);
-            
-            // Crear y asignar la empresa si existe
-            if (empresaId != null && empresaId > 0) {
-                Empresa empresa = new Empresa();
-                empresa.setId(empresaId);
-                alumno.setEmpresa(empresa);
-            } else {
-                alumno.setEmpresa(null);
-            }
-            
-            // Crear y asignar el tutor si existe
-            if (tutorPracticasId != null && tutorPracticasId > 0) {
-                TutorPracticas tutor = new TutorPracticas();
-                tutor.setId(tutorPracticasId);
-                alumno.setTutorPracticas(tutor);
-            } else {
-                alumno.setTutorPracticas(null);
-            }
-            
-            alumnoService.guardar(alumno);
-            redirectAttributes.addFlashAttribute("success", 
-                alumno.getId() == null ? "Alumno creado exitosamente" : "Alumno actualizado exitosamente");
-                
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al guardar el alumno: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return "redirect:/admin/alumno/listar";
-    }
-    */
-   
+    }     
     
     
     @GetMapping("/eliminar/{id}")
