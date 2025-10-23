@@ -62,15 +62,12 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="tutorCurso" class="form-label">Tutor del Curso</label>
-                                    <select class="form-select" 
-                                            id="tutorCurso" 
-                                            th:field="*{tutorCurso.id}">
-                                        <option value="">Seleccione un tutor</option>
-                                        <option th:each="tutor : ${tutores}" 
-                                                th:value="${tutor.id}" 
-                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}">
-                                        </option>
-                                    </select>
+                                    <select class="form-select" id="tutorCurso" th:field="*{tutorCursoId}">
+  										<option th:value="">Seleccione un tutor</option>
+  										<option th:each="tutor : ${tutores}" th:value="${tutor.id}" th:text="${tutor.nombre}"></option>
+									</select>
+                                    
+                                    
                                 </div>
                             </div>
 
@@ -103,13 +100,13 @@
                                 </div>
                             </div>
 
-                            <!-- Información adicional al editar -->
+                            <!-- Información adicional al editar
                             <div th:if="${curso.id != null}" class="alert alert-info">
                                 <small>
                                     <strong>Fecha de creación:</strong> 
                                     <span th:text="${curso.fechaCreacion != null ? #temporals.format(curso.fechaCreacion, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2024</span>
                                 </small>
-                            </div>
+                            </div> -->
 
                             <!-- Botones -->
                             <div class="d-flex justify-content-between mt-4">

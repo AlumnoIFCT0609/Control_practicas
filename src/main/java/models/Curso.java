@@ -62,6 +62,9 @@ public class Curso {
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
     private List<Alumno> alumnos = new ArrayList<>();
     
+    @Transient
+    private Long tutorCursoId;
+    
     public Long getId() {
 		return id;
 	}
@@ -160,7 +163,21 @@ public class Curso {
 		this.fechaCreacion=LocalDateTime.now();
 		
 	}
-	
+
+
+	// En la entidad Curso: campo transitorio
+
+	// Getter seguro que maneja nulls
+	public Long getTutorCursoId() {
+	    return (this.tutorCurso != null) ? this.tutorCurso.getId() : this.tutorCursoId;
+	}
+
+	// Setter que también sincroniza la relación si se desea (opcional)
+	public void setTutorCursoId(Long tutorCursoId) {
+	    this.tutorCursoId = tutorCursoId;
+	    // no crear ni asignar TutorCurso aquí; el controlador debe cargar la entidad completa antes de guardar
+	}
+
 	
 	
 }
