@@ -61,10 +61,12 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
-                                    <input type="date" 
-                                           class="form-control" 
-                                           id="fechaNacimiento" 
-                                           th:field="*{fechaNacimiento}">
+                                 <input type="date"
+       									id="fechaNacimiento"
+       									name="fechaNacimiento"
+       									th:value="${alumno.fechaNacimiento != null ? alumno.fechaNacimiento.toString() : ''}"
+       									class="form-control"/>
+
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="telefono" class="form-label">Teléfono</label>
@@ -72,7 +74,7 @@
                                            class="form-control" 
                                            id="telefono" 
                                            th:field="*{telefono}"
-                                           placeholder="600123456">
+                                           placeholder="Telefono">
                                 </div>
                             </div>
 
@@ -81,14 +83,14 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="curso" class="form-label">Curso <span class="text-danger">*</span></label>
-<select class="form-select" id="curso" th:field="*{cursoId}" required>
-    <option value="">Seleccione un curso</option>
-    <option th:each="curso : ${cursos}"
-            th:value="${curso.id}"
-            th:text="${curso.nombre}"
-            th:selected="${alumno.curso != null and alumno.curso.id == curso.id}">
-    </option>
-</select>
+							<select class="form-select" id="curso" th:field="*{cursoId}" required>
+    							<option value="">Seleccione un curso</option>
+    							<option th:each="curso : ${cursos}"
+            						th:value="${curso.id}"
+            						th:text="${curso.nombre}"
+            						th:selected="${alumno.curso != null and alumno.curso.id == curso.id}">
+    							</option>
+							</select>
 											
 				
                                 </div>
@@ -125,7 +127,7 @@
                                            class="form-control" 
                                            id="duracionPracticas" 
                                            th:field="*{duracionPracticas}"
-                                           placeholder="80">
+                                           placeholder="Horas">
                                 </div>
                             </div>
 
@@ -135,26 +137,30 @@
                                        class="form-control" 
                                        id="horario" 
                                        th:field="*{horario}"
-                                       placeholder="Lunes a Viernes: 9:00 - 14:00"
+                                       placeholder="Horario"
                                        required>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaInicio" class="form-label">Fecha Inicio <span class="text-danger">*</span></label>
-                                    <input type="date" 
-                                           class="form-control" 
-                                           id="fechaInicio" 
-                                           th:field="*{fechaInicio}"
-                                           required>
+                                    
+                                    <input type="date"
+       											class="form-control"
+       											id="fechaInicio"
+       											name="fechaInicio"
+       											th:value="${alumno.fechaInicio != null ? alumno.fechaInicio.toString() : ''}"
+       											required />
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaFin" class="form-label">Fecha Fin <span class="text-danger">*</span></label>
-                                    <input type="date" 
-                                           class="form-control" 
-                                           id="fechaFin" 
-                                           th:field="*{fechaFin}"
-                                           required>
+                                    
+                                    <input type="date"
+       												class="form-control"
+       												id="fechaFin"
+       												name="fechaFin"
+       												th:value="${alumno.fechaFin != null ? alumno.fechaFin.toString() : ''}"
+       												required />
                                 </div>
                             </div>
 
