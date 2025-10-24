@@ -91,11 +91,6 @@ public class CursoController {
         Curso curso = new Curso();
         curso.setActivo(true); // Por defecto activo
         curso.setTutorCursoId(null); // Para inicializar el campo transitorio
-        if (curso.getTutorCurso() != null) {
-            curso.setTutorCursoId(curso.getTutorCurso().getId());
-        } else {
-            curso.setTutorCursoId(null);
-        }
         model.addAttribute("curso", curso);
         model.addAttribute("tutores", tutorCursoRepository.findAll());
         model.addAttribute("viewName", "admin/curso/form");
