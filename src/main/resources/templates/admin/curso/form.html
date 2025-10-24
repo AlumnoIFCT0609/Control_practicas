@@ -60,15 +60,22 @@
                                            th:field="*{duracion}"
                                            placeholder="2000">
                                 </div>
+                                
                                 <div class="col-md-6 mb-3">
                                     <label for="tutorCurso" class="form-label">Tutor del Curso</label>
-                                    <select class="form-select" id="tutorCurso" th:field="*{tutorCursoId}">
-  										<option th:value="">Seleccione un tutor</option>
-  										<option th:each="tutor : ${tutores}" th:value="${tutor.id}" th:text="${tutor.nombre}"></option>
+                                    
+									 <select class="form-select" id="tutorCurso" th:field="*{tutorCursoId}">
+  											<option value="">Seleccione un tutor</option>
+  											<option th:each="tutor : ${tutores}" 
+          											th:value="${tutor.id}" 
+          											th:text="${tutor.nombre + ' ' + tutor.apellidos}">
+  											</option>
 									</select>
-                                    
-                                    
-                                </div>
+									                               
+                                </div>   
+                                
+                          
+                                
                             </div>
 
                             <div class="row">

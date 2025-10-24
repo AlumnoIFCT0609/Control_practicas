@@ -2,6 +2,7 @@ package controllers;
 
 import models.Curso;
 import models.TutorCurso;
+import models.TutorPracticas;
 import repositories.TutorCursoRepository;
 import services.CursoService;
 import services.TutorCursoService;
@@ -31,7 +32,9 @@ public class CursoController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         // Binder para TutorCurso (propiedad tutorCurso en Curso)
-        binder.registerCustomEditor(TutorCurso.class, "tutorCurso", new PropertyEditorSupport() {
+     //   binder.registerCustomEditor(Long.class, new CustomNumberEditor(Long.class, true));
+   	
+    	 binder.registerCustomEditor(TutorCurso.class, "tutorCurso", new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
                 if (text == null || text.trim().isEmpty() || "0".equals(text)) {
@@ -42,7 +45,7 @@ public class CursoController {
                     setValue(t);
                 }
             }
-        });
+        }); 
 
         // Opcional: binder para Course si necesitas recibir directamente curso.id en alguna petición
         binder.registerCustomEditor(Curso.class, "curso", new PropertyEditorSupport() {
@@ -87,6 +90,12 @@ public class CursoController {
     public String nuevo(Model model) {
         Curso curso = new Curso();
         curso.setActivo(true); // Por defecto activo
+        curso.setTutorCursoId(null); // Para inicializar el campo transitorio
+        if (curso.getTutorCurso() != null) {
+            curso.setTutorCursoId(curso.getTutorCurso().getId());
+        } else {
+            curso.setTutorCursoId(null);
+        }
         model.addAttribute("curso", curso);
         model.addAttribute("tutores", tutorCursoRepository.findAll());
         model.addAttribute("viewName", "admin/curso/form");
@@ -113,12 +122,15 @@ public class CursoController {
             } else {
                 curso.setTutorCursoId(null);
             }
-
             // Debug temporal
             System.out.println("DEBUG curso.id=" + curso.getId() +
                     " tutorId=" + (curso.getTutorCurso() != null ? curso.getTutorCurso().getId() : "null"));
             tutores.forEach(t -> System.out.println("DEBUG tutor id=" + t.getId() + " nombre=" + t.getNombre() + " apellidos=" + t.getApellidos()));
-
+            if (curso.getTutorCurso() != null) {
+                curso.setTutorCursoId(curso.getTutorCurso().getId());
+            } else {
+                curso.setTutorCursoId(null);
+            }
             model.addAttribute("curso", curso);
             model.addAttribute("tutores", tutores);
             model.addAttribute("viewName", "admin/curso/form");
@@ -136,14 +148,22 @@ public class CursoController {
         boolean esNuevo = (curso.getId() == null);
         try {
             // Usar el campo transitorio tutorCursoId enviado desde el form
-            if (curso.getTutorCursoId() != null && curso.getTutorCursoId() > 0) {
+            /*if (curso.getTutorCursoId() != null && curso.getTutorCursoId() > 0) {
                 Long tutorId = curso.getTutorCursoId();
                 TutorCurso tutor = tutorCursoRepository.findById(tutorId)
                         .orElseThrow(() -> new RuntimeException("TutorCurso no encontrado"));
                 curso.setTutorCurso(tutor);
             } else {
                 curso.setTutorCurso(null);
-            }
+            }*/
+        	if (curso.getTutorCursoId() != null && curso.getTutorCursoId() > 0) {
+        	    TutorCurso tutor = tutorCursoRepository.findById(curso.getTutorCursoId())
+        	        .orElseThrow(() -> new RuntimeException("TutorCurso no encontrado"));
+        	    curso.setTutorCurso(tutor);
+        	} else {
+        	    curso.setTutorCurso(null);
+        	}
+
 
             // Persistir (service gestiona repository.save y transacción)
             cursoService.guardar(curso);
@@ -157,94 +177,6 @@ public class CursoController {
         return "redirect:/admin/curso/listar";
     }
 
-    
-    /*
-    @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            // 1) Cargar primero las listas para los selects (evita problemas de rendering)
-            List<TutorCurso> tutores = tutorCursoService.listarTodos(); // o tutorCursoRepository.findAll()
-           
-            // 2) Cargar el curso (service debe devolver entidad dentro de la transacción)
-            Curso curso = cursoService.buscarPorId(id)
-                    .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
-
-            // 3) Asegurar que la asociación tutorCurso está inicializada
-            // Si la relación es LAZY, forzamos acceso al id dentro de la transacción.
-            if (curso.getTutorCurso() != null) {
-                curso.getTutorCurso().getId();
-            }
-
-            // 4) Opcional: si prefieres usar un campo auxiliar transitorio tutorCursoId en la entidad/DTO,
-            //    setéalo aquí para que th:field="*{tutorCursoId}" funcione fácilmente.
-            //    Si usas th:field="*{tutorCurso.id}" no es obligatorio.
-            // if (curso.getTutorCurso() != null) {
-            //     curso.setTutorCursoId(curso.getTutorCurso().getId());
-            // }
-
-            // Debug útil temporal
-            System.out.println("DEBUG curso.id=" + curso.getId() +
-                    " tutorId=" + (curso.getTutorCurso() != null ? curso.getTutorCurso().getId() : "null"));
-            tutores.forEach(t -> System.out.println("DEBUG tutor id=" + t.getId() + " nombre=" + t.getNombre() + " apellidos=" + t.getApellidos()));
-
-            model.addAttribute("curso", curso);
-            model.addAttribute("tutores", tutores);
-            model.addAttribute("viewName", "admin/curso/form");
-            return "layout";
-        } catch (Exception e) {
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Error al cargar el curso: " + e.getMessage());
-            return "redirect:/admin/curso/listar";
-        }
-    }
-
-       // Guardar o actualizar curso
-    @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Curso curso, RedirectAttributes redirectAttributes) {
-        boolean esNuevo = (curso.getId() == null);
-        try {
-            // Si el binding creó un TutorCurso con solo id (desde InitBinder), reemplazar por la entidad completa
-            if (curso.getTutorCurso() != null && curso.getTutorCurso().getId() != null) {
-                Long tutorId = curso.getTutorCurso().getId();
-                TutorCurso tutor = tutorCursoRepository.findById(tutorId)
-                        .orElseThrow(() -> new RuntimeException("TutorCurso no encontrado"));
-                curso.setTutorCurso(tutor);
-            } else {
-                curso.setTutorCurso(null);
-            }
-
-            // Persistir. El servicio debe gestionar la transacción y llamar a repository.save(...)
-            cursoService.guardar(curso);
-
-            redirectAttributes.addFlashAttribute("success",
-                    esNuevo ? "Curso creado exitosamente" : "Curso actualizado exitosamente");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al guardar el curso: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return "redirect:/admin/curso/listar";
-    }
-
-    */
-    
-    /*
-    // Guardar o actualizar curso
-    @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Curso curso, RedirectAttributes redirectAttributes) {
-        try {
-            // Si es nuevo, establecer fecha de creación
-            if (curso.getId() == null) {
-                curso.setFechaCreacion();
-            }
-            
-            cursoService.guardar(curso);
-            redirectAttributes.addFlashAttribute("success", 
-                curso.getId() == null ? "Curso creado exitosamente" : "Curso actualizado exitosamente");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al guardar el curso: " + e.getMessage());
-        }
-        return "redirect:/admin/curso/listar";
-    }*/
 
     // Eliminar curso
     @GetMapping("/eliminar/{id}")

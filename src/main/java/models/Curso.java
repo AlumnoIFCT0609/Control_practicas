@@ -157,14 +157,13 @@ public class Curso {
 	public void setId(Long id) {
 		// TODO Auto-generated method stub
 		//no va a hacer nada
+		this.id=id;
 	}
 
 	public void setFechaCreacion() {
 		this.fechaCreacion=LocalDateTime.now();
 		
 	}
-
-
 	// En la entidad Curso: campo transitorio
 
 	// Getter seguro que maneja nulls
@@ -173,8 +172,8 @@ public class Curso {
 	}
 
 	// Setter que también sincroniza la relación si se desea (opcional)
-	public void setTutorCursoId(Long tutorCursoId) {
-	    this.tutorCursoId = tutorCursoId;
+	public void setTutorCursoId(Long tutorCurso_Id) {
+	    this.tutorCursoId = tutorCurso_Id;
 	    // no crear ni asignar TutorCurso aquí; el controlador debe cargar la entidad completa antes de guardar
 	}
 
