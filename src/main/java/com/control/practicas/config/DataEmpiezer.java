@@ -100,6 +100,7 @@ public class DataEmpiezer {
                 TutorCurso tutor2 = tutorCursoRepository.findById(2L).orElseThrow();
 
                 Curso curso1 = new Curso();
+                curso1.setCodigo("DAW01");;
                 curso1.setNombre("Desarrollo de Aplicaciones Web - DAW");
                 curso1.setDescripcion("Curso de formación en desarrollo web full stack");
                 curso1.setDuracion(2000);
@@ -110,6 +111,7 @@ public class DataEmpiezer {
                 cursoRepository.save(curso1);
 
                 Curso curso2 = new Curso();
+                curso2.setCodigo("ASIR");
                 curso2.setNombre("Administración de Sistemas Informáticos - ASIR");
                 curso2.setDescripcion("Curso de administración de sistemas y redes");
                 curso2.setDuracion(2000);

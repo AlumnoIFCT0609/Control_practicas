@@ -144,8 +144,8 @@ public class TutorCurso {
 		return activo;
 	}
 
-	public void setId(long long1) {
+	public void setId(Long long1) {
 		// TODO Auto-generated method stub
-		
+		this.id=long1;
 	}
 }

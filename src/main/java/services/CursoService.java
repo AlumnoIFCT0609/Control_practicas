@@ -41,7 +41,7 @@ public class CursoService {
     }
     
     public List<Curso> listarPorTutorCurso(Long tutorCursoId) {
-        return cursoRepository.findByTutorCursoId(tutorCursoId);
+        return cursoRepository.findByTutorCurso_Id(tutorCursoId);
     }
     
     @Transactional

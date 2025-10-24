@@ -51,12 +51,15 @@
 
                             <!-- Empresa -->
                             <div class="mb-3">
-                                <label for="empresa" class="form-label">Empresa</label>
-                                <select class="form-select" id="empresa" th:field="*{empresa}">
-                                    <option th:each="emp : ${empresas}" th:value="${emp}" th:text="${emp.nombre}"></option>
-                                </select>
-                            </div>
-
+    							<label for="empresa" class="form-label">Empresa</label>
+    							<select class="form-select" id="empresa" th:field="*{empresa}">
+						    	    <option value="">Seleccione una empresa</option>
+        							<option th:each="emp : ${empresas}" 
+                							th:value="${emp.id}" 
+                							th:text="${emp.nombre}">
+        							</option>
+    							</select>
+							</div>
                             <!-- Datos de Contacto -->
                             <h5 class="mb-3 text-primary"><i class="fas fa-address-book"></i> Datos de Contacto</h5>
                             <div class="row">

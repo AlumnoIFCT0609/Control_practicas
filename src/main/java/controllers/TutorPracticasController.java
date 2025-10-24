@@ -22,13 +22,15 @@ public class TutorPracticasController {
 
     private final TutorPracticasRepository tutorPracticasRepository;
     private final TutorPracticasService tutorPracticasService;
+    private final EmpresaRepository empresaRepository; 
 
     public TutorPracticasController(TutorPracticasRepository tutorPracticasRepository,
-                                    TutorPracticasService tutorPracticasService) {
-        this.tutorPracticasRepository = tutorPracticasRepository;
-        this.tutorPracticasService = tutorPracticasService;
+            TutorPracticasService tutorPracticasService,
+            EmpresaRepository empresaRepository) { 
+    		this.tutorPracticasRepository = tutorPracticasRepository;
+    		this.tutorPracticasService = tutorPracticasService;
+    		this.empresaRepository = empresaRepository; 
     }
-
     @GetMapping("/listar")
     public String listar(Model model) {
         List<TutorPracticas> tutores = tutorPracticasService.listarTodos();
@@ -40,6 +42,7 @@ public class TutorPracticasController {
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("tutorPracticas", new TutorPracticas());
+        model.addAttribute("empresas", empresaRepository.findAll());
         model.addAttribute("viewName", "admin/tutorpracticas/form");
         return "layout";
     }
@@ -49,6 +52,7 @@ public class TutorPracticasController {
         Optional<TutorPracticas> tutorOpt = tutorPracticasService.buscarPorId(id);
         if (tutorOpt.isPresent()) {
             model.addAttribute("tutorPracticas", tutorOpt.get());
+            model.addAttribute("empresas", empresaRepository.findAll());
             model.addAttribute("viewName", "admin/tutorpracticas/form");
             return "layout";
         } else {
