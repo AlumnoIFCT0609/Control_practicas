@@ -78,7 +78,24 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
+									
                                     <div class="btn-group" role="group">
+										<!-- boton   -->
+										<a th:if="${tutor != null and !tutor.tieneUsuario}"
+										   th:href="@{/admin/tutorcurso/crear-usuario/{id}(id=${tutor.id})}"
+										   class="btn btn-sm btn-info"
+										   title="Crear Usuario"
+										   onclick="return confirm('¿Crear usuario de acceso para este tutor?')">
+										    <i class="bi bi-person-plus"></i>
+										</a>
+										<!-- Botón Crear Usuario - Solo visible si no tiene usuario
+										    <a th:if="${!tutorCurso.tieneUsuario}" 
+										    th:href="@{/admin/tutorcurso/crear-usuario/{id}(id=${tutorCurso.id})}" 
+										    class="btn btn-sm btn-info" 
+										    title="Crear Usuario"
+										    onclick="return confirm('¿Crear usuario de acceso para este tutor?')">
+										    <i class="bi bi-person-plus"></i>
+										    </a> -->
                                         <!-- Botón Editar -->
                                         <a th:href="@{/admin/tutorcurso/editar/{id}(id=${tutor.id})}" 
                                            class="btn btn-sm btn-warning" 

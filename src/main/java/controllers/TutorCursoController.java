@@ -3,6 +3,8 @@ package controllers;
 import models.*;
 import repositories.*;
 import services.TutorCursoService;
+import services.UsuarioService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +19,15 @@ public class TutorCursoController {
     
     private final TutorCursoRepository tutorCursoRepository;
     private final TutorCursoService tutorCursoService;
+
+
     
     public TutorCursoController(TutorCursoRepository tutorCursoRepository,
                                 TutorCursoService tutorCursoService) {
         this.tutorCursoRepository = tutorCursoRepository;
         this.tutorCursoService = tutorCursoService;
+
+
     }
     /* @GetMapping("/tutorcurso/dashboard")
     public String dashboard(Model model) {
@@ -158,4 +164,21 @@ public class TutorCursoController {
         }
         return "redirect:/admin/tutorcurso/listar";
     }
+    @GetMapping("/crear-usuario/{id}")
+    public String crearUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Usuario usuario = tutorCursoService.crearUsuarioParaTutorCurso(id);
+            redirectAttributes.addFlashAttribute("success", 
+                "Usuario creado exitosamente. Email: " + usuario.getEmail() + 
+                " | Password inicial: DNI del alumno");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", 
+                "Error al crear el usuario: " + e.getMessage());
+        }
+        return "redirect:/admin/tutorcurso/listar";
+    }
+    
+    
 }

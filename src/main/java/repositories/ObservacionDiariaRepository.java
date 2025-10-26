@@ -9,8 +9,19 @@ import java.util.List;
 
 @Repository
 public interface ObservacionDiariaRepository extends JpaRepository<ObservacionDiaria, Long> {
-    List<ObservacionDiaria> findByAlumnoId(Long alumnoId);
-    List<ObservacionDiaria> findByAlumnoIdOrderByFechaDesc(Long alumnoId);
+    
+    // Buscar por el ID del alumno (relación @ManyToOne)
+    List<ObservacionDiaria> findByAlumno_Id(Long alumnoId);
+    
+    // Buscar por el ID del alumno ordenado por fecha descendente
+    List<ObservacionDiaria> findByAlumno_IdOrderByFechaDesc(Long alumnoId);
+    
+    // Buscar por fecha
     List<ObservacionDiaria> findByFecha(LocalDate fecha);
+    
+    // Buscar por rango de fechas
+    List<ObservacionDiaria> findByFechaBetween(LocalDate fechaInicio, LocalDate fechaFin);
+    
+    // Buscar por alumno y fecha
+    List<ObservacionDiaria> findByAlumno_IdAndFecha(Long alumnoId, LocalDate fecha);
 }
-

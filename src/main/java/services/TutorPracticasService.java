@@ -1,7 +1,8 @@
 package services;
 
 import models.TutorPracticas;
-
+import models.Usuario;
+import models.Usuario.Rol;
 import repositories.TutorPracticasRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +15,12 @@ import java.util.Optional;
 public class TutorPracticasService {
  
  private final TutorPracticasRepository tutorPracticasRepository;
+ private final UsuarioService usuarioService;
  
- public TutorPracticasService(TutorPracticasRepository tutorPracticasRepository) {
+ public TutorPracticasService(TutorPracticasRepository tutorPracticasRepository,
+		 						UsuarioService usuarioService) {
      this.tutorPracticasRepository = tutorPracticasRepository;
+     this.usuarioService = usuarioService;
  }
  
  
@@ -43,4 +47,16 @@ public class TutorPracticasService {
  public void eliminar(Long id) {
      tutorPracticasRepository.deleteById(id);
  }
+ public Usuario crearUsuarioParaTutorPracticas(Long tutorId) {
+	    TutorPracticas tutor = tutorPracticasRepository.findById(tutorId)
+	        .orElseThrow(() -> new IllegalArgumentException("Tutor de prácticas no encontrado"));
+	    
+	    return usuarioService.crearUsuarioParaEntidad(
+	        tutor.getEmail(),
+	        tutor.getDni(),
+	        Rol.TUTOR_PRACTICAS,
+	        tutor.getId(),
+	        tutor.getActivo()
+	    );
+	}
 }

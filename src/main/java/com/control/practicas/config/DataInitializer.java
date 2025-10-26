@@ -1,7 +1,7 @@
 package com.control.practicas.config;
 
 import models.Usuario;
-import repositories.UserRepository;
+import repositories.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     
-    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public DataInitializer(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
     }
     
@@ -45,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private void createUserIfNotExists(String email, String password, Usuario.Rol rol, 
                                        Integer referenceId, String descripcion) {
-        if (!userRepository.existsByEmail(email)) {
+        if (!usuarioRepository.existsByEmail(email)) {
             log.info("No se encontró usuario {}. Creando usuario...", descripcion);
             
             Usuario usuario = new Usuario();
@@ -55,7 +55,7 @@ public class DataInitializer implements CommandLineRunner {
             usuario.setReferenceId(referenceId);
             usuario.setActivo(true);
             
-            userRepository.save(usuario);
+            usuarioRepository.save(usuario);
             
             log.info("=================================================");
             log.info("Usuario {} creado exitosamente:", descripcion);

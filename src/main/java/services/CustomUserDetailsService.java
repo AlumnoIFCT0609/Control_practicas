@@ -1,7 +1,7 @@
 package services;
 
 import models.Usuario;
-import repositories.UserRepository;
+import repositories.UsuarioRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,16 +18,16 @@ import java.util.List;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
     
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
     
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = userRepository.findByEmail(email)
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
         
         if (!usuario.getActivo()) {
@@ -35,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         
         usuario.setUltimoAcceso();
-        userRepository.save(usuario);
+        usuarioRepository.save(usuario);
         
         return new org.springframework.security.core.userdetails.User(
                 usuario.getEmail(),

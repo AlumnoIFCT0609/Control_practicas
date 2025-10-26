@@ -1,11 +1,10 @@
 package controllers;
 
 import models.*;
-import models.TutorPracticas;
 import repositories.*;
 import services.TutorPracticasService;
 
-import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -155,5 +154,21 @@ public class TutorPracticasController {
         }
         return "redirect:/admin/tutorpracticas/listar";
     }
+    @GetMapping("/crear-usuario/{id}")
+    public String crearUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Usuario usuario = tutorPracticasService.crearUsuarioParaTutorPracticas(id);
+            redirectAttributes.addFlashAttribute("success", 
+                "Usuario creado exitosamente. Email: " + usuario.getEmail() + 
+                " | Password inicial: DNI del alumno");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", 
+                "Error al crear el usuario: " + e.getMessage());
+        }
+        return "redirect:/admin/tutorpracticas/listar";
+    }
+    
 }
 

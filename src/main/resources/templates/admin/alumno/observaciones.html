@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+						<!--
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3 class="card-title mb-0">Observaciones Diarias de Alumnos</h3>
+                            <a th:href="@{/admin/alumno/observaciondiaria/nueva}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Nueva Observación
+                            </a>
+                        </div>
+						-->
+                        <div class="card-body">
+                            <div th:if="${ObservacionDiaria.isEmpty()}" class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No hay observaciones registradas.
+                            </div>
+                            
+                            <div th:unless="${ObservacionDiaria.isEmpty()}" class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Alumno</th>
+                                            <th>Fecha</th>
+                                            <th>Actividades</th>
+                                            <th>Horas Realizadas</th>
+                                            <th>Fecha Creación</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="observacion : ${ObservacionDiaria}">
+                                            <td th:text="${observacion.id}">1</td>
+                                            <td>
+                                                <span th:if="${observacion.alumno != null}" 
+                                                      th:text="${observacion.alumno.nombre + ' ' + observacion.alumno.apellidos}">
+                                                    Nombre Alumno
+                                                </span>
+                                                <span th:unless="${observacion.alumno != null}" class="text-muted">
+                                                    Sin alumno asignado
+                                                </span>
+                                            </td>
+                                            <td th:text="${#temporals.format(observacion.fecha, 'dd/MM/yyyy')}">01/01/2024</td>
+                                            <td>
+                                                <span th:if="${observacion.actividades != null && !observacion.actividades.isEmpty()}" 
+                                                      th:text="${#strings.abbreviate(observacion.actividades, 50)}">
+                                                    Actividades realizadas...
+                                                </span>
+                                                <span th:unless="${observacion.actividades != null && !observacion.actividades.isEmpty()}" 
+                                                      class="text-muted">
+                                                    Sin actividades
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${observacion.horasRealizadas != null}" 
+                                                      th:text="${observacion.horasRealizadas + ' h'}">
+                                                    8 h
+                                                </span>
+                                                <span th:unless="${observacion.horasRealizadas != null}" class="text-muted">
+                                                    -
+                                                </span>
+                                            </td>
+                                            <td th:text="${#temporals.format(observacion.fechaCreacion, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</td>
+                                            <td>
+                                                <a th:href="@{/admin/alumno/observaciondiaria/{id}(id=${observacion.id})}" 
+                                                   class="btn btn-sm btn-info" 
+                                                   title="Ver detalle">
+                                                    <i class="fas fa-eye"></i> Ver
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

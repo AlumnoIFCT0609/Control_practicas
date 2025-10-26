@@ -36,11 +36,11 @@ public class ObservacionDiariaService {
     }
 
     public List<ObservacionDiaria> listarPorAlumno(Long alumnoId) {
-        return observacionDiariaRepository.findByAlumnoId(alumnoId);
+        return observacionDiariaRepository.findByAlumno_Id(alumnoId);
     }
 
     public List<ObservacionDiaria> listarPorAlumnoOrdenadas(Long alumnoId) {
-        return observacionDiariaRepository.findByAlumnoIdOrderByFechaDesc(alumnoId);
+        return observacionDiariaRepository.findByAlumno_IdOrderByFechaDesc(alumnoId);
     }
 
     public List<ObservacionDiaria> listarPorFecha(LocalDate fecha) {

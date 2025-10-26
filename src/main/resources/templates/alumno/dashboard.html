@@ -5,21 +5,23 @@
            
         </div>
     </nav>
+	<div th:if="${alerta}" class="alert alert-warning" th:text="${alerta}"></div>
 
     <div class="container mt-5">
         <h1 class="mb-4">
             <i class="bi bi-person-circle"></i> Mi Panel de Alumno
         </h1>
-        
+         <!--
         <div class="alert alert-info">
-            <h4>Bienvenido</h4>
+           <h4>Bienvenido</h4>
+		   <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
             <p th:if="${alumno != null}">
                 <strong>Nombre:</strong> <span th:text="${alumno.nombre + ' ' + alumno.apellidos}"></span><br>
                 <strong>DNI:</strong> <span th:text="${alumno.dni}"></span><br>
                 <strong>Email:</strong> <span th:text="${alumno.email}"></span><br>
                 <strong>Teléfono:</strong> <span th:text="${alumno.telefono != null ? alumno.telefono : 'No especificado'}"></span>
             </p>
-        </div>
+        </div> -->
 
         <div class="row mt-4">
             <div class="col-md-4">
@@ -82,16 +84,18 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card text-white bg-success">
-                    <div class="card-body text-center">
-                        <i class="bi bi-journal-text" style="font-size: 2rem;"></i>
-                        <h3>0</h3>
-                        <p>Observaciones</p>
-                    </div>
-                </div>
-            </div>
-
+			<div class="col-md-3">
+			    <a th:href="@{/alumno/observaciondiaria/listar}" style="text-decoration: none;">
+			        <div class="card text-white bg-success">
+			            <div class="card-body text-center">
+			                <i class="bi bi-journal-text" style="font-size: 2rem;"></i>
+			                <h3 th:text="${totalObservaciones}">0</h3>
+			                <p>Observaciones</p>
+			            </div>
+			        </div>
+			    </a>
+			</div>
+			
             <div class="col-md-3">
                 <div class="card text-white bg-primary">
                     <div class="card-body text-center">
@@ -122,7 +126,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3 mb-3">
-                                <a href="#" class="btn btn-lg btn-outline-primary w-100">
+                                 <a th:href="@{/alumno/perfil}" 
+								     class="btn btn-lg btn-outline-primary w-100">
                                     <i class="bi bi-person"></i><br>Mi Perfil
                                 </a>
                             </div>

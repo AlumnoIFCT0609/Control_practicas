@@ -1,6 +1,3 @@
-<!-- <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"> -->
-
 <div th:fragment="content">
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -66,7 +63,15 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
-                                       
+                                        <!-- Botón Crear Usuario - Solo visible si no tiene usuario -->
+                                        <a th:if="${!alumno.tieneUsuario}" 
+                                           th:href="@{/admin/alumno/crear-usuario/{id}(id=${alumno.id})}" 
+                                           class="btn btn-sm btn-info" 
+                                           title="Crear Usuario"
+                                           onclick="return confirm('¿Crear usuario de acceso para este alumno?')">
+                                            <i class="bi bi-person-plus"></i>
+                                        </a>
+                                        
                                         <a th:href="@{/admin/alumno/editar/{id}(id=${alumno.id})}" 
                                            class="btn btn-sm btn-warning" 
                                            title="Editar">
@@ -86,35 +91,34 @@
                 </div>
             </div>
         </div>
-		
-		<!-- Estadísticas -->
-		        <div class="row mt-4">
-		            <div class="col-md-4">
-		                <div class="card bg-primary text-white">
-		                    <div class="card-body">
-		                        <h5>Total Alumnos</h5>
-		                        <h2 th:text="${#lists.size(alumnos)}"></h2>
-		                    </div>
-		                </div>
-		            </div>
-		            <div class="col-md-4">
-		                <div class="card bg-success text-white">
-		                    <div class="card-body">
-		                        <h5>Alumnos Activos</h5>
-		                        <h2 th:text="${#lists.size(alumnos.?[activo == true])}"></h2>
-		                    </div>
-		                </div>
-		            </div>
-		            <div class="col-md-4">
-		                <div class="card bg-secondary text-white">
-		                    <div class="card-body">
-		                        <h5>Alumnos Inactivos</h5>
-		                        <h2 th:text="${#lists.size(alumnos.?[activo == false])}"></h2>
-		                    </div>
-		                </div>
-		            </div>
-		
-		
+        
+        <!-- Estadísticas -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5>Total Alumnos</h5>
+                        <h2 th:text="${#lists.size(alumnos)}"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5>Alumnos Activos</h5>
+                        <h2 th:text="${#lists.size(alumnos.?[activo == true])}"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body">
+                        <h5>Alumnos Inactivos</h5>
+                        <h2 th:text="${#lists.size(alumnos.?[activo == false])}"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

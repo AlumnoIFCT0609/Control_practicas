@@ -93,7 +93,7 @@
             <div class="card h-100">
                 <div class="card-body text-center">
                     <i class="bi bi-people-fill fs-1 text-success mb-3"></i>
-                    <h5 class="card-title">Mis Alumnos</h5>
+                    <h5 class="card-title">Alumnos</h5>
                     <p class="card-text">Gestionar alumnos de los cursos</p>
                     <a th:href="@{/admin/alumno/listar}" class="btn btn-success">
                         <i class="bi bi-arrow-right-circle me-1"></i>Ver Alumnos
@@ -121,7 +121,7 @@
                     <i class="bi bi-journal-text fs-1 text-info mb-3"></i>
                     <h5 class="card-title">Observaciones</h5>
                     <p class="card-text">Consultar observaciones de prácticas</p>
-                    <a th:href="@{/tutor-curso/observaciones}" class="btn btn-info">
+                    <a th:href="@{/admin/alumno/observaciondiaria}" class="btn btn-info">
                         <i class="bi bi-arrow-right-circle me-1"></i>Ver Observaciones
                     </a>
                 </div>
@@ -184,7 +184,7 @@
                                     <td th:text="${curso.nombre}">Description</td>
                                     <td th:text="${curso.duracion != null ? curso.duracion + ' horas' : 'N/A'}"> horas</td>
                                     <td>
-                                        <span class="badge bg-primary">0</span>
+										<span class="badge bg-primary" th:text="${alumnosPorCurso[curso.id]}">0</span>
                                     </td>
                                     <td>
                                         <span class="badge" 
@@ -211,7 +211,7 @@
         </div>
     </div>
     
-    <!-- Alumnos Recientes -->
+    <!-- Alumnos Recientes 
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">
@@ -259,6 +259,7 @@
                     </div>
                 </div>
             </div>
+			--> 
         </div>
     </div>
 </div>
