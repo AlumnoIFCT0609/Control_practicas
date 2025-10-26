@@ -1,6 +1,6 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
+<body>-->
     <div th:fragment="content">
         <div class="container-fluid">
             <!-- Alertas -->
@@ -15,14 +15,14 @@
                         <div class="card-header">
                             <h3 class="card-title mb-0">
                                 <i class="fas fa-clipboard-list"></i>
-                                <span th:text="${observacion.id != null} ? 'Editar Observación Diaria' : 'Nueva Observación Diaria'">
+                                <span th:text="${observacionDiaria.id != null} ? 'Editar Observación Diaria' : 'Nueva Observación Diaria'">
                                     Nueva Observación Diaria
                                 </span>
                             </h3>
                         </div>
                         <div class="card-body">
                             <form th:action="@{/alumno/observaciondiaria/guardar}" 
-                                  th:object="${observacion}" 
+                                  th:object="${observacionDiaria}" 
                                   method="post">
                                 
                                 <input type="hidden" th:field="*{id}" />
@@ -58,7 +58,9 @@
                                         <input type="number" 
                                                class="form-control" 
                                                id="horasRealizadas" 
-                                               th:field="*{horasRealizadas}"
+											   name="horasRealizadas"
+											   th:value="${observacionDiaria.horasRealizadas}"
+                                           
                                                min="0"
                                                max="24"
                                                placeholder="Número de horas" />
@@ -71,11 +73,12 @@
                                         <label for="actividades" class="form-label">
                                             <i class="fas fa-tasks"></i> Actividades Realizadas
                                         </label>
-                                        <textarea class="form-control" 
-                                                  id="actividades" 
-                                                  th:field="*{actividades}"
-                                                  rows="4"
-                                                  placeholder="Descripción de las actividades realizadas durante el día..."></textarea>
+										<textarea class="form-control" 
+										          id="actividades" 
+										          name="actividades"
+										          rows="4"
+										          th:text="${observacionDiaria.actividades}"
+										          placeholder="Descripción de las actividades..."></textarea>
                                     </div>
                                 </div>
                                 
@@ -85,12 +88,12 @@
                                         <label for="explicaciones" class="form-label">
                                             <i class="fas fa-info-circle"></i> Explicaciones
                                         </label>
-                                        <textarea class="form-control" 
-                                                  id="explicaciones" 
-                                                  th:field="*{explicaciones}"
-                                                  rows="4"
-                                                  placeholder="Explicaciones adicionales sobre las actividades..."></textarea>
-                                    </div>
+										<textarea class="form-control" 
+										          id="explicaciones" 
+										          name="explicaciones"
+										          rows="4"
+										          th:text="${observacionDiaria.explicaciones}"
+										          placeholder="Explicaciones adicionales..."></textarea></div>
                                 </div>
                                 
                                 <div class="row">
@@ -99,31 +102,33 @@
                                         <label for="observacionesAlumno" class="form-label">
                                             <i class="fas fa-user-graduate"></i> Observaciones del Alumno
                                         </label>
-                                        <textarea class="form-control" 
-                                                  id="observacionesAlumno" 
-                                                  th:field="*{observacionesAlumno}"
-                                                  rows="4"
-                                                  placeholder="Comentarios y observaciones del alumno..."></textarea>
-                                    </div>
+										<textarea class="form-control" 
+										          id="observacionesAlumno" 
+										          name="observacionesAlumno"
+										          rows="4"
+										          th:text="${observacionDiaria.observacionesAlumno}"
+										          placeholder="Comentarios del alumno..."></textarea>
+								   </div>
                                     
                                     <!-- Observaciones del Tutor -->
                                     <div class="col-md-6 mb-3">
                                         <label for="observacionesTutor" class="form-label">
                                             <i class="fas fa-chalkboard-teacher"></i> Observaciones del Tutor
                                         </label>
-                                        <textarea class="form-control" 
-                                                  id="observacionesTutor" 
-                                                  th:field="*{observacionesTutor}"
-                                                  rows="4"
-                                                  placeholder="Comentarios y observaciones del tutor..."></textarea>
-                                    </div>
+										<textarea class="form-control" 
+										          id="observacionesTutor" 
+										          name="observacionesTutor"
+										          rows="4"
+										          th:text="${observacionDiaria.observacionesTutor}"
+										          placeholder="Comentarios del tutor..."></textarea>
+                                          </div> 
                                 </div>
                                 
                                 <div class="row mt-3">
                                     <div class="col-12">
                                         <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-save"></i>
-                                            <span th:text="${observacion.id != null} ? 'Actualizar' : 'Guardar'">Guardar</span>
+                                            <span th:text="${observacionDiaria.id != null} ? 'Actualizar' : 'Guardar'">Guardar</span>
                                         </button>
                                         <a th:href="@{/alumno/observaciondiaria/listar}" class="btn btn-secondary">
                                             <i class="fas fa-times"></i> Cancelar
@@ -137,5 +142,3 @@
             </div>
         </div>
     </div>
-</body>
-</html>
