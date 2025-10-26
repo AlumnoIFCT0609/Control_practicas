@@ -45,6 +45,18 @@ public class ObservacionDiaria {
     protected void onCreate() {
         this.fechaCreacion = LocalDateTime.now();
     }
+    
+    @Transient
+    private Long alumnoId;
+
+    // Y su getter y setter:
+    public Long getAlumnoId() {
+        return alumnoId;
+    }
+
+    public void setAlumnoId(Long alumnoId) {
+        this.alumnoId = alumnoId;
+    }
     // Getters y setters
 
     public Long getId() {
@@ -118,6 +130,8 @@ public class ObservacionDiaria {
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
+
+
 
 	
 }

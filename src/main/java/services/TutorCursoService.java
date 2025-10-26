@@ -1,6 +1,8 @@
 package services;
 
 import models.TutorCurso;
+import models.Usuario;
+import models.Usuario.Rol;
 import repositories.TutorCursoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +15,12 @@ import java.util.Optional;
 public class TutorCursoService {
     
     private final TutorCursoRepository tutorCursoRepository;
+    private final UsuarioService usuarioService;
     
-    public TutorCursoService(TutorCursoRepository tutorCursoRepository) {
+    public TutorCursoService(TutorCursoRepository tutorCursoRepository,
+    		 UsuarioService usuarioService) {
         this.tutorCursoRepository = tutorCursoRepository;
+        this.usuarioService = usuarioService;
     }
     
     /**
@@ -132,4 +137,39 @@ public class TutorCursoService {
     public List<TutorCurso> buscarPorNombreOApellidos(String texto) {
         return tutorCursoRepository.findByNombreContainingIgnoreCaseOrApellidosContainingIgnoreCase(texto, texto);
     }
+    public List<TutorCurso> listarTodosConUsuario() {
+        List<TutorCurso> tutores = tutorCursoRepository.findAll();
+        
+        System.out.println("===== DEBUG TutorCurso =====");
+        System.out.println("Total tutores desde BD: " + tutores.size());
+        
+        for (int i = 0; i < tutores.size(); i++) {
+            TutorCurso tutor = tutores.get(i);
+            System.out.println("Tutor " + i + ": " + (tutor == null ? "ES NULL!!!" : tutor.getNombre()));
+            
+            if (tutor != null) {
+                System.out.println("  Email: " + tutor.getEmail());
+                boolean tieneUsuario = usuarioService.existeUsuarioPorEmail(tutor.getEmail());
+                tutor.setTieneUsuario(tieneUsuario);
+                System.out.println("  tieneUsuario: " + tieneUsuario);
+            }
+        }
+        System.out.println("============================");
+        
+        return tutores;
+    }
+    public Usuario crearUsuarioParaTutorCurso(Long tutorId) {
+        TutorCurso tutor = tutorCursoRepository.findById(tutorId)
+            .orElseThrow(() -> new IllegalArgumentException("Tutor de curso no encontrado"));
+        
+        return usuarioService.crearUsuarioParaEntidad(
+            tutor.getEmail(),
+            tutor.getDni(),
+            Rol.TUTOR_CURSO,
+            tutor.getId(),
+            tutor.getActivo()
+        );
+    }
+    
+    
 }

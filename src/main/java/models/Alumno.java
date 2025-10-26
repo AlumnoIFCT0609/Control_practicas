@@ -213,8 +213,19 @@ public class Alumno {
         this.fechaCreacion = LocalDateTime.now();
         }
         
+    @Transient // Este campo no se persiste en la BD
+    private boolean tieneUsuario;
     
+       
     // Getters y setters
+    
+    public boolean isTieneUsuario() {
+        return tieneUsuario;
+    }
+    
+    public void setTieneUsuario(boolean tieneUsuario) {
+        this.tieneUsuario = tieneUsuario;
+    }
 
     public Long getId() {
         return id;
@@ -301,4 +312,10 @@ public class Alumno {
             this.tutorPracticas = new TutorPracticas();
         }
     }
+
+
+	public boolean isActivo() {
+		// TODO Auto-generated method stub
+		return activo;
+	}
 }

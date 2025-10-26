@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="content">
+        <div class="container-fluid">
+            <!-- Alertas -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span th:text="${observacion.id != null} ? 'Editar Observación Diaria' : 'Nueva Observación Diaria'">
+                                    Nueva Observación Diaria
+                                </span>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/alumno/observaciondiaria/guardar}" 
+                                  th:object="${observacion}" 
+                                  method="post">
+                                
+                                <input type="hidden" th:field="*{id}" />
+                                
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-user-graduate"></i>
+                                            <strong>Alumno:</strong> 
+                                            <span th:text="${alumnoActual.nombre + ' ' + alumnoActual.apellidos}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                        <label for="fecha" class="form-label">
+                                            Fecha <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="date" 
+                                               class="form-control" 
+                                               id="fecha" 
+                                               th:field="*{fecha}" 
+                                               required />
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <!-- Horas Realizadas -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="horasRealizadas" class="form-label">
+                                            Horas Realizadas
+                                        </label>
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="horasRealizadas" 
+                                               th:field="*{horasRealizadas}"
+                                               min="0"
+                                               max="24"
+                                               placeholder="Número de horas" />
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <!-- Actividades -->
+                                    <div class="col-md-12 mb-3">
+                                        <label for="actividades" class="form-label">
+                                            <i class="fas fa-tasks"></i> Actividades Realizadas
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="actividades" 
+                                                  th:field="*{actividades}"
+                                                  rows="4"
+                                                  placeholder="Descripción de las actividades realizadas durante el día..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <!-- Explicaciones -->
+                                    <div class="col-md-12 mb-3">
+                                        <label for="explicaciones" class="form-label">
+                                            <i class="fas fa-info-circle"></i> Explicaciones
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="explicaciones" 
+                                                  th:field="*{explicaciones}"
+                                                  rows="4"
+                                                  placeholder="Explicaciones adicionales sobre las actividades..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <!-- Observaciones del Alumno -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="observacionesAlumno" class="form-label">
+                                            <i class="fas fa-user-graduate"></i> Observaciones del Alumno
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="observacionesAlumno" 
+                                                  th:field="*{observacionesAlumno}"
+                                                  rows="4"
+                                                  placeholder="Comentarios y observaciones del alumno..."></textarea>
+                                    </div>
+                                    
+                                    <!-- Observaciones del Tutor -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="observacionesTutor" class="form-label">
+                                            <i class="fas fa-chalkboard-teacher"></i> Observaciones del Tutor
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="observacionesTutor" 
+                                                  th:field="*{observacionesTutor}"
+                                                  rows="4"
+                                                  placeholder="Comentarios y observaciones del tutor..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i>
+                                            <span th:text="${observacion.id != null} ? 'Actualizar' : 'Guardar'">Guardar</span>
+                                        </button>
+                                        <a th:href="@{/alumno/observaciondiaria/listar}" class="btn btn-secondary">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

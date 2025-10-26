@@ -24,7 +24,7 @@ public class DataEmpiezer {
             AlumnoRepository alumnoRepository,
             CriterioEvaluacionRepository criterioRepository,
             CapacidadEvaluacionRepository capacidadRepository,
-            UserRepository userRepository,
+            UsuarioRepository usuarioRepository,
             PasswordEncoder passwordEncoder) {
 
         return args -> {
@@ -430,7 +430,7 @@ public class DataEmpiezer {
             System.out.println("  - Alumnos: " + alumnoRepository.count());
             System.out.println("  - Criterios de Evaluación: " + criterioRepository.count());
             System.out.println("  - Capacidades de Evaluación: " + capacidadRepository.count());
-            System.out.println("  - Usuarios: " + userRepository.count());
+            System.out.println("  - Usuarios: " + usuarioRepository.count());
             System.out.println("================================================\n");
         };
     }

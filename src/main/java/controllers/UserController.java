@@ -1,7 +1,7 @@
 package controllers;
 
 import models.Usuario;
-import repositories.UserRepository;
+import repositories.UsuarioRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +14,18 @@ import java.util.Optional;
 @RequestMapping("/admin/users")
 public class UserController {
         
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public UserController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
     }
     
     // Listar todos los usuarios
     @GetMapping
     public String listarUsuarios(Model model) {
-        List<Usuario> usuarios = userRepository.findAll();
+        List<Usuario> usuarios = usuarioRepository.findAll();
         model.addAttribute("users", usuarios);
         model.addAttribute("viewName", "admin/users/listar");
         return "layout";
@@ -44,7 +44,7 @@ public class UserController {
     // Mostrar formulario para editar usuario existente
     @GetMapping("/editar/{id}")
     public String editarUsuario(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        Optional<Usuario> usuarioOpt = userRepository.findById(id);
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         
         if (usuarioOpt.isPresent()) {
             model.addAttribute("user", usuarioOpt.get());
@@ -66,7 +66,7 @@ public class UserController {
                 usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
             } else {
                 // Si es edición, solo actualizar contraseña si se proporcionó una nueva
-                Usuario existente = userRepository.findById(usuario.getId()).orElseThrow();
+                Usuario existente = usuarioRepository.findById(usuario.getId()).orElseThrow();
                 if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
                     usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
                 } else {
@@ -76,7 +76,7 @@ public class UserController {
             }
             
             usuario.setUltimoAcceso();
-            userRepository.save(usuario);
+            usuarioRepository.save(usuario);
             
             redirectAttributes.addFlashAttribute("success", 
                 usuario.getId() == null ? "Usuario creado exitosamente" : "Usuario actualizado exitosamente");
@@ -91,9 +91,9 @@ public class UserController {
     @GetMapping("/eliminar/{id}")
     public String eliminarUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            Optional<Usuario> usuarioOpt = userRepository.findById(id);
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
             if (usuarioOpt.isPresent()) {
-                userRepository.deleteById(id);
+                usuarioRepository.deleteById(id);
                 redirectAttributes.addFlashAttribute("success", "Usuario eliminado exitosamente");
             } else {
                 redirectAttributes.addFlashAttribute("error", "Usuario no encontrado");

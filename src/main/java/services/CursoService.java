@@ -52,4 +52,11 @@ public class CursoService {
 	public boolean existePorId(Long id) {
 		return cursoRepository.existsById(id);
 	}
+	
+	 // Nuevo método para obtener el número de alumnos de un curso
+    public long contarAlumnosPorCurso(Long cursoId) {
+        return cursoRepository.contarAlumnosPorCurso(cursoId);
+    }
+	
+	
 }

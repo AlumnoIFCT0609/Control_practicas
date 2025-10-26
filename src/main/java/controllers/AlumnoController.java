@@ -3,7 +3,9 @@ package controllers;
 import models.*;
 import repositories.*;
 import services.*;
-import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+//import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -18,7 +20,7 @@ import java.util.Optional;
 @RequestMapping("/admin/alumno")
 public class AlumnoController {
     
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
     private final AlumnoRepository alumnoRepository;
     private final AlumnoService alumnoService;
     private final CursoRepository cursoRepository;
@@ -27,8 +29,9 @@ public class AlumnoController {
     private final TutorPracticasService tutorPracticasService;
     private final EmpresaRepository empresaRepository;
     private final TutorPracticasRepository tutorPracticasRepository;
+    private final ObservacionDiariaRepository observacionDiariaRepository;
     
-    public AlumnoController(UserRepository userRepository,
+    public AlumnoController(UsuarioRepository usuarioRepository,
                           AlumnoRepository alumnoRepository,
                           AlumnoService alumnoService,
                           CursoRepository cursoRepository,
@@ -36,8 +39,9 @@ public class AlumnoController {
                           CursoService cursoService,
                           EmpresaService empresaService,
                           TutorPracticasService tutorPracticasService,
+                          ObservacionDiariaRepository observacionDiariaRepository,
                           TutorPracticasRepository tutorPracticasRepository) {
-        this.userRepository = userRepository;
+        this.usuarioRepository = usuarioRepository;
         this.alumnoRepository = alumnoRepository;
         this.alumnoService = alumnoService;
         this.cursoRepository = cursoRepository;
@@ -46,6 +50,7 @@ public class AlumnoController {
         this.cursoService= cursoService;
         this.empresaService=empresaService;
         this.tutorPracticasService=tutorPracticasService;
+        this.observacionDiariaRepository=observacionDiariaRepository;
     }
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -98,6 +103,8 @@ public class AlumnoController {
         return "layout";
     }
     
+
+    
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("alumno", new Alumno());
@@ -105,6 +112,13 @@ public class AlumnoController {
         model.addAttribute("empresas", empresaRepository.findAll());
         model.addAttribute("tutores", tutorPracticasRepository.findAll());
         model.addAttribute("viewName", "admin/alumno/form");
+        return "layout";
+    }
+    
+    @GetMapping("/observaciondiaria")
+    public String MostrarObservacionExistente(Model model) {
+        model.addAttribute("ObservacionDiaria", observacionDiariaRepository.findAll());
+        model.addAttribute("viewName", "admin/alumno/observaciones");
         return "layout";
     }
     
@@ -199,4 +213,22 @@ public class AlumnoController {
         }
         return "redirect:/admin/alumno/listar";
     }
+    @GetMapping("/crear-usuario/{id}")
+    public String crearUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Usuario usuario = alumnoService.crearUsuarioParaAlumno(id);
+            redirectAttributes.addFlashAttribute("success", 
+                "Usuario creado exitosamente. Email: " + usuario.getEmail() + 
+                " | Password inicial: DNI del alumno");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", 
+                "Error al crear el usuario: " + e.getMessage());
+        }
+        return "redirect:/admin/alumno/listar";
+    }
+    
+    
+    
 }

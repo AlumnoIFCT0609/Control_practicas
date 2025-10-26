@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Capacidades de Evaluación</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-award me-2"></i>
+                    Capacidades de Evaluación
+                </h2>
+                <div>
+                    <a th:href="@{/admin/evaluacion/listar}" class="btn btn-secondary me-2">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    <a th:href="@{/admin/evaluacion/capacidad/nueva}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Nueva Capacidad
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mensajes -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Tabla de capacidades -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Criterio</th>
+                                    <th>Descripción</th>
+                                    <th>Puntuación Máxima</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${capacidades == null || capacidades.isEmpty()}">
+                                    <td colspan="7" class="text-center text-muted">
+                                        <i class="bi bi-inbox"></i> No hay capacidades registradas
+                                    </td>
+                                </tr>
+                                <tr th:each="capacidad : ${capacidades}">
+                                    <td th:text="${capacidad.id}">1</td>
+                                    <td th:text="${capacidad.nombre}">Nombre</td>
+                                    <td>
+                                        <span th:if="${capacidad.criterio != null}" 
+                                              th:text="${capacidad.criterio.nombre}">
+                                            Criterio
+                                        </span>
+                                        <span th:if="${capacidad.criterio == null}" class="text-muted">Sin criterio</span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${#strings.abbreviate(capacidad.descripcion, 50)}">Descripción</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${capacidad.puntuacionMaxima}">10</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${capacidad.activo} ? 'bg-success' : 'bg-secondary'"
+                                              th:text="${capacidad.activo ? 'Activo' : 'Inactivo'}">
+                                            Activo
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a th:href="@{/admin/evaluacion/capacidad/editar/{id}(id=${capacidad.id})}" 
+                                               class="btn btn-sm btn-warning" 
+                                               title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form th:action="@{/admin/evaluacion/capacidad/activar/{id}(id=${capacidad.id})}" 
+                                                  method="post" 
+                                                  style="display: inline;">
+                                                <button type="submit" 
+                                                        class="btn btn-sm" 
+                                                        th:classappend="${capacidad.activo} ? 'btn-secondary' : 'btn-success'"
+                                                        th:title="${capacidad.activo ? 'Desactivar' : 'Activar'}">
+                                                    <i class="bi" 
+                                                       th:classappend="${capacidad.activo} ? 'bi-toggle-on' : 'bi-toggle-off'"></i>
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/admin/evaluacion/capacidad/eliminar/{id}(id=${capacidad.id})}" 
+                                                  method="post" 
+                                                  style="display: inline;"
+                                                  onsubmit="return confirm('¿Está seguro de eliminar esta capacidad?')">
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5>Total Capacidades</h5>
+                            <h2 th:text="${#lists.size(capacidades)}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5>Activas</h5>
+                            <h2 th:text="${#lists.size(capacidades.?[activo == true])}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body">
+                            <h5>Inactivas</h5>
+                            <h2 th:text="${#lists.size(capacidades.?[activo == false])}">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

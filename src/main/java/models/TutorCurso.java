@@ -10,17 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "tutorcurso")
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
 public class TutorCurso {
-     
-   
-
-	@Id
+     	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
@@ -62,6 +57,17 @@ public class TutorCurso {
     
     @Column(nullable = false)
     private Boolean activo = true;
+    
+    @Transient // Este campo no se persiste en la BD
+    private boolean tieneUsuario;
+    
+    public boolean isTieneUsuario() {
+        return tieneUsuario;
+    }
+    
+    public void setTieneUsuario(boolean tieneUsuario) {
+        this.tieneUsuario = tieneUsuario;
+    }
    
     
     public LocalDateTime getUltimoAcceso() {
@@ -145,7 +151,6 @@ public class TutorCurso {
 	}
 
 	public void setId(Long long1) {
-		// TODO Auto-generated method stub
 		this.id=long1;
 	}
 }

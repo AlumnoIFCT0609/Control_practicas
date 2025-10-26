@@ -4,10 +4,13 @@ import models.Alumno;
 import models.Curso;
 import models.Empresa;
 import models.TutorPracticas;
+import models.Usuario;
+import models.Usuario.Rol;
 import repositories.AlumnoRepository;
 import repositories.CursoRepository;
 import repositories.EmpresaRepository;
 import repositories.TutorPracticasRepository;
+import repositories.UsuarioRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +25,21 @@ public class AlumnoService {
     private final AlumnoRepository alumnoRepository;
     private final EmpresaRepository empresaRepository;
     private final TutorPracticasRepository tutorPracticasRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
     
     public AlumnoService(AlumnoRepository alumnoRepository,
                         CursoRepository cursoRepository, 
                         EmpresaRepository empresaRepository,
-                        TutorPracticasRepository tutorPracticasRepository) {
+                        TutorPracticasRepository tutorPracticasRepository,
+                        UsuarioService usuarioService,
+                        UsuarioRepository usuarioRepository) {
         this.alumnoRepository = alumnoRepository;
         this.cursoRepository = cursoRepository;
         this.empresaRepository = empresaRepository;
         this.tutorPracticasRepository = tutorPracticasRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.usuarioService = usuarioService;
     }
     
     @Transactional
@@ -63,6 +72,10 @@ public class AlumnoService {
         
         return alumnoRepository.save(alumno);
     }
+    public Alumno obtenerPorEmail(String email) {
+        return alumnoRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("No se encontró el alumno con email: " + email));
+    }
     
     public Optional<Alumno> buscarPorId(Long id) {
         return alumnoRepository.findById(id);
@@ -88,4 +101,46 @@ public class AlumnoService {
     public EmpresaRepository getEmpresaRepository() {
         return empresaRepository;
     }
+    
+    // Buscar alumno por usuario
+    public Optional<Alumno> findByUsuario(Usuario usuario) {
+        if (usuario.getRol() == Rol.ALUMNO) {
+            return alumnoRepository.findById(usuario.getReferenceId());
+        }
+        return Optional.empty();
+    }
+    
+    // Buscar alumno por email del usuario
+    public Optional<Alumno> findByEmailUsuario(String email) {
+        return usuarioRepository.findByEmail(email)
+            .filter(u -> u.getRol() == Rol.ALUMNO)
+            .flatMap(u -> alumnoRepository.findById(u.getReferenceId()));
+    }
+    
+    public List<Alumno> listarTodosConUsuario() {
+        List<Alumno> alumnos = alumnoRepository.findAll();
+        alumnos.forEach(alumno -> {
+            boolean tieneUsuario = usuarioService.existeUsuarioPorEmail(alumno.getEmail());
+            alumno.setTieneUsuario(tieneUsuario);
+        });
+        return alumnos;
+    }
+    
+    /**
+     * Crea un usuario para el alumno
+     */
+    public Usuario crearUsuarioParaAlumno(Long alumnoId) {
+        Alumno alumno = alumnoRepository.findById(alumnoId)
+            .orElseThrow(() -> new IllegalArgumentException("Alumno no encontrado"));
+        
+        return usuarioService.crearUsuarioParaEntidad(
+            alumno.getEmail(),
+            alumno.getDni(),
+            Rol.ALUMNO,
+            alumno.getId(),
+            alumno.isActivo()
+        );
+    }
+
+    
 }
