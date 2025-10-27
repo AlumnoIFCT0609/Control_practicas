@@ -97,6 +97,7 @@ public class AlumnoDatoController {
        // model.addAttribute("observacionDiaria", new ObservacionDiaria());
         observacionDiaria.setHorasRealizadas(0); // ← INICIALIZA ESTO
         observacionDiaria.setFecha(LocalDate.now());
+        
         model.addAttribute("observacionDiaria", observacionDiaria);
         model.addAttribute("alumnoActual", alumno);
         model.addAttribute("viewName", "alumno/observaciondiaria/form");
@@ -120,6 +121,13 @@ public class AlumnoDatoController {
         return "layout";
     }
     
+    /* Error al guardar la observación: could not execute statement [Column 'fecha' cannot be null] 
+     * [update observaciondiaria set actividades=?,alumno=?,explicaciones=?,fecha=?,
+     * horas_realizadas=?,observaciones_alumno=?,observaciones_tutor=? where id=?]; 
+     * SQL [update observaciondiaria set actividades=?,alumno=?,explicaciones=?,
+     * fecha=?,horas_realizadas=?,observaciones_alumno=?,observaciones_tutor=? where id=?]; 
+     * constraint [null]*/
+    
     @PostMapping("/observaciondiaria/guardar")
     public String guardar(@ModelAttribute ObservacionDiaria observacionDiaria, 
                          Authentication authentication, 
@@ -127,7 +135,7 @@ public class AlumnoDatoController {
         try {
             Alumno alumno = getAlumnoAutenticado(authentication);
             
-            // Si es edición, verificar que pertenece al alumno
+            /* Si es edición, verificar que pertenece al alumno*/
             if (observacionDiaria.getId() != null) {
                 ObservacionDiaria observacionExistente = observacionDiariaService.buscarPorId(observacionDiaria.getId())
                     .orElseThrow(() -> new RuntimeException("Observación no encontrada"));
