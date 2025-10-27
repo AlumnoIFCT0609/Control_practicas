@@ -59,5 +59,29 @@ public class AdminController {
         model.addAttribute("viewName", "admin/dashboard");
         return "layout";
     }
-  
+    @GetMapping("/reportes/report")
+    public String reports(Model model) {
+        List<Curso> cursos = cursoService.listarTodos();
+        List<Empresa> empresas = empresaService.listarTodas();
+        List<TutorPracticas> tutorp = tutorPracticasService.listarTodos();
+        List<Alumno> alumnos = alumnoService.listarTodos();
+        
+        // Crear un mapa con el número de alumnos por curso
+        Map<Long, Long> alumnosPorCurso = new HashMap<>();
+        for (Curso curso : cursos) {
+            long numeroAlumnos = cursoService.contarAlumnosPorCurso(curso.getId());
+            alumnosPorCurso.put(curso.getId(), numeroAlumnos);
+        }
+        
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("alumnosPorCurso", alumnosPorCurso);
+        model.addAttribute("empresas", empresas);
+        model.addAttribute("tutorp", tutorp);
+        model.addAttribute("alumnos", alumnos);
+        
+        model.addAttribute("viewName", "admin/reportes/report");
+        return "layout";
+    }
+    
+    
 }
