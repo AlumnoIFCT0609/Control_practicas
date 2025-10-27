@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="content">
+        <div class="container-fluid py-4">
+            <h1>Observaciones del Tutor de Prácticas</h1>
+            
+            <div th:if="${error}" class="alert alert-danger">
+                <span th:text="${error}"></span>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Tutor:</strong> <span th:text="${tutorActual.nombre}"></span>
+            </div>
+            
+            <div class="alert alert-secondary">
+                <strong>Total Alumnos:</strong> <span th:text="${alumnosDelTutor.size()}"></span>
+            </div>
+            
+            <p th:if="${!tieneObservaciones}">No hay observaciones disponibles.</p>
+            
+            <table th:if="${tieneObservaciones}" class="table">
+                <thead>
+                    <tr>
+                        <th>Alumno</th>
+                        <th>Fecha</th>
+                        <th>Horas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="obs : ${observaciones}">
+                        <td th:text="${obs.alumno.nombre}"></td>
+                        <td th:text="${obs.fecha}"></td>
+                        <td th:text="${obs.horasRealizadas}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

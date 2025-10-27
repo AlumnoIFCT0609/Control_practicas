@@ -1,0 +1,112 @@
+<!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> -->
+
+<div th:fragment="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="bi bi-person-circle"></i>
+                            <span>Perfil del Alumno</span>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Datos personales -->
+                        <h5 class="border-bottom pb-2 mb-3">Datos Personales</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>DNI:</strong>
+                                <p th:text="${alumno.dni}">12345678A</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Email:</strong>
+                                <p th:text="${alumno.email}">alumno@ejemplo.com</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Nombre:</strong>
+                                <p th:text="${alumno.nombre}">Juan</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Apellidos:</strong>
+                                <p th:text="${alumno.apellidos}">Pérez García</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Fecha de Nacimiento:</strong>
+                                <p th:text="${#temporals.format(alumno.fechaNacimiento, 'dd/MM/yyyy')}">01/01/2000</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Teléfono:</strong>
+                                <p th:text="${alumno.telefono}">600123456</p>
+                            </div>
+                        </div>
+
+                        <!-- Datos académicos y prácticas -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Datos Académicos y Prácticas</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Curso:</strong>
+                                <p th:text="${alumno.curso != null ? alumno.curso.nombre : 'Sin curso asignado'}">DAW 2º</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Empresa:</strong>
+                                <p th:text="${alumno.empresa != null ? alumno.empresa.nombre : 'Sin empresa'}">TechCorp</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Tutor de Prácticas:</strong>
+                                <p th:text="${alumno.tutorPracticas != null ? alumno.tutorPracticas.nombre + ' ' + alumno.tutorPracticas.apellidos : 'Sin tutor asignado'}">
+                                    Carlos Ruiz
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Duración de Prácticas (horas):</strong>
+                                <p th:text="${alumno.duracionPracticas}">400</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Horario:</strong>
+                            <p th:text="${alumno.horario}">Lunes a Viernes, 9:00 - 14:00</p>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Fecha Inicio:</strong>
+                                <p th:text="${#temporals.format(alumno.fechaInicio, 'dd/MM/yyyy')}">01/03/2025</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Fecha Fin:</strong>
+                                <p th:text="${#temporals.format(alumno.fechaFin, 'dd/MM/yyyy')}">30/06/2025</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Estado:</strong>
+                            <span th:if="${alumno.activo}" class="badge bg-success">Activo</span>
+                            <span th:if="${!alumno.activo}" class="badge bg-danger">Inactivo</span>
+                        </div>
+
+                        <!-- Botón volver -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <a th:href="@{/alumno/perfil}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

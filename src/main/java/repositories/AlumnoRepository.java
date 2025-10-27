@@ -3,6 +3,7 @@ package repositories;
 import models.Alumno;
 import models.Curso;
 import models.Empresa;
+import models.TutorPracticas;
 import models.Usuario;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,5 +21,6 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
     List<Alumno> findByEmpresa_Id(Long empresaId);
     Optional<Alumno> findByDni(String dni);
 	Optional<Alumno> findByEmail(String email);
+	List<Alumno> findByTutorPracticas(TutorPracticas tutor);
 
 }

@@ -182,6 +182,10 @@ public class Curso {
 	    this.tutorCursoId = tutorCurso_Id;
 	    // no crear ni asignar TutorCurso aquí; el controlador debe cargar la entidad completa antes de guardar
 	}
+	public boolean isActivo() {
+		// TODO Auto-generated method stub
+		return this.activo;
+	}
 
 	
 	

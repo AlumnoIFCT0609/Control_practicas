@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="content">
+        <div class="container-fluid py-4">
+            <!-- Alertas -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span>Observaciones Diarias de Mis Alumnos</span>
+                            </h3>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Información del Tutor -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                        <strong>Tutor de Prácticas:</strong> 
+                                        <span th:text="${tutorActual.nombre + ' ' + tutorActual.apellidos}"></span>
+                                        <span class="ms-3" th:if="${tutorActual.empresa != null}">
+                                            <i class="fas fa-building"></i>
+                                            <strong>Empresa:</strong> 
+                                            <span th:text="${tutorActual.empresa.nombre}"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro por Alumno -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="filtroAlumno" class="form-label fw-bold">
+                                        <i class="fas fa-filter"></i> Filtrar por Alumno:
+                                    </label>
+                                    <select class="form-select" id="filtroAlumno" onchange="filtrarPorAlumno(this.value)">
+                                        <option value="">Todos los alumnos</option>
+                                        <option th:each="alumno : ${alumnosDelTutor}" 
+                                                th:value="${alumno.id}"
+                                                th:text="${alumno.nombre + ' ' + alumno.apellidos}"
+                                                th:selected="${alumnoSeleccionado != null && alumnoSeleccionado.id == alumno.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <div class="alert alert-secondary mb-0 w-100">
+                                        <i class="fas fa-users"></i>
+                                        <strong>Total Alumnos:</strong> <span th:text="${alumnosDelTutor.size()}"></span>
+                                        <span class="ms-3">
+                                            <i class="fas fa-file-alt"></i>
+                                            <strong>Total Observaciones:</strong> <span th:text="${observaciones.size()}"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Mensaje si no hay observaciones -->
+                            <div th:if="${!tieneObservaciones}" class="alert alert-warning">
+                                <i class="fas fa-info-circle"></i> 
+                                <span th:if="${alumnoSeleccionado != null}">
+                                    El alumno <strong th:text="${alumnoSeleccionado.nombre + ' ' + alumnoSeleccionado.apellidos}"></strong> 
+                                    aún no tiene observaciones diarias registradas.
+                                </span>
+                                <span th:unless="${alumnoSeleccionado != null}">
+                                    Todavía no hay observaciones diarias de tus alumnos.
+                                </span>
+                            </div>
+                            
+                            <!-- Tabla de observaciones -->
+                            <div th:if="${tieneObservaciones}" class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><i class="fas fa-user-graduate"></i> Alumno</th>
+                                            <th><i class="fas fa-calendar"></i> Fecha</th>
+                                            <th><i class="fas fa-clock"></i> Horas</th>
+                                            <th><i class="fas fa-tasks"></i> Actividades</th>
+                                            <th><i class="fas fa-comment"></i> Obs. Alumno</th>
+                                            <th><i class="fas fa-comment-dots"></i> Obs. Tutor</th>
+                                            <th class="text-center"><i class="fas fa-cogs"></i> Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="obs : ${observaciones}">
+                                            <td>
+                                                <strong th:text="${obs.alumno.nombre + ' ' + obs.alumno.apellidos}"></strong>
+                                            </td>
+                                            <td>
+                                                <span th:text="${#temporals.format(obs.fecha, 'dd/MM/yyyy')}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${obs.horasRealizadas != null}" 
+                                                      th:text="${obs.horasRealizadas + ' h'}">
+                                                </span>
+                                                <span th:unless="${obs.horasRealizadas != null}" 
+                                                      class="text-muted">-</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${obs.actividades != null and !#strings.isEmpty(obs.actividades)}" 
+                                                      th:text="${#strings.abbreviate(obs.actividades, 50)}">
+                                                </span>
+                                                <span th:unless="${obs.actividades != null and !#strings.isEmpty(obs.actividades)}" 
+                                                      class="text-muted">Sin actividades</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${obs.observacionesAlumno != null and !#strings.isEmpty(obs.observacionesAlumno)}" 
+                                                      th:text="${#strings.abbreviate(obs.observacionesAlumno, 50)}">
+                                                </span>
+                                                <span th:unless="${obs.observacionesAlumno != null and !#strings.isEmpty(obs.observacionesAlumno)}" 
+                                                      class="text-muted">Sin obs.</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${obs.observacionesTutor != null and !#strings.isEmpty(obs.observacionesTutor)}" 
+                                                      th:text="${#strings.abbreviate(obs.observacionesTutor, 50)}"
+                                                      class="text-success">
+                                                </span>
+                                                <span th:unless="${obs.observacionesTutor != null and !#strings.isEmpty(obs.observacionesTutor)}" 
+                                                      class="badge bg-warning text-dark">
+                                                    <i class="fas fa-exclamation-triangle"></i> Pendiente
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a th:href="@{/tutorpracticas/observaciondiaria/ver/{id}(id=${obs.id})}" 
+                                                   class="btn btn-sm btn-primary" 
+                                                   title="Ver y añadir observaciones">
+                                                    <i class="fas fa-eye"></i> Ver
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function filtrarPorAlumno(alumnoId) {
+                if (alumnoId) {
+                    window.location.href = '/tutorpracticas/observaciondiaria/listar?alumnoId=' + alumnoId;
+                } else {
+                    window.location.href = '/tutorpracticas/observaciondiaria/listar';
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>

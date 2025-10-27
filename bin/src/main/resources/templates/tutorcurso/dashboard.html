@@ -1,0 +1,126 @@
+ <div th:fragment="content"> 
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Control de Practicas - Tutor de Curso</a>
+            <form th:action="@{/logout}" method="post" class="d-flex">
+                <button class="btn btn-outline-light" type="submit">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">
+            <i class="bi bi-person-workspace"></i> Dashboard Tutor de Curso
+        </h1>
+        
+        <div class="alert alert-info">
+            <h4>Bienvenido, Tutor de Curso</h4>
+            <p th:if="${tutor != null}">
+                <strong>Nombre:</strong> <span th:text="${tutor.nombre + ' ' + tutor.apellidos}"></span><br>
+                <strong>Especialidad:</strong> <span th:text="${tutor.especialidad}"></span>
+            </p>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-book"></i> Mis Cursos
+                        </h5>
+                        <h2 th:text="${cursos != null ? #lists.size(cursos) : 0}">0</h2>
+                        <p class="card-text">Cursos asignados</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-people"></i> Total Alumnos
+                        </h5>
+                        <h2 th:text="${alumnos != null ? #lists.size(alumnos) : 0}">0</h2>
+                        <p class="card-text">Alumnos en practicas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-clipboard-check"></i> Evaluaciones
+                        </h5>
+                        <h2>0</h2>
+                        <p class="card-text">Pendientes de realizar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-list-ul"></i> Acciones Rapidas</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-primary w-100">
+                                    <i class="bi bi-book"></i><br>Ver Mis Cursos
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <a href="#" class="btn btn-lg btn-outline-success w-100">
+                                    <i class="bi bi-people"></i><br>Ver Alumnos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-table"></i> Lista de Alumnos</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Curso</th>
+                                    <th>Empresa</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="alumno : ${alumnos}">
+                                    <td th:text="${alumno.nombre + ' ' + alumno.apellidos}"></td>
+                                    <td th:text="${alumno.curso != null ? alumno.curso.nombre : 'Sin asignar'}"></td>
+                                    <td th:text="${alumno.empresa != null ? alumno.empresa.nombre : 'Sin asignar'}"></td>
+                                    <td>
+                                        <span class="badge bg-success">Activo</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(alumnos)}">
+                                    <td colspan="4" class="text-center text-muted">No hay alumnos registrados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>

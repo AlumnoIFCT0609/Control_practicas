@@ -33,11 +33,11 @@
                                 <hr>
                                 <div class="small text-muted">
                                     <strong>Cursos Activos:</strong> 
-                                    <span th:text="${#lists.size(#lists.filter(cursos, c -> c.activo == true))}">0</span>
+                                    <span th:text="${cursosActivos}">0</span>
                                 </div>
                                 <div class="small text-muted">
                                     <strong>Cursos Finalizados:</strong> 
-                                    <span th:text="${#lists.size(#lists.filter(cursos, c -> c.activo == false))}">0</span>
+                                    <span th:text="${cursosFinalizados}">0</span>
                                 </div>
                             </div>
                         </div>
@@ -61,11 +61,11 @@
                                 <hr>
                                 <div class="small text-muted">
                                     <strong>Empresas Activas:</strong> 
-                                    <span th:text="${#lists.size(#lists.filter(empresas, e -> e.activa == true))}">0</span>
+                                    <span th:text="${empresasActivas}">0</span>
                                 </div>
                                 <div class="small text-muted">
                                     <strong>Empresas Inactivas:</strong> 
-                                    <span th:text="${#lists.size(#lists.filter(empresas, e -> e.activa == false))}">0</span>
+                                    <span th:text="${empresasInactivas}">0</span>
                                 </div>
                             </div>
                         </div>
@@ -129,13 +129,13 @@
                                     <div class="col-md-6">
                                         <div class="small text-muted">
                                             <strong>Alumnos en Prácticas:</strong> 
-                                            <span th:text="${#lists.size(#lists.filter(alumnos, a -> a.activo == true))}">0</span>
+                                            <span th:text="${alumnosEnPracticas}">0</span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="small text-muted">
                                             <strong>Alumnos Finalizados:</strong> 
-                                            <span th:text="${#lists.size(#lists.filter(alumnos, a -> a.activo == false))}">0</span>
+                                            <span th:text="${alumnosFinalizados}">0</span>
                                         </div>
                                     </div>
                                 </div>
@@ -272,7 +272,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="tutor, iterStat : ${tutorp}">
+                                    <tr th:each="tutor, iterStat : ${tutoresCurso}">
                                         <td th:text="${iterStat.count}">1</td>
                                         <td th:text="${tutor.nombre + ' ' + tutor.apellidos}">Nombre Tutor</td>
                                         <td th:text="${tutor.cursos != null ? tutor.cursos.size() : 0}">0</td>
@@ -302,7 +302,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="tutorP, iterStat : ${tutorp}">
+                                    <tr th:each="tutorP, iterStat : ${tutoresPracticas}">
                                         <td th:text="${iterStat.count}">1</td>
                                         <td th:text="${tutorP.nombre + ' ' + tutorP.apellidos}">Nombre Tutor</td>
                                         <td th:text="${tutorP.empresa != null ? tutorP.empresa.nombre : 'Sin empresa'}">Empresa</td>
@@ -333,7 +333,9 @@
     const cursos = /*[[${cursos}]]*/ [];
     const empresas = /*[[${empresas}]]*/ [];
     const alumnosPorCurso = /*[[${alumnosPorCurso}]]*/ {};
-    const tutorp = /*[[${tutorp}]]*/ [];
+    const tutoresCurso = /*[[${tutoresCurso}]]*/ [];
+    const tutoresPracticas = /*[[${tutoresPracticas}]]*/ [];
+
     
     // Gráfico: Ranking de Cursos
     const cursosOrdenados = cursos
@@ -394,10 +396,11 @@
     });
 
     // Gráfico: Ranking Tutores de Curso
-    const tutoresOrdenados = tutorp
-        .map(t => ({nombre: t.nombre + ' ' + t.apellidos, cursos: t.cursos ? t.cursos.length : 0}))
-        .sort((a, b) => b.cursos - a.cursos)
-        .slice(0, 5);
+    const tutoresOrdenados = tutoresCurso
+    .map(t => ({nombre: t.nombre + ' ' + t.apellidos, cursos: t.cursos ? t.cursos.length : 0}))
+    .sort((a, b) => b.cursos - a.cursos)
+    .slice(0, 5);
+
     
     new Chart(document.getElementById('rankingTutoresCursoChart'), {
         type: 'horizontalBar',
@@ -424,10 +427,10 @@
     });
 
     // Gráfico: Ranking Tutores de Prácticas
-    const tutoresPracticasOrdenados = tutorp
-        .map(t => ({nombre: t.nombre + ' ' + t.apellidos, alumnos: t.alumnos ? t.alumnos.length : 0}))
-        .sort((a, b) => b.alumnos - a.alumnos)
-        .slice(0, 5);
+   const tutoresPracticasOrdenados = tutoresPracticas
+    .map(t => ({nombre: t.nombre + ' ' + t.apellidos, alumnos: t.alumnos ? t.alumnos.length : 0}))
+    .sort((a, b) => b.alumnos - a.alumnos)
+    .slice(0, 5);
     
     new Chart(document.getElementById('rankingTutoresPracticasChart'), {
         type: 'horizontalBar',
