@@ -11,14 +11,20 @@ import java.util.List;
 
 @Entity
 @Table(name = "curso")
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
 public class Curso {
     
     public Curso() {
 		
 	}
+    public Curso(String nombre, String codigo, String descripcion,
+    		Integer duracion, Long tutorCursoId, boolean activo) {
+    	this.nombre=nombre;
+    	this.codigo=codigo;
+    	this.descripcion=descripcion;
+    	this.duracion=duracion;
+    	this.activo=activo;
+    	this.tutorCursoId=tutorCursoId;
+    }
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

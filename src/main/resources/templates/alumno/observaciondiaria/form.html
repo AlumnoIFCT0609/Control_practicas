@@ -41,11 +41,12 @@
                                         <label for="fecha" class="form-label">
                                             Fecha <span class="text-danger">*</span>
                                         </label>
-                                        <input type="date" 
-                                               class="form-control" 
-                                               id="fecha" 
-                                               th:field="*{fecha}" 
-                                               required />
+                                        <input 	type="date" 
+                                               	class="form-control" 
+                                               	id="fecha" 
+                                               	name="fecha"
+       											th:value="${observacionDiaria.fecha != null ? observacionDiaria.fecha.toString() : ''}"
+       											required />
                                     </div>
                                 </div>
                                 

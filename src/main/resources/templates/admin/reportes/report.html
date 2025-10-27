@@ -1,0 +1,471 @@
+<div th:fragment="content">
+    <!-- Encabezado y Botón de Exportación -->
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Reportes del Sistema</h1>
+            <button onclick="exportToPDF()" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Exportar a PDF
+            </button>
+        </div>
+
+        <!-- SECCIÓN 1: HISTÓRICO DE REGISTROS -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">1. Histórico de Registros</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Histórico por Curso -->
+                    <div class="col-xl-6 col-lg-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Total Cursos Registrados
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${cursos.size()}">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-graduation-cap fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="small text-muted">
+                                    <strong>Cursos Activos:</strong> 
+                                    <span th:text="${#lists.size(#lists.filter(cursos, c -> c.activo == true))}">0</span>
+                                </div>
+                                <div class="small text-muted">
+                                    <strong>Cursos Finalizados:</strong> 
+                                    <span th:text="${#lists.size(#lists.filter(cursos, c -> c.activo == false))}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Histórico por Empresa -->
+                    <div class="col-xl-6 col-lg-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Total Empresas Registradas
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${empresas.size()}">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-building fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="small text-muted">
+                                    <strong>Empresas Activas:</strong> 
+                                    <span th:text="${#lists.size(#lists.filter(empresas, e -> e.activa == true))}">0</span>
+                                </div>
+                                <div class="small text-muted">
+                                    <strong>Empresas Inactivas:</strong> 
+                                    <span th:text="${#lists.size(#lists.filter(empresas, e -> e.activa == false))}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Histórico Tutores de Curso -->
+                    <div class="col-xl-6 col-lg-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Total Tutores de Curso
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorp != null ? tutorp.size() : 0}">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Histórico Tutores de Prácticas -->
+                    <div class="col-xl-6 col-lg-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Total Tutores de Prácticas
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorp != null ? tutorp.size() : 0}">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user-tie fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Histórico de Alumnos -->
+                    <div class="col-xl-12 col-lg-12 mb-4">
+                        <div class="card border-left-danger shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                            Total Alumnos Registrados
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${alumnos.size()}">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="small text-muted">
+                                            <strong>Alumnos en Prácticas:</strong> 
+                                            <span th:text="${#lists.size(#lists.filter(alumnos, a -> a.activo == true))}">0</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="small text-muted">
+                                            <strong>Alumnos Finalizados:</strong> 
+                                            <span th:text="${#lists.size(#lists.filter(alumnos, a -> a.activo == false))}">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: RANKINGS -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">2. Rankings</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Ranking Cursos con más alumnos -->
+                    <div class="col-xl-6 mb-4">
+                        <h6 class="font-weight-bold text-primary">Top 5 Cursos con Más Alumnos</h6>
+                        <canvas id="rankingCursosChart"></canvas>
+                        <div class="table-responsive mt-3">
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Curso</th>
+                                        <th>Alumnos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="curso, iterStat : ${cursos}" th:if="${iterStat.index < 5}">
+                                        <td th:text="${iterStat.count}">1</td>
+                                        <td th:text="${curso.nombre}">Nombre Curso</td>
+                                        <td th:text="${alumnosPorCurso.get(curso.id) ?: 0}">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Ranking Empresas con más alumnos -->
+                    <div class="col-xl-6 mb-4">
+                        <h6 class="font-weight-bold text-success">Top 5 Empresas con Más Alumnos</h6>
+                        <canvas id="rankingEmpresasChart"></canvas>
+                        <div class="table-responsive mt-3">
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Empresa</th>
+                                        <th>Alumnos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="empresa, iterStat : ${empresas}" th:if="${iterStat.index < 5}">
+                                        <td th:text="${iterStat.count}">1</td>
+                                        <td th:text="${empresa.nombre}">Nombre Empresa</td>
+                                        <td th:text="${empresa.alumnos.size()}">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: DIAGRAMA DE GANTT - DISPONIBILIDAD DE TUTORES -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">3. Cronología de Cursos (Diagrama de Gantt)</h6>
+                <small class="text-muted">Visualización de períodos de cursos para detectar solapamientos</small>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th>Tutor</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Duración (días)</th>
+                                <th>Timeline</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="curso : ${cursos}">
+                                <td th:text="${curso.nombre}">Curso</td>
+                                <td th:text="${curso.tutorCurso != null ? curso.tutorCurso.nombre + ' ' + curso.tutorCurso.apellidos : 'Sin asignar'}">Tutor</td>
+                                <td th:text="${curso.fechaInicio != null ? #temporals.format(curso.fechaInicio, 'dd/MM/yyyy') : 'N/A'}">01/01/2024</td>
+                                <td th:text="${curso.fechaFin != null ? #temporals.format(curso.fechaFin, 'dd/MM/yyyy') : 'N/A'}">31/12/2024</td>
+                                <td th:text="${curso.duracion != null ? curso.duracion + ' días' : 'N/A'}">365</td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-info" role="progressbar" 
+                                             style="width: 100%" 
+                                             th:title="${curso.nombre}">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>Nota:</strong> Revise si hay tutores asignados a múltiples cursos con fechas solapadas.
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: RANKINGS DE TUTORES -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">4. Rankings de Tutores</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Ranking Tutores de Curso -->
+                    <div class="col-xl-6 mb-4">
+                        <h6 class="font-weight-bold text-info">Top Tutores de Curso (por número de cursos)</h6>
+                        <canvas id="rankingTutoresCursoChart"></canvas>
+                        <div class="table-responsive mt-3">
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tutor</th>
+                                        <th>Cursos Tutorizados</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="tutor, iterStat : ${tutorp}">
+                                        <td th:text="${iterStat.count}">1</td>
+                                        <td th:text="${tutor.nombre + ' ' + tutor.apellidos}">Nombre Tutor</td>
+                                        <td th:text="${tutor.cursos != null ? tutor.cursos.size() : 0}">0</td>
+                                        <td>
+                                            <span th:if="${tutor.activo}" class="badge badge-success">Activo</span>
+                                            <span th:unless="${tutor.activo}" class="badge badge-secondary">Inactivo</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Ranking Tutores de Prácticas -->
+                    <div class="col-xl-6 mb-4">
+                        <h6 class="font-weight-bold text-warning">Top Tutores de Prácticas (por número de alumnos)</h6>
+                        <canvas id="rankingTutoresPracticasChart"></canvas>
+                        <div class="table-responsive mt-3">
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tutor</th>
+                                        <th>Empresa</th>
+                                        <th>Alumnos</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="tutorP, iterStat : ${tutorp}">
+                                        <td th:text="${iterStat.count}">1</td>
+                                        <td th:text="${tutorP.nombre + ' ' + tutorP.apellidos}">Nombre Tutor</td>
+                                        <td th:text="${tutorP.empresa != null ? tutorP.empresa.nombre : 'Sin empresa'}">Empresa</td>
+                                        <td th:text="${tutorP.alumnos != null ? tutorP.alumnos.size() : 0}">0</td>
+                                        <td>
+                                            <span th:if="${tutorP.activo}" class="badge badge-success">Activo</span>
+                                            <span th:unless="${tutorP.activo}" class="badge badge-secondary">Inactivo</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts para Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    
+    // Datos desde Thymeleaf
+    const cursos = /*[[${cursos}]]*/ [];
+    const empresas = /*[[${empresas}]]*/ [];
+    const alumnosPorCurso = /*[[${alumnosPorCurso}]]*/ {};
+    const tutorp = /*[[${tutorp}]]*/ [];
+    
+    // Gráfico: Ranking de Cursos
+    const cursosOrdenados = cursos
+        .map(c => ({nombre: c.nombre, alumnos: alumnosPorCurso[c.id] || 0}))
+        .sort((a, b) => b.alumnos - a.alumnos)
+        .slice(0, 5);
+    
+    new Chart(document.getElementById('rankingCursosChart'), {
+        type: 'bar',
+        data: {
+            labels: cursosOrdenados.map(c => c.nombre),
+            datasets: [{
+                label: 'Número de Alumnos',
+                data: cursosOrdenados.map(c => c.alumnos),
+                backgroundColor: 'rgba(78, 115, 223, 0.8)',
+                borderColor: 'rgba(78, 115, 223, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gráfico: Ranking de Empresas
+    const empresasOrdenadas = empresas
+        .map(e => ({nombre: e.nombre, alumnos: e.alumnos ? e.alumnos.length : 0}))
+        .sort((a, b) => b.alumnos - a.alumnos)
+        .slice(0, 5);
+    
+    new Chart(document.getElementById('rankingEmpresasChart'), {
+        type: 'bar',
+        data: {
+            labels: empresasOrdenadas.map(e => e.nombre),
+            datasets: [{
+                label: 'Número de Alumnos',
+                data: empresasOrdenadas.map(e => e.alumnos),
+                backgroundColor: 'rgba(28, 200, 138, 0.8)',
+                borderColor: 'rgba(28, 200, 138, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gráfico: Ranking Tutores de Curso
+    const tutoresOrdenados = tutorp
+        .map(t => ({nombre: t.nombre + ' ' + t.apellidos, cursos: t.cursos ? t.cursos.length : 0}))
+        .sort((a, b) => b.cursos - a.cursos)
+        .slice(0, 5);
+    
+    new Chart(document.getElementById('rankingTutoresCursoChart'), {
+        type: 'horizontalBar',
+        data: {
+            labels: tutoresOrdenados.map(t => t.nombre),
+            datasets: [{
+                label: 'Cursos Tutorizados',
+                data: tutoresOrdenados.map(t => t.cursos),
+                backgroundColor: 'rgba(54, 185, 204, 0.8)',
+                borderColor: 'rgba(54, 185, 204, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gráfico: Ranking Tutores de Prácticas
+    const tutoresPracticasOrdenados = tutorp
+        .map(t => ({nombre: t.nombre + ' ' + t.apellidos, alumnos: t.alumnos ? t.alumnos.length : 0}))
+        .sort((a, b) => b.alumnos - a.alumnos)
+        .slice(0, 5);
+    
+    new Chart(document.getElementById('rankingTutoresPracticasChart'), {
+        type: 'horizontalBar',
+        data: {
+            labels: tutoresPracticasOrdenados.map(t => t.nombre),
+            datasets: [{
+                label: 'Alumnos Supervisados',
+                data: tutoresPracticasOrdenados.map(t => t.alumnos),
+                backgroundColor: 'rgba(246, 194, 62, 0.8)',
+                borderColor: 'rgba(246, 194, 62, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Función para exportar a PDF
+    function exportToPDF() {
+        const element = document.querySelector('[th\\:fragment="content"]');
+        const opt = {
+            margin: 10,
+            filename: 'reporte_sistema.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+    
+    /*]]>*/
+    </script>
+</div>
