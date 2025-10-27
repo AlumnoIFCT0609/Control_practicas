@@ -1,0 +1,133 @@
+<!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> -->
+
+<div th:fragment="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="bi bi-book-fill"></i>
+                            <span th:text="${curso.id == null ? 'Nuevo Curso' : 'Editar Curso'}">Nuevo Curso</span>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/curso/guardar}" th:object="${curso}" method="post">
+                            <input type="hidden" th:field="*{id}">
+                            <input type="hidden" th:field="*{fechaCreacion}">
+
+                            <!-- Información básica -->
+                            <h5 class="border-bottom pb-2 mb-3">Información Básica</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="codigo" class="form-label">Código <span class="text-danger">*</span></label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="codigo" 
+                                           th:field="*{codigo}" 
+                                           placeholder="DAW01"
+                                           required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="nombre" 
+                                           th:field="*{nombre}" 
+                                           placeholder="Desarrollo de Aplicaciones Web"
+                                           required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" 
+                                          id="descripcion" 
+                                          th:field="*{descripcion}" 
+                                          rows="3"
+                                          placeholder="Descripción del curso..."></textarea>
+                            </div>
+
+                            <!-- Datos del curso -->
+                            <h5 class="border-bottom pb-2 mb-3 mt-4">Datos del Curso</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="duracion" class="form-label">Duración (horas)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="duracion" 
+                                           th:field="*{duracion}"
+                                           placeholder="2000">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="tutorCurso" class="form-label">Tutor del Curso</label>
+                                    
+									 <select class="form-select" id="tutorCurso" th:field="*{tutorCursoId}">
+  											<option value="">Seleccione un tutor</option>
+  											<option th:each="tutor : ${tutores}" 
+          											th:value="${tutor.id}" 
+          											th:text="${tutor.nombre + ' ' + tutor.apellidos}">
+  											</option>
+									</select>
+									                               
+                                </div>   
+                                
+                          
+                                
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           id="fechaInicio" 
+                                           th:field="*{fechaInicio}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           id="fechaFin" 
+                                           th:field="*{fechaFin}">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="activo" 
+                                           th:field="*{activo}">
+                                    <label class="form-check-label" for="activo">
+                                        Curso Activo
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Información adicional al editar
+                            <div th:if="${curso.id != null}" class="alert alert-info">
+                                <small>
+                                    <strong>Fecha de creación:</strong> 
+                                    <span th:text="${curso.fechaCreacion != null ? #temporals.format(curso.fechaCreacion, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2024</span>
+                                </small>
+                            </div> -->
+
+                            <!-- Botones -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/admin/curso/listar}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

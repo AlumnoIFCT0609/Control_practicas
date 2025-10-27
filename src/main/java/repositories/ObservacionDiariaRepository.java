@@ -1,5 +1,6 @@
 package repositories;
 
+import models.Alumno;
 import models.ObservacionDiaria;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,6 @@ public interface ObservacionDiariaRepository extends JpaRepository<ObservacionDi
     
     // Buscar por alumno y fecha
     List<ObservacionDiaria> findByAlumno_IdAndFecha(Long alumnoId, LocalDate fecha);
+
+	List<ObservacionDiaria> findByAlumnoInOrderByFechaDesc(List<Alumno> alumnosDelTutor);
 }

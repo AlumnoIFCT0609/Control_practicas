@@ -3,6 +3,7 @@ package controllers;
 import services.AlumnoService;
 import services.CursoService;
 import services.EmpresaService;
+import services.TutorCursoService;
 import services.TutorPracticasService;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import models.Alumno;
 import models.Curso;
 import models.Empresa;
+import models.TutorCurso;
 import models.TutorPracticas;
 
 //import java.util.List;
@@ -28,14 +30,17 @@ public class AdminController {
     private final CursoService cursoService;
     private final EmpresaService empresaService;
     private final TutorPracticasService tutorPracticasService;
+    private final TutorCursoService tutorCursoService;
     private final AlumnoService alumnoService;
     public AdminController(CursoService cursoService, EmpresaService empresaService, 
     						TutorPracticasService tutorPracticasService,
+    						TutorCursoService tutorCursoService,
     						AlumnoService alumnoService){
     	 this.cursoService = cursoService;
     	 this.empresaService= empresaService;
     	 this.tutorPracticasService=tutorPracticasService;
     	 this.alumnoService=alumnoService;
+    	 this.tutorCursoService=tutorCursoService;
     }
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -51,6 +56,9 @@ public class AdminController {
         }
         
         model.addAttribute("cursos", cursos);
+        long cursosActivos = cursos.stream()
+                .filter(c -> c.isActivo())
+                .count();
         model.addAttribute("alumnosPorCurso", alumnosPorCurso);
         model.addAttribute("empresas", empresas);
         model.addAttribute("tutorp", tutorp);
@@ -63,25 +71,48 @@ public class AdminController {
     public String reports(Model model) {
         List<Curso> cursos = cursoService.listarTodos();
         List<Empresa> empresas = empresaService.listarTodas();
-        List<TutorPracticas> tutorp = tutorPracticasService.listarTodos();
+        List<TutorPracticas> tutoresPracticas = tutorPracticasService.listarTodos();
+        List<TutorCurso> tutoresCurso = tutorCursoService.listarTodos(); // ← AGREGAR ESTO
+                
+
         List<Alumno> alumnos = alumnoService.listarTodos();
-        
+
         // Crear un mapa con el número de alumnos por curso
         Map<Long, Long> alumnosPorCurso = new HashMap<>();
         for (Curso curso : cursos) {
             long numeroAlumnos = cursoService.contarAlumnosPorCurso(curso.getId());
             alumnosPorCurso.put(curso.getId(), numeroAlumnos);
         }
+
+        // Calcular estadísticas de cursos
+        long cursosActivos = cursos.stream().filter(Curso::isActivo).count();
+        long cursosFinalizados = cursos.stream().filter(c -> !c.isActivo()).count();
         
+        // Calcular estadísticas de empresas
+        long empresasActivas = empresas.stream().filter(Empresa::getActiva).count();
+        long empresasInactivas = empresas.stream().filter(e -> !e.getActiva()).count();
+        
+        // Calcular estadísticas de alumnos
+        long alumnosEnPracticas = alumnos.stream().filter(Alumno::isActivo).count();
+        long alumnosFinalizados = alumnos.stream().filter(a -> !a.isActivo()).count();
+
         model.addAttribute("cursos", cursos);
         model.addAttribute("alumnosPorCurso", alumnosPorCurso);
         model.addAttribute("empresas", empresas);
-        model.addAttribute("tutorp", tutorp);
+        model.addAttribute("tutoresPracticas", tutoresPracticas);
+        model.addAttribute("tutoresCurso", tutoresCurso);
         model.addAttribute("alumnos", alumnos);
         
+        // Agregar estadísticas calculadas
+        model.addAttribute("cursosActivos", cursosActivos);
+        model.addAttribute("cursosFinalizados", cursosFinalizados);
+        model.addAttribute("empresasActivas", empresasActivas);
+        model.addAttribute("empresasInactivas", empresasInactivas);
+        model.addAttribute("alumnosEnPracticas", alumnosEnPracticas);
+        model.addAttribute("alumnosFinalizados", alumnosFinalizados);
+
         model.addAttribute("viewName", "admin/reportes/report");
         return "layout";
-    }
-    
+    }   
     
 }

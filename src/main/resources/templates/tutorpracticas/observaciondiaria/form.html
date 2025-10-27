@@ -12,42 +12,46 @@
                     <div class="card-header bg-primary text-white">
                         <h3 class="card-title mb-0">
                             <i class="fas fa-clipboard-list"></i>
-                            <span th:text="${observacionDiaria.id != null} ? 'Editar Observación Diaria' : 'Nueva Observación Diaria'">
-                                Nueva Observación Diaria
-                            </span>
+                            <span>Observación Diaria - Vista de Tutor</span>
                         </h3>
                     </div>
                     <div class="card-body p-4">
-                        <form th:action="@{/alumno/observaciondiaria/guardar}" 
+                        <form th:action="@{/tutorpracticas/observaciondiaria/guardar}" 
                               th:object="${observacionDiaria}" 
                               method="post">
                             
                             <input type="hidden" th:field="*{id}" />
                             
-                            <!-- Info del Alumno -->
+                            <!-- Info del Alumno y Tutor -->
                             <div class="row mb-4">
-                                <div class="col-12">
+                                <div class="col-md-6">
                                     <div class="alert alert-info">
                                         <i class="fas fa-user-graduate"></i>
                                         <strong>Alumno:</strong> 
                                         <span th:text="${alumnoActual.nombre + ' ' + alumnoActual.apellidos}"></span>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="alert alert-secondary">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                        <strong>Tutor:</strong> 
+                                        <span th:text="${tutorActual.nombre + ' ' + tutorActual.apellidos}"></span>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <!-- Fecha y Horas -->
+                            <!-- Fecha y Horas (SOLO LECTURA para el tutor) -->
                             <div class="row mb-4">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <label for="fecha" class="form-label fw-bold">
-                                        <i class="fas fa-calendar"></i> Fecha <span class="text-danger">*</span>
+                                        <i class="fas fa-calendar"></i> Fecha
                                     </label>
-                                   <input 	type="date"
-       										class="form-control bg-light"
-       										id="fecha"
-       										name="fecha"
-       										th:value="${observacionDiaria.fecha != null ? observacionDiaria.fecha.toString() : #temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
-       										readonly
-       										required />
+                                    <input type="date"
+                                           class="form-control bg-light"
+                                           id="fecha"
+                                           th:value="${observacionDiaria.fecha != null ? observacionDiaria.fecha.toString() : ''}"
+                                           readonly
+                                           disabled />
                                 </div>
                                 
                                 <div class="col-md-6">
@@ -55,44 +59,43 @@
                                         <i class="fas fa-clock"></i> Horas Realizadas
                                     </label>
                                     <input type="number" 
-                                           class="form-control" 
-                                           id="horasRealizadas" 
-                                           name="horasRealizadas"
+                                           class="form-control bg-light" 
+                                           id="horasRealizadas"
                                            th:value="${observacionDiaria.horasRealizadas}"
-                                           min="0"
-                                           max="24"
-                                           step="0.5"
-                                           placeholder="Número de horas" />
+                                           readonly
+                                           disabled />
                                 </div>
                             </div>
                             
-                            <!-- Actividades -->
+                            <!-- Actividades (SOLO LECTURA) -->
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <label for="actividades" class="form-label fw-bold">
                                         <i class="fas fa-tasks"></i> Actividades Realizadas
+                                        <small class="text-muted">(Completado por el alumno)</small>
                                     </label>
-                                    <textarea class="form-control" 
-                                              id="actividades" 
-                                              name="actividades"
+                                    <textarea class="form-control bg-light" 
+                                              id="actividades"
                                               rows="4"
                                               th:text="${observacionDiaria.actividades}"
-                                              placeholder="Descripción de las actividades realizadas durante el día..."></textarea>
+                                              readonly
+                                              disabled></textarea>
                                 </div>
                             </div>
                             
-                            <!-- Explicaciones -->
+                            <!-- Explicaciones (SOLO LECTURA) -->
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <label for="explicaciones" class="form-label fw-bold">
                                         <i class="fas fa-info-circle"></i> Explicaciones
+                                        <small class="text-muted">(Completado por el alumno)</small>
                                     </label>
-                                    <textarea class="form-control" 
-                                              id="explicaciones" 
-                                              name="explicaciones"
+                                    <textarea class="form-control bg-light" 
+                                              id="explicaciones"
                                               rows="4"
                                               th:text="${observacionDiaria.explicaciones}"
-                                              placeholder="Explicaciones adicionales sobre el trabajo realizado..."></textarea>
+                                              readonly
+                                              disabled></textarea>
                                 </div>
                             </div>
                             
@@ -101,27 +104,30 @@
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <label for="observacionesAlumno" class="form-label fw-bold">
                                         <i class="fas fa-user-graduate"></i> Observaciones del Alumno
+                                        <small class="text-muted">(Solo lectura)</small>
                                     </label>
-                                    <textarea class="form-control" 
-                                              id="observacionesAlumno" 
-                                              name="observacionesAlumno"
+                                    <textarea class="form-control bg-light" 
+                                              id="observacionesAlumno"
                                               rows="4"
                                               th:text="${observacionDiaria.observacionesAlumno}"
-                                              placeholder="Comentarios y reflexiones del alumno..."></textarea>
+                                              readonly
+                                              disabled></textarea>
                                 </div>
                                 
                                 <div class="col-md-6">
                                     <label for="observacionesTutor" class="form-label fw-bold">
                                         <i class="fas fa-chalkboard-teacher"></i> Observaciones del Tutor
+                                        <small class="text-success">(Editable)</small>
                                     </label>
-                                    <textarea class="form-control" 
+                                    <textarea class="form-control border-success" 
                                               id="observacionesTutor" 
                                               name="observacionesTutor"
                                               rows="4"
                                               th:text="${observacionDiaria.observacionesTutor}"
-                                              placeholder="El tutor aún no ha dejado observaciones..."
-                                              readonly
-                                              disabled></textarea>
+                                              placeholder="Añade tus observaciones como tutor de prácticas..."></textarea>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-pen"></i> Este es el único campo que puedes editar
+                                    </small>
                                 </div>
                             </div>
                             
@@ -129,12 +135,11 @@
                             <div class="row mt-4">
                                 <div class="col-12">
                                     <div class="d-flex gap-2">
-                                        <button type="submit" class="btn btn-primary px-4">
-                                            <i class="fas fa-save"></i>
-                                            <span th:text="${observacionDiaria.id != null} ? 'Actualizar' : 'Guardar'">Guardar</span>
+                                        <button type="submit" class="btn btn-success px-4">
+                                            <i class="fas fa-save"></i> Guardar Observaciones del Tutor
                                         </button>
-                                        <a th:href="@{/alumno/observaciondiaria/listar}" class="btn btn-secondary px-4">
-                                            <i class="fas fa-times"></i> Cancelar
+                                        <a th:href="@{/tutorpracticas/observaciondiaria/listar}" class="btn btn-secondary px-4">
+                                            <i class="fas fa-arrow-left"></i> Volver al Listado
                                         </a>
                                     </div>
                                 </div>

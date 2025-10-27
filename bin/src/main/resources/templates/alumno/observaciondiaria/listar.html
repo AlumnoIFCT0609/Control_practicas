@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="content">
+        <div class="container-fluid">
+            <!-- Alertas -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> <span th:text="${mensaje}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span>Mis Observaciones Diarias</span>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Información del Alumno -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-user-graduate"></i>
+                                        <strong>Alumno:</strong> 
+                                        <span th:text="${alumnoActual.nombre + ' ' + alumnoActual.apellidos}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Botón para añadir nueva observación -->
+                            <div class="mb-3">
+                                <a th:href="@{/alumno/observaciondiaria/nuevo}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Nueva Observación Diaria
+                                </a>
+                            </div>
+                            
+                            <!-- Mensaje si no hay observaciones -->
+                            <div th:if="${!tieneObservaciones}" class="alert alert-warning">
+                                <i class="fas fa-info-circle"></i> Aún no tienes observaciones diarias registradas. 
+                                Pulsa el botón "Nueva Observación Diaria" para crear tu primera observación.
+                            </div>
+                            
+                            <!-- Tabla de observaciones -->
+                            <div th:if="${tieneObservaciones}">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th><i class="fas fa-calendar"></i> Fecha</th>
+                                                <th><i class="fas fa-clock"></i> Horas</th>
+                                                <th><i class="fas fa-tasks"></i> Actividades</th>
+                                                <th><i class="fas fa-comment"></i> Observaciones</th>
+                                                <th class="text-center"><i class="fas fa-cogs"></i> Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="obs : ${observaciones}">
+                                                <td>
+                                                    <strong th:text="${#temporals.format(obs.fecha, 'dd/MM/yyyy')}"></strong>
+                                                    <!-- Badge si es de hoy (editable) -->
+                                                    <span th:if="${#temporals.format(obs.fecha, 'yyyy-MM-dd') == #temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
+                                                          class="badge bg-success ms-2">
+                                                        <i class="fas fa-edit"></i> Editable
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${obs.horasRealizadas != null}" 
+                                                          th:text="${obs.horasRealizadas + ' h'}">
+                                                    </span>
+                                                    <span th:unless="${obs.horasRealizadas != null}" 
+                                                          class="text-muted">-</span>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${obs.actividades != null and !#strings.isEmpty(obs.actividades)}" 
+                                                          th:text="${#strings.abbreviate(obs.actividades, 80)}">
+                                                    </span>
+                                                    <span th:unless="${obs.actividades != null and !#strings.isEmpty(obs.actividades)}" 
+                                                          class="text-muted">Sin actividades</span>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${obs.observacionesAlumno != null and !#strings.isEmpty(obs.observacionesAlumno)}" 
+                                                          th:text="${#strings.abbreviate(obs.observacionesAlumno, 80)}">
+                                                    </span>
+                                                    <span th:unless="${obs.observacionesAlumno != null and !#strings.isEmpty(obs.observacionesAlumno)}" 
+                                                          class="text-muted">Sin observaciones</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group" role="group">
+
+                                                        <!-- Botón Editar (solo visible si la fecha es HOY) -->
+                                                        <a th:if="${#temporals.format(obs.fecha, 'yyyy-MM-dd') == #temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
+                                                           th:href="@{/alumno/observaciondiaria/editar/{id}(id=${obs.id})}" 
+                                                           class="btn btn-sm btn-warning" 
+                                                           title="Editar (solo disponible el día de creación)">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        
+                                                        <!-- Icono bloqueado si no es editable -->
+                                                        <button th:unless="${#temporals.format(obs.fecha, 'yyyy-MM-dd') == #temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
+                                                                type="button"
+                                                                class="btn btn-sm btn-secondary" 
+                                                                disabled
+                                                                title="No editable (solo se puede editar el día de creación)">
+                                                            <i class="fas fa-lock"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
