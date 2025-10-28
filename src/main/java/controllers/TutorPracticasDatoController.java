@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import models.Alumno;
+import models.Curso;
+import models.Empresa;
 import models.ObservacionDiaria;
 import models.TutorPracticas;
 import models.Usuario;
@@ -24,6 +26,8 @@ import repositories.ObservacionDiariaRepository;
 import repositories.TutorPracticasRepository;
 import repositories.UsuarioRepository;
 import services.AlumnoService;
+import services.CursoService;
+import services.EmpresaService;
 import services.ObservacionDiariaService;
 import services.TutorPracticasService;
 
@@ -38,12 +42,17 @@ public class TutorPracticasDatoController {
     private final UsuarioRepository usuarioRepository;
     private final TutorPracticasRepository tutorPracticasRepository;
     private final TutorPracticasService tutorPracticasService;
+    private final CursoService cursoService;
+    private final EmpresaService empresaService;
+    
     
     public TutorPracticasDatoController(
             ObservacionDiariaRepository observacionDiariaRepository,
             ObservacionDiariaService observacionDiariaService,
             AlumnoRepository alumnoRepository,
             AlumnoService alumnoService,
+            CursoService cursoService,
+            EmpresaService empresaService,
             UsuarioRepository usuarioRepository,
             TutorPracticasRepository tutorPracticasRepository,
             TutorPracticasService tutorPracticasService) {
@@ -54,6 +63,8 @@ public class TutorPracticasDatoController {
         this.usuarioRepository = usuarioRepository;
         this.tutorPracticasRepository = tutorPracticasRepository;
         this.tutorPracticasService = tutorPracticasService;
+        this.cursoService=cursoService;
+        this.empresaService=empresaService;
     }
     
     // Método auxiliar para obtener el tutor de prácticas autenticado
@@ -65,46 +76,7 @@ public class TutorPracticasDatoController {
         return tutorPracticasRepository.findById(user.getReferenceId())
             .orElseThrow(() -> new RuntimeException("Tutor de prácticas no encontrado"));
     }
-    /*
-    @GetMapping("/observaciondiaria/listar")
-    public String listar(
-            @RequestParam(required = false) Long alumnoId,
-            Model model, 
-            Authentication authentication) {
-        
-        TutorPracticas tutor = getTutorAutenticado(authentication);
-        
-        // Obtener todos los alumnos del tutor
-        List<Alumno> alumnosDelTutor = alumnoRepository.findByTutorPracticas(tutor);
-        
-        List<ObservacionDiaria> observaciones;
-        Alumno alumnoSeleccionado = null;
-        
-        if (alumnoId != null) {
-            // Filtrar por alumno específico
-            alumnoSeleccionado = alumnoRepository.findById(alumnoId)
-                .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
-            
-            // Verificar que el alumno pertenece al tutor
-            if (!alumnoSeleccionado.getTutorPracticas().getId().equals(tutor.getId())) {
-                throw new RuntimeException("No tiene permisos para ver las observaciones de este alumno");
-            }
-            
-            observaciones = observacionDiariaService.listarPorAlumnoOrdenadas(alumnoId);
-        } else {
-            // Mostrar observaciones de todos sus alumnos
-            observaciones = observacionDiariaRepository.findByAlumnoInOrderByFechaDesc(alumnosDelTutor);
-        }
-        
-        model.addAttribute("observaciones", observaciones);
-        model.addAttribute("alumnosDelTutor", alumnosDelTutor);
-        model.addAttribute("alumnoSeleccionado", alumnoSeleccionado);
-        model.addAttribute("tutorActual", tutor);
-        model.addAttribute("tieneObservaciones", !observaciones.isEmpty());
-        model.addAttribute("viewName", "tutorpracticas/observaciondiaria/listar");
-        return "layout";
-    }
-    */
+   
     
     
     @GetMapping("/observaciondiaria/listar")
@@ -211,4 +183,62 @@ public class TutorPracticasDatoController {
         }
         return "redirect:/tutorpracticas/observaciondiaria/listar";
     }
+    
+    @GetMapping("/alumno")
+    public String listarAlumnosDelTutor(Model model, 
+    		Authentication authentication,
+    		RedirectAttributes redirectAttributes) {
+        try {
+            TutorPracticas tutor = getTutorAutenticado(authentication);
+
+            List<Alumno> alumnosDelTutor = alumnoRepository.findByTutorPracticas(tutor);
+            model.addAttribute("alumnos", alumnosDelTutor);
+            model.addAttribute("mostrarBotonNuevo", false);
+
+            model.addAttribute("alumnosDelTutor", alumnosDelTutor);
+            model.addAttribute("tutorActual", tutor);
+            model.addAttribute("viewName", "admin/alumno/listar");
+            return "layout";
+
+        } catch (Exception e) {
+        	 redirectAttributes.addFlashAttribute("error", "Error al guardar las observaciones: " + e.getMessage());
+             e.printStackTrace();
+             model.addAttribute("viewName", "admin/alumno/listar");
+             return "layout";
+        }
+    }
+    @GetMapping("/alumno/editar/{id}")
+    public String editarAlumnoComoTutor(@PathVariable Long id, 
+    		Model model, 
+    		Authentication authentication,
+    		RedirectAttributes redirectAttributes) {
+        try {
+            TutorPracticas tutor = getTutorAutenticado(authentication);
+
+            Alumno alumno = alumnoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
+
+            // Verificar que el alumno pertenece al tutor
+            if (!alumno.getTutorPracticas().getId().equals(tutor.getId())) {
+                throw new RuntimeException("No tiene permisos para editar este alumno");
+            }
+            List<Curso> cursos = cursoService.listarTodos();
+            List<Empresa> empresas = empresaService.listarTodas();
+            model.addAttribute("alumno", alumno);
+            model.addAttribute("modo", "editar");
+            model.addAttribute("viewName", "admin/alumno/form");
+            return "layout";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar las observaciones: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("viewName", "admin/alumno/listar");
+            return "layout";
+        }
+
+    }
+
+    
+    
+    
 }

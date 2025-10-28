@@ -5,9 +5,12 @@
                 <i class="bi bi-people-fill me-2"></i>
                 Gestión de Alumnos
             </h2>
-            <a th:href="@{/admin/alumno/nuevo}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Nuevo Alumno
-            </a>
+           <th:block th:if="${mostrarBotonNuevo}">
+    				<a th:href="@{/admin/alumno/nuevo}" class="btn btn-primary">
+        			<i class="bi bi-plus-circle"></i> Nuevo Alumno
+    				</a>
+			</th:block>
+
         </div>
 
         <!-- Mensajes de feedback -->
@@ -64,6 +67,7 @@
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
                                         <!-- Botón Crear Usuario - Solo visible si no tiene usuario -->
+                                       <th:block th:if="${mostrarBotonNuevo}">
                                         <a th:if="${!alumno.tieneUsuario}" 
                                            th:href="@{/admin/alumno/crear-usuario/{id}(id=${alumno.id})}" 
                                            class="btn btn-sm btn-info" 
@@ -82,7 +86,16 @@
                                            title="Eliminar"
                                            onclick="return confirm('¿Está seguro de eliminar este alumno?')">
                                             <i class="bi bi-trash"></i>
+                                         
                                         </a>
+                                        </th:block>
+                                        <th:block th:unless="${mostrarBotonNuevo}">
+    										<a th:href="@{/tutorpracticas/alumno/editar/{id}(id=${alumno.id})}" 
+       										   class="btn btn-sm btn-warning" 
+       										   title="Editar perfil del alumno">
+        									   <i class="bi bi-pencil-square"></i>
+    									    </a>
+										</th:block>
                                     </div>
                                 </td>
                             </tr>

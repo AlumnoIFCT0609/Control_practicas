@@ -1,0 +1,163 @@
+<div th:fragment="content">
+    <div class="container-fluid py-4">
+        <!-- Alertas -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="card shadow">
+                    <div class="card-header"
+                         th:classappend="${modo == 'editar'} ? ' bg-warning text-dark' : ' bg-primary text-white'">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span th:text="${modo == 'editar'} ? 'Editar Observación Diaria' : 'Detalle de Observación Diaria'"></span>
+                        </h3>
+                    </div>
+
+                    <div class="card-body p-4">
+
+                        <!-- FORMULARIO -->
+                      <form th:action="@{/admin/alumno/observaciondiaria/guardar}"
+      							th:object="${observacionDiaria}"
+      							method="post">
+
+                            <input type="hidden" th:field="*{id}" />
+
+                            <!-- Info del Alumno -->
+                            <div class="row mb-4" th:if="*{alumno != null}">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-user-graduate"></i>
+                                        <strong>Alumno:</strong>
+                                        <span th:text="*{alumno.nombre + ' ' + alumno.apellidos}"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fecha y Horas -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-calendar"></i> Fecha
+                                    </label>
+                                    <input type="date" 
+                                    	  	id="fecha"
+       										name="fecha"
+       									    th:value="${observacionDiaria.fecha != null ? observacionDiaria.fecha.toString() : ''}"
+       									    class="form-control"/>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-clock"></i> Horas Realizadas
+                                    </label>
+                                    <input type="number" th:field="*{horasRealizadas}"
+                                           class="form-control"/>
+                                </div>
+                            </div>
+
+                            <!-- Actividades -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-tasks"></i> Actividades Realizadas
+                                    </label>
+                                    <textarea th:field="*{actividades}"
+                                              class="form-control"
+                                              rows="4"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Explicaciones -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-info-circle"></i> Explicaciones
+                                    </label>
+                                    <textarea th:field="*{explicaciones}"
+                                              class="form-control"
+                                              rows="4"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Observaciones -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-user-graduate"></i> Observaciones del Alumno
+                                    </label>
+                                    <textarea th:field="*{observacionesAlumno}"
+                                              class="form-control"
+                                              rows="4"></textarea>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-chalkboard-teacher"></i> Observaciones del Tutor
+                                    </label>
+                                    <textarea th:field="*{observacionesTutor}"
+                                              class="form-control"
+                                              rows="4"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="d-flex gap-2">
+                                       
+                                       <!-- <a th:if="${modo != 'editar'}"
+                                           th:href="@{/admin/alumno/observaciondiaria/{id}/editar(id=*{id})}"
+                                           class="btn btn-warning px-4">
+                                            <i class="fas fa-edit"></i> Guardar
+                                        </a> -->
+                                         <button type="submit" class="btn btn-primary">
+                                    			<i class="bi bi-save"></i> Guardar
+                                		</button>
+
+                                        <button th:if="${modo != 'editar'}" type="button"
+                                                class="btn btn-danger px-4"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#deleteModal' + *{id}">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+
+                                        <a th:href="@{/admin/alumno/observaciondiaria}"
+                                           class="btn btn-secondary px-4">
+                                            <i class="fas fa-arrow-left"></i> Volver
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmación para eliminar -->
+        <div class="modal fade" th:id="'deleteModal' + *{id}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar Eliminación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Está seguro de que desea eliminar esta observación diaria?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form th:action="@{/admin/alumno/observaciondiaria/{id}/eliminar(id=*{id})}"
+                              method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
