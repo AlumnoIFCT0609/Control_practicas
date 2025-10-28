@@ -13,7 +13,9 @@
                         </h3>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/admin/alumno/guardar}" th:object="${alumno}" method="post">
+                        <form th:action="${esTutorPracticas ? '/tutorpracticas/alumno/guardar' : '/admin/alumno/guardar'}" 
+						th:object="${alumno}" 
+						method="post">
                             <input type="hidden" th:field="*{id}">
                             
                             <!-- Datos personales -->
@@ -38,7 +40,6 @@
                                            required>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
@@ -57,7 +58,6 @@
                                            required>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
@@ -66,7 +66,6 @@
        									name="fechaNacimiento"
        									th:value="${alumno.fechaNacimiento != null ? alumno.fechaNacimiento.toString() : ''}"
        									class="form-control"/>
-
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="telefono" class="form-label">Teléfono</label>
@@ -77,28 +76,30 @@
                                            placeholder="Telefono">
                                 </div>
                             </div>
-
-                            <!-- Datos académicos y de prácticas -->
+                            <!-- Datos académicos y de prácticas -->		
                             <h5 class="border-bottom pb-2 mb-3 mt-4">Datos Académicos y Prácticas</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="curso" class="form-label">Curso <span class="text-danger">*</span></label>
-							<select class="form-select" id="curso" th:field="*{cursoId}" required>
-    							<option value="">Seleccione un curso</option>
+							<select class="form-select" id="curso" 
+									th:field="*{cursoId}"
+									th:disabled="${esTutorPracticas}"  
+									required>
+								<option value="" th:if="${!esTutorPracticas}">Seleccione un curso</option>
     							<option th:each="curso : ${cursos}"
             						th:value="${curso.id}"
             						th:text="${curso.nombre}"
             						th:selected="${alumno.curso != null and alumno.curso.id == curso.id}">
     							</option>
-							</select>
-											
-				
+							</select>			
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="empresa" class="form-label">Empresa</label>
-                                    <select class="form-select" id="empresa" th:field="*{empresaId}">
-
-                                        <option value="">Seleccione una empresa</option>
+                                    <select class="form-select" id="empresa" 
+									th:field="*{empresaId}"
+									th:disabled="${esTutorPracticas}" >
+										<option value="" th:if="${!esTutorPracticas}">Seleccione una empresa</option>
+                                        
                                         <option th:each="empresa : ${empresas}" 
                                                 th:value="${empresa.id}" 
                                                 th:text="${empresa.nombre}"
@@ -107,20 +108,20 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="tutorPracticas" class="form-label">Tutor de Prácticas</label>
-                                    <select class="form-select" id="tutorPracticas" th:field="*{tutorPracticasId}">
-
-                                        <option value="">Seleccione un tutor</option>
+                                    <select class="form-select" id="tutorPracticas" 
+											th:field="*{tutorPracticasId}" 
+											th:disabled="${esTutorPracticas}">
+										<option value="" th:if="${!esTutorPracticas}">Seleccione un tutor</option>
                                         <option th:each="tutor : ${tutores}" 
                                                 th:value="${tutor.id}" 
                                                 th:text="${tutor.nombre + ' ' + tutor.apellidos}"
                                                 th:selected="${alumno.tutorPracticas != null and alumno.tutorPracticas.id == tutor.id}">
                                         </option>
                                     </select>
-                                </div>
+                                </div>					
                                 <div class="col-md-6 mb-3">
                                     <label for="duracionPracticas" class="form-label">Duración Prácticas (horas)</label>
                                     <input type="number" 
@@ -130,7 +131,6 @@
                                            placeholder="Horas">
                                 </div>
                             </div>
-
                             <div class="mb-3">
                                 <label for="horario" class="form-label">Horario <span class="text-danger">*</span></label>
                                 <input type="text" 
@@ -140,11 +140,9 @@
                                        placeholder="Horario"
                                        required>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaInicio" class="form-label">Fecha Inicio <span class="text-danger">*</span></label>
-                                    
                                     <input type="date"
        											class="form-control"
        											id="fechaInicio"
@@ -178,9 +176,10 @@
 
                             <!-- Botones -->
                             <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/admin/alumno/listar}" class="btn btn-secondary">
-                                    <i class="bi bi-arrow-left"></i> Cancelar
-                                </a>
+								<a th:href="${esTutorPracticas ? '/tutorpracticas/alumno' : '/admin/alumno/listar'}" 
+								   class="btn btn-secondary">
+								    <i class="bi bi-arrow-left"></i> Cancelar
+								</a>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-save"></i> Guardar
                                 </button>

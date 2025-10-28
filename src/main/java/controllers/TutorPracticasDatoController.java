@@ -22,6 +22,8 @@ import models.ObservacionDiaria;
 import models.TutorPracticas;
 import models.Usuario;
 import repositories.AlumnoRepository;
+import repositories.CursoRepository;
+import repositories.EmpresaRepository;
 import repositories.ObservacionDiariaRepository;
 import repositories.TutorPracticasRepository;
 import repositories.UsuarioRepository;
@@ -41,9 +43,8 @@ public class TutorPracticasDatoController {
     private final AlumnoService alumnoService;
     private final UsuarioRepository usuarioRepository;
     private final TutorPracticasRepository tutorPracticasRepository;
-    private final TutorPracticasService tutorPracticasService;
-    private final CursoService cursoService;
-    private final EmpresaService empresaService;
+    private final CursoRepository cursoRepository;
+    private final EmpresaRepository empresaRepository;
     
     
     public TutorPracticasDatoController(
@@ -51,8 +52,8 @@ public class TutorPracticasDatoController {
             ObservacionDiariaService observacionDiariaService,
             AlumnoRepository alumnoRepository,
             AlumnoService alumnoService,
-            CursoService cursoService,
-            EmpresaService empresaService,
+            CursoRepository cursoRepository,
+            EmpresaRepository empresaRepository,
             UsuarioRepository usuarioRepository,
             TutorPracticasRepository tutorPracticasRepository,
             TutorPracticasService tutorPracticasService) {
@@ -62,9 +63,8 @@ public class TutorPracticasDatoController {
         this.alumnoService = alumnoService;
         this.usuarioRepository = usuarioRepository;
         this.tutorPracticasRepository = tutorPracticasRepository;
-        this.tutorPracticasService = tutorPracticasService;
-        this.cursoService=cursoService;
-        this.empresaService=empresaService;
+        this.cursoRepository=cursoRepository;
+        this.empresaRepository=empresaRepository;
     }
     
     // Método auxiliar para obtener el tutor de prácticas autenticado
@@ -208,34 +208,111 @@ public class TutorPracticasDatoController {
         }
     }
     @GetMapping("/alumno/editar/{id}")
-    public String editarAlumnoComoTutor(@PathVariable Long id, 
-    		Model model, 
-    		Authentication authentication,
-    		RedirectAttributes redirectAttributes) {
+    public String editarAlumnoComoTutor(@PathVariable Long id,
+                                        Model model,
+                                        Authentication authentication,
+                                        RedirectAttributes redirectAttributes) {
         try {
             TutorPracticas tutor = getTutorAutenticado(authentication);
 
             Alumno alumno = alumnoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
 
-            // Verificar que el alumno pertenece al tutor
             if (!alumno.getTutorPracticas().getId().equals(tutor.getId())) {
                 throw new RuntimeException("No tiene permisos para editar este alumno");
             }
-            List<Curso> cursos = cursoService.listarTodos();
-            List<Empresa> empresas = empresaService.listarTodas();
-            model.addAttribute("alumno", alumno);
+            
+            List<Curso> cursos = alumno.getCurso() != null 
+                ? List.of(alumno.getCurso()) 
+                : List.of();
+                
+            List<Empresa> empresas = alumno.getEmpresa() != null 
+                ? List.of(alumno.getEmpresa()) 
+                : List.of();
+                
+            List<TutorPracticas> tutores = List.of(tutor);
+            
+            model.addAttribute("alumno", alumno); // ⚠️ CRÍTICO - debe ser "alumno" exactamente
+            model.addAttribute("cursos", cursos);
+            model.addAttribute("empresas", empresas);
+            model.addAttribute("tutores", tutores);
+            model.addAttribute("horario", alumno.getHorario());
             model.addAttribute("modo", "editar");
+            model.addAttribute("esTutorPracticas", true);
             model.addAttribute("viewName", "admin/alumno/form");
             return "layout";
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al guardar las observaciones: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error al cargar el alumno: " + e.getMessage());
             e.printStackTrace();
-            model.addAttribute("viewName", "admin/alumno/listar");
-            return "layout";
+            return "redirect:/tutorpracticas/alumno/listar";
         }
-
+    }    
+    @PostMapping("/alumno/guardar")
+    public String guardar(@ModelAttribute Alumno alumno,
+                         Authentication authentication,
+                         RedirectAttributes redirectAttributes) {
+        try {
+            TutorPracticas tutor = getTutorAutenticado(authentication);
+            
+            // DEBUG: Verificar qué llega
+            System.out.println("Alumno ID: " + alumno.getId());
+            System.out.println("Curso ID: " + alumno.getCursoId());
+            System.out.println("Empresa ID: " + alumno.getEmpresaId());
+            System.out.println("Tutor ID: " + alumno.getTutorPracticasId());
+            
+            // Validar que el alumno pertenece al tutor (si está editando)
+            if (alumno.getId() != null) {
+                Alumno alumnoExistente = alumnoRepository.findById(alumno.getId())
+                    .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
+                    
+                if (!alumnoExistente.getTutorPracticas().getId().equals(tutor.getId())) {
+                    throw new RuntimeException("No tiene permisos para editar este alumno");
+                }
+                
+                // Si cursoId es null, mantener el curso existente
+                if (alumno.getCursoId() == null && alumnoExistente.getCurso() != null) {
+                    alumno.setCurso(alumnoExistente.getCurso());
+                }
+                
+                // Si empresaId es null, mantener la empresa existente
+                if (alumno.getEmpresaId() == null && alumnoExistente.getEmpresa() != null) {
+                    alumno.setEmpresa(alumnoExistente.getEmpresa());
+                }
+            }
+            
+            // Cargar el curso desde la BD si viene el ID
+            if (alumno.getCursoId() != null && alumno.getCursoId() > 0) {
+                Curso curso = cursoRepository.findById(alumno.getCursoId())
+                    .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+                alumno.setCurso(curso);
+            }
+            
+            // Validar que al final tenga curso
+            if (alumno.getCurso() == null) {
+                redirectAttributes.addFlashAttribute("error", "Debe seleccionar un curso");
+                return "redirect:/tutorpracticas/alumno/editar/" + alumno.getId();
+            }
+            
+            // Cargar la empresa desde la BD si existe
+            if (alumno.getEmpresaId() != null && alumno.getEmpresaId() > 0) {
+                Empresa empresa = empresaRepository.findById(alumno.getEmpresaId())
+                    .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
+                alumno.setEmpresa(empresa);
+            }
+            
+            // Mantener el tutor de prácticas (él mismo)
+            alumno.setTutorPracticas(tutor);
+            
+            alumnoService.guardar(alumno);
+            redirectAttributes.addFlashAttribute("success", "Alumno actualizado exitosamente");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el alumno: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return "redirect:/tutorpracticas/alumno";
     }
 
     
