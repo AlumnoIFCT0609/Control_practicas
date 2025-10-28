@@ -12,6 +12,7 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
     List<Curso> findByTutorCurso_Id(Long tutorCursoId);
     List<Curso> findByCodigo(String codigo);
     
+    
  // Nueva consulta para obtener el número de alumnos por curso
     @Query("SELECT COUNT(a) FROM Alumno a WHERE a.curso.id = :cursoId")
     long contarAlumnosPorCurso(Long cursoId);

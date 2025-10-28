@@ -239,10 +239,9 @@ public class AlumnoController {
         model.addAttribute("cursos", cursos);
         model.addAttribute("empresas", empresas);
         model.addAttribute("tutores", tutores);
+        model.addAttribute("esTutorPracticas", false);
         model.addAttribute("viewName", "admin/alumno/form");
         return "layout";
-
-        //return "admin/alumno/form";
     }
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
