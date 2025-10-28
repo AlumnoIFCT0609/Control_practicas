@@ -3,6 +3,13 @@ package controllers;
 import models.*;
 import repositories.*;
 import services.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 //import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 //import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
@@ -98,6 +105,8 @@ public class AlumnoController {
     @GetMapping("/listar")
     public String listar(Model model) {
         List<Alumno> alumnos = alumnoService.listarTodos();
+        model.addAttribute("mostrarBotonNuevo", true);
+
         model.addAttribute("alumnos", alumnos);
         model.addAttribute("viewName", "admin/alumno/listar");
         return "layout";
@@ -118,8 +127,89 @@ public class AlumnoController {
     @GetMapping("/observaciondiaria")
     public String MostrarObservacionExistente(Model model) {
         model.addAttribute("ObservacionDiaria", observacionDiariaRepository.findAll());
-        model.addAttribute("viewName", "admin/alumno/observaciones");
+        model.addAttribute("viewName", "admin/alumno/observaciondiaria/observaciones");
         return "layout";
+    }
+    
+    @GetMapping("/observaciondiaria/{id}")
+    public String MostrarObservacionPorId(@PathVariable Long id, Model model) {
+        ObservacionDiaria observacion = observacionDiariaRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                                                           "Observación no encontrada"));
+        
+        model.addAttribute("ObservacionDiaria", observacion);
+        
+        // ⭐ AÑADE ESTO: pasar el alumno al modelo
+        if (observacion.getAlumno() != null) {
+            model.addAttribute("alumno", observacion.getAlumno());
+        }
+        
+        model.addAttribute("viewName", "admin/alumno/observaciondiaria/form");
+        return "layout";
+    }
+    
+    
+    @GetMapping("/observaciondiaria/{id}/editar")
+    public String EditarObservacion(@PathVariable Long id, Model model) {
+        // Buscar la observación
+        ObservacionDiaria observacion = observacionDiariaRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                                                           "Observación no encontrada"));
+        
+        // Añadir al modelo para el formulario
+        model.addAttribute("observacionDiaria", observacion);
+        
+        // Añadir el alumno si existe (necesario para el form.html)
+        if (observacion.getAlumno() != null) {
+            model.addAttribute("alumnoActual", observacion.getAlumno());
+        }
+        
+        // Ruta de la vista (ajústala según tu estructura de carpetas)
+        model.addAttribute("viewName", "admin/alumno/observaciondiaria/form");
+        
+        return "layout";
+    }
+
+    @PostMapping("/observaciondiaria/guardar")
+    public String GuardarObservacion(@ModelAttribute ObservacionDiaria observacionDiaria, 
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            // Si es edición, mantener datos originales necesarios
+            if (observacionDiaria.getId() != null) {
+                ObservacionDiaria existente = observacionDiariaRepository.findById(observacionDiaria.getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                
+                // Mantener el alumno original
+                observacionDiaria.setAlumno(existente.getAlumno());
+            }
+            
+            // Guardar
+            observacionDiariaRepository.save(observacionDiaria);
+            
+            redirectAttributes.addFlashAttribute("success", "Observación guardada correctamente");
+            return "redirect:/admin/alumno/observaciondiaria";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar: " + e.getMessage());
+            return "redirect:/admin/alumno/observaciondiaria";
+        }
+    }
+    @PostMapping("/observaciondiaria/{id}/eliminar")
+    public String EliminarObservacion(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            ObservacionDiaria observacion = observacionDiariaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                                                               "Observación no encontrada"));
+            
+            observacionDiariaRepository.delete(observacion);
+            
+            redirectAttributes.addFlashAttribute("success", "Observación eliminada correctamente");
+            return "redirect:/admin/alumno/observaciondiaria";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar: " + e.getMessage());
+            return "redirect:/admin/alumno/observaciondiaria";
+        }
     }
     
     
