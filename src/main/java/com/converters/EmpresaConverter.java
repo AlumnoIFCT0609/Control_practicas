@@ -2,7 +2,8 @@ package com.converters;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import models.Empresa;
+
+import com.control.practicas.models.Empresa;
 
 @Component
 public class EmpresaConverter implements Converter<String, Empresa> {

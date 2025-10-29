@@ -2,7 +2,8 @@ package com.converters;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import models.TutorPracticas;
+
+import com.control.practicas.models.TutorPracticas;
 
 @Component
 public class TutorPracticasConverter implements Converter<String, TutorPracticas> {
