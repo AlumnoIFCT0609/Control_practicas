@@ -8,12 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "repositories")
-@EntityScan(basePackages = "models")
+@EnableJpaRepositories(basePackages = "com.control.practicas.repositories")
+@EntityScan(basePackages = "com.control.practicas.models")
 @ComponentScan(basePackages = {
 		"com.control.practicas",
-		"services",
-		"controllers",
 		})
 public class ControlPracticasApplication extends SpringBootServletInitializer {
     

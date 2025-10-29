@@ -1,13 +1,14 @@
 package com.control.practicas.config;
 
 
-import models.*;
-import repositories.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.control.practicas.models.*;
+import com.control.practicas.repositories.*;
 
 import java.time.LocalDate;
 

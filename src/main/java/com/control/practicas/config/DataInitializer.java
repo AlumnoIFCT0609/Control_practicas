@@ -1,12 +1,13 @@
 package com.control.practicas.config;
 
-import models.Usuario;
-import repositories.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import com.control.practicas.models.Usuario;
+import com.control.practicas.repositories.UsuarioRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
