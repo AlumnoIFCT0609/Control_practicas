@@ -132,15 +132,34 @@ public class AlumnoDatoController {
 
     
     @GetMapping("/dashboard")
-    public String dashboard(Authentication authentication,
-    						Model model) {
+    public String dashboard(Authentication authentication, Model model) {
+        // 1️⃣ Obtener el email del alumno autenticado
+        String email = authentication.getName();
 
-        List<Alumno> alumnos = alumnoService.listarTodos();
-        model.addAttribute("alumnos", alumnos);
+        // 2️⃣ Buscar el alumno completo
+        Alumno alumno = alumnoService.findByEmailUsuario(email)
+                .orElseThrow(() -> new RuntimeException("Alumno no encontrado con email: " + email));
+
+        // 3️⃣ Opcional: cargar relaciones para la vista
+        // Esto asegura que curso, empresa y tutor no sean nulos en la vista
+        if (alumno.getCurso() == null) {
+            alumno.setCurso(new Curso()); // Evita NullPointerException en la vista
+        }
+        if (alumno.getEmpresa() == null) {
+            alumno.setEmpresa(new Empresa());
+        }
+        if (alumno.getTutorPracticas() == null) {
+            alumno.setTutorPracticas(new TutorPracticas());
+        }
+
+        // 4️⃣ Pasar los datos al modelo
+        model.addAttribute("alumno", alumno);
         model.addAttribute("pageTitle", "Dashboard Alumno");
-        model.addAttribute("viewName", "alumno/dashboard"); // Para que tu layout lo incluya
-        return "layout";  // O el nombre del template principal que uses
+        model.addAttribute("viewName", "alumno/dashboard"); // tu fragmento principal
+
+        return "layout"; // layout principal que incluye header y contenido
     }
+
     
     @GetMapping("/observaciondiaria/listar")
     public String listar(Model model, Authentication authentication) {

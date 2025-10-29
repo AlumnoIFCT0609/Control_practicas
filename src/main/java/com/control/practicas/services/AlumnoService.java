@@ -12,6 +12,7 @@ import com.control.practicas.models.Usuario.Rol;
 import com.control.practicas.repositories.AlumnoRepository;
 import com.control.practicas.repositories.CursoRepository;
 import com.control.practicas.repositories.EmpresaRepository;
+import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.TutorPracticasRepository;
 import com.control.practicas.repositories.UsuarioRepository;
 
@@ -28,10 +29,12 @@ public class AlumnoService {
     private final TutorPracticasRepository tutorPracticasRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
+    private final ObservacionDiariaRepository observacionDiariaRepository;
     
     public AlumnoService(AlumnoRepository alumnoRepository,
                         CursoRepository cursoRepository, 
                         EmpresaRepository empresaRepository,
+                        ObservacionDiariaRepository observacionDiariaRepository,
                         TutorPracticasRepository tutorPracticasRepository,
                         UsuarioService usuarioService,
                         UsuarioRepository usuarioRepository) {
@@ -41,6 +44,7 @@ public class AlumnoService {
         this.tutorPracticasRepository = tutorPracticasRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioService = usuarioService;
+        this.observacionDiariaRepository=observacionDiariaRepository;
     }
     
     @Transactional
@@ -141,6 +145,11 @@ public class AlumnoService {
             alumno.getId(),
             alumno.isActivo()
         );
+    }
+    
+    public int contarObservacionesPorAlumno(Alumno alumno) {
+        if (alumno == null) return 0;
+        return observacionDiariaRepository.findByAlumno_Id(alumno.getId()).size();
     }
 
     

@@ -39,12 +39,12 @@
                         <h5><i class="bi bi-book"></i> Mi Curso</h5>
                     </div>
                     <div class="card-body">
-                        <p th:if="${curso != null}">
+                        <p th:if="${alumno.curso != null}">
                             <strong>Nombre:</strong><br>
-                            <span th:text="${curso.nombre}"></span><br><br>
-                            <strong>Codigo:</strong> <span th:text="${curso.codigo}"></span>
+                            <span th:text="${alumno.curso.nombre}"></span><br><br>
+                            <strong>Codigo:</strong> <span th:text="${alumno.curso.codigo}"></span>
                         </p>
-                        <p th:if="${curso == null}" class="text-muted">No asignado</p>
+                        <p th:if="${alumno.curso == null}" class="text-muted">No asignado</p>
                     </div>
                 </div>
             </div>
@@ -55,12 +55,12 @@
                         <h5><i class="bi bi-building"></i> Mi Empresa</h5>
                     </div>
                     <div class="card-body">
-                        <p th:if="${empresa != null}">
+                        <p th:if="${alumno.empresa != null}">
                             <strong>Nombre:</strong><br>
-                            <span th:text="${empresa.nombre}"></span><br><br>
-                            <strong>Sector:</strong> <span th:text="${empresa.sector}"></span>
+                            <span th:text="${alumno.empresa.nombre}"></span><br><br>
+                            <strong>Sector:</strong> <span th:text="${alumno.empresa.sector}"></span>
                         </p>
-                        <p th:if="${empresa == null}" class="text-muted">No asignada</p>
+                        <p th:if="${alumno.empresa == null}" class="text-muted">No asignada</p>
                     </div>
                 </div>
             </div>
@@ -71,12 +71,12 @@
                         <h5><i class="bi bi-person-badge"></i> Mi Tutor</h5>
                     </div>
                     <div class="card-body">
-                        <p th:if="${tutorPracticas != null}">
+                        <p th:if="${alumno.tutorPracticas != null}">
                             <strong>Nombre:</strong><br>
-                            <span th:text="${tutorPracticas.nombre + ' ' + tutorPracticas.apellidos}"></span><br><br>
-                            <strong>Cargo:</strong> <span th:text="${tutorPracticas.cargo}"></span>
+                            <span th:text="${alumno.tutorPracticas.nombre + ' ' + alumno.tutorPracticas.apellidos}"></span><br><br>
+                            <strong>Cargo:</strong> <span th:text="${alumno.tutorPracticas.cargo}"></span>
                         </p>
-                        <p th:if="${tutorPracticas == null}" class="text-muted">No asignado</p>
+                        <p th:if="${alumno.tutorPracticas == null}" class="text-muted">No asignado</p>
                     </div>
                 </div>
             </div>
@@ -88,7 +88,7 @@
                     <div class="card-body text-center">
                         <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
                         <h3 th:text="${alumno != null and alumno.duracionPracticas != null ? alumno.duracionPracticas : 0}">0</h3>
-                        <p>Duración Prácticas (días)</p>
+                        <p>Duración Prácticas (Horas)</p>
                     </div>
                 </div>
             </div>
@@ -141,17 +141,19 @@
                                 </a>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <a href="#" class="btn btn-lg btn-outline-success w-100">
+
+                            <a th:href="@{/alumno/observaciondiaria/nuevo}" class="btn btn-lg btn-outline-success w-100">
                                     <i class="bi bi-plus-circle"></i><br>Nueva Observacion
-                                </a>
+                            </a>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <a href="#" class="btn btn-lg btn-outline-info w-100">
-                                    <i class="bi bi-clipboard-check"></i><br>Mis Evaluaciones
-                                </a>
-                            </div>
+    							<a th:href="@{/enconstruccion}" class="btn btn-lg btn-outline-info w-100">
+        							<i class="bi bi-clipboard-check"></i><br>Mis Evaluaciones
+    							</a>
+							</div>
+
                             <div class="col-md-3 mb-3">
-                                <a href="#" class="btn btn-lg btn-outline-warning w-100">
+                                <a th:href="@{/enconstruccion}"  class="btn btn-lg btn-outline-warning w-100">
                                     <i class="bi bi-calendar"></i><br>Mi Horario
                                 </a>
                             </div>
@@ -180,7 +182,7 @@
                             </div>
                             <div class="col-md-6">
                                 <p><strong>Duración Prácticas:</strong> 
-                                   <span th:text="${alumno.duracionPracticas != null ? alumno.duracionPracticas + ' días' : 'No especificada'}"></span>
+                                   <span th:text="${alumno.duracionPracticas != null ? alumno.duracionPracticas + ' horas' : 'No especificada'}"></span>
                                 </p>
                                 <p><strong>Horario:</strong> 
                                    <span th:text="${alumno.horario != null ? alumno.horario : 'No especificado'}"></span>
