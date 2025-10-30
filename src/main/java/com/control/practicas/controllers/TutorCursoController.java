@@ -1,5 +1,6 @@
 package com.control.practicas.controllers;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -47,13 +48,22 @@ public class TutorCursoController {
     }*/
     
     @GetMapping("/listar")
-    public String listar(Model model) {
-        List<TutorCurso> tutores = tutorCursoService.listarTodos();
-        model.addAttribute("tutores", tutores);
-        model.addAttribute("viewName", "admin/tutorcurso/listar");
-        return "layout";
+    public String listar(Model model,
+    		Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		 List<TutorCurso> tutores = tutorCursoService.listarTodos();
+    		 model.addAttribute("tutores", tutores);
+    		 model.addAttribute("viewName", "admin/tutorcurso/listar");
+    		 return "layout";
+    	}
+     catch (Exception e) {
+        redirectAttributes.addFlashAttribute("error", "Error al cargar los cursos: " + e.getMessage());
+        e.printStackTrace();
+        return "redirect:/";}
     }
-    
+
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("tutorCurso", new TutorCurso());

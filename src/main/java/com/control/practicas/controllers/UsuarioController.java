@@ -14,12 +14,12 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin/users")
-public class UserController {
+public class UsuarioController {
         
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     
-    public UserController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
     }

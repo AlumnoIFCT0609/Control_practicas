@@ -1,5 +1,5 @@
-<!-- <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"> -->
+ <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="content">
     <div class="container-fluid">
@@ -12,41 +12,52 @@
                             <span th:text="${curso.id == null ? 'Nuevo Curso' : 'Editar Curso'}">Nuevo Curso</span>
                         </h3>
                     </div>
+
                     <div class="card-body">
-                        <form th:action="@{/admin/curso/guardar}" th:object="${curso}" method="post">
-                            <input type="hidden" th:field="*{id}">
-                            <input type="hidden" th:field="*{fechaCreacion}">
+						<form th:object="${curso}" 
+						th:action="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') ? '/admin/curso/guardar' :
+						            #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') ? '/tutorcurso/cursos/guardar' :
+						            #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') ? '/tutorpracticas/cursos/guardar' :
+						            '/alumno/cursos/guardar'}" method="post">
+
+
+						    <input type="hidden" th:field="*{id}">
+						    <input type="hidden" th:field="*{fechaCreacion}">
 
                             <!-- Información básica -->
                             <h5 class="border-bottom pb-2 mb-3">Información Básica</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="codigo" class="form-label">Código <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           class="form-control" 
-                                           id="codigo" 
-                                           th:field="*{codigo}" 
+                                    <input type="text"
+                                           class="form-control"
+                                           id="codigo"
+                                           th:field="*{codigo}"
                                            placeholder="DAW01"
-                                           required>
+                                           required
+                                           th:readonly="${!#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
-                                    <input type="text" 
-                                           class="form-control" 
-                                           id="nombre" 
-                                           th:field="*{nombre}" 
+                                    <input type="text"
+                                           class="form-control"
+                                           id="nombre"
+                                           th:field="*{nombre}"
                                            placeholder="Desarrollo de Aplicaciones Web"
-                                           required>
+                                           required
+                                           th:readonly="${!#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea class="form-control" 
-                                          id="descripcion" 
-                                          th:field="*{descripcion}" 
+                                <textarea class="form-control"
+                                          id="descripcion"
+                                          th:field="*{descripcion}"
                                           rows="3"
-                                          placeholder="Descripción del curso..."></textarea>
+                                          placeholder="Descripción del curso..."
+                                          th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO') 
+                                                        or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"></textarea>
                             </div>
 
                             <!-- Datos del curso -->
@@ -54,74 +65,95 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="duracion" class="form-label">Duración (horas)</label>
-                                    <input type="number" 
-                                           class="form-control" 
-                                           id="duracion" 
+                                    <input type="number"
+                                           class="form-control"
+                                           id="duracion"
                                            th:field="*{duracion}"
-                                           placeholder="2000">
+                                           placeholder="horas"
+                                           th:readonly="${!#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
                                 </div>
-                                
+
                                 <div class="col-md-6 mb-3">
                                     <label for="tutorCurso" class="form-label">Tutor del Curso</label>
-                                    
-									 <select class="form-select" id="tutorCurso" th:field="*{tutorCursoId}">
-  											<option value="">Seleccione un tutor</option>
-  											<option th:each="tutor : ${tutores}" 
-          											th:value="${tutor.id}" 
-          											th:text="${tutor.nombre + ' ' + tutor.apellidos}">
-  											</option>
-									</select>
-									                               
-                                </div>   
-                                
-                          
-                                
+                                    <select class="form-select"
+                                            id="tutorCurso"
+                                            th:field="*{tutorCursoId}"
+											th:disabled="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')
+											              or #lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+										<option value="" th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
+											    Seleccione un tutor
+										</option>                   
+                                        <option th:each="tutor : ${tutores}"
+                                                th:value="${tutor.id}"
+                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}">
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
-                                    <input type="date" 
-                                           class="form-control" 
-                                           id="fechaInicio" 
-                                           th:field="*{fechaInicio}">
+                                    <input type="date"
+                                           class="form-control"
+                                           id="fechaInicio"
+                                           name="fechaInicio"
+										   th:value="${curso.fechaInicio != null ? curso.fechaInicio.toString() : ''}" required
+                                           th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO') 
+                                                         or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"/>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaFin" class="form-label">Fecha de Fin</label>
-                                    <input type="date" 
-                                           class="form-control" 
-                                           id="fechaFin" 
-                                           th:field="*{fechaFin}">
+                                    <input type="date"
+                                           class="form-control"
+                                           id="fechaFin"
+                                           name="fechaFin"
+										   th:value="${curso.fechaFin != null ? curso.fechaFin.toString() : ''}" required
+                                           th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO') 
+                                                         or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"/>
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" 
-                                           type="checkbox" 
-                                           id="activo" 
-                                           th:field="*{activo}">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           id="activo"
+                                           th:field="*{activo}"
+                                           th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO') 
+                                                         or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}">
                                     <label class="form-check-label" for="activo">
                                         Curso Activo
                                     </label>
                                 </div>
                             </div>
 
-                            <!-- Información adicional al editar
-                            <div th:if="${curso.id != null}" class="alert alert-info">
-                                <small>
-                                    <strong>Fecha de creación:</strong> 
-                                    <span th:text="${curso.fechaCreacion != null ? #temporals.format(curso.fechaCreacion, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2024</span>
-                                </small>
-                            </div> -->
-
                             <!-- Botones -->
-                            <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/admin/curso/listar}" class="btn btn-secondary">
-                                    <i class="bi bi-arrow-left"></i> Cancelar
-                                </a>
-                                <button type="submit" class="btn btn-primary">
+							<div class="d-flex justify-content-between mt-4">
+							    <a th:href="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') ? '/admin/curso/listar' :
+							                 #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') ? '/tutorcurso/cursos' :
+							                 #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') ? '/tutorpracticas/cursos' :
+							                 '/alumno/cursos/listar'}"
+							       class="btn btn-secondary">
+							        <i class="bi bi-arrow-left"></i> Cancelar
+							    </a>
+							
+
+                                <!-- Botón Guardar visible solo para roles con permiso -->
+                                <button type="submit"
+                                        class="btn btn-primary"
+                                        th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') 
+                                                or #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}">
                                     <i class="bi bi-save"></i> Guardar
+                                </button>
+
+                                <!-- Alumnos y tutores de prácticas no pueden guardar -->
+                                <button type="button"
+                                        class="btn btn-outline-secondary"
+                                        th:if="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO') 
+                                                or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"
+                                        disabled>
+                                    <i class="bi bi-lock"></i> Solo lectura
                                 </button>
                             </div>
                         </form>
@@ -131,3 +163,4 @@
         </div>
     </div>
 </div>
+</html>
