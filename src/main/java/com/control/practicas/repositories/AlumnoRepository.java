@@ -1,6 +1,8 @@
 package com.control.practicas.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.control.practicas.models.Alumno;
@@ -22,8 +24,11 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
     List<Alumno> findByEmpresa_Id(Long empresaId);
     Optional<Alumno> findByDni(String dni);
 	Optional<Alumno> findByEmail(String email);
-	
+	List<Alumno> findByCursoIn(List<Curso> cursos);
 
+	//List<Alumno> findByCursoIdIn(List<Long> cursoIds);
+	 @Query("SELECT a FROM Alumno a WHERE a.curso.id IN :cursoIds")
+	    List<Alumno> findByCursoIds(@Param("cursoIds") List<Long> cursoIds);
 	List<Alumno> findByTutorPracticas(TutorPracticas tutor);
 
 }

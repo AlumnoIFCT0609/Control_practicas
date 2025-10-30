@@ -1,6 +1,7 @@
 <div th:fragment="content">
     <div class="container-fluid py-4">
-        <!-- Alertas -->
+
+        <!-- 🔹 Alertas de error -->
         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -19,14 +20,22 @@
 
                     <div class="card-body p-4">
 
-                        <!-- FORMULARIO -->
-                      <form th:action="@{/admin/alumno/observaciondiaria/guardar}"
-      							th:object="${observacionDiaria}"
-      							method="post">
+                        <!-- 🔹 FORMULARIO UNIFICADO -->
+                        <form th:object="${observacionDiaria}"
+                              method="post"
+                              th:action="
+                                ${#lists.contains(#authentication.authorities.![authority], 'ADMIN')} ?
+                                    @{/admin/alumno/observaciondiaria/guardar} :
+                                ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')} ?
+                                    @{/tutorcurso/observaciondiaria/guardar} :
+                                ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')} ?
+                                    @{/tutorpracticas/observaciondiaria/guardar} :
+                                    @{/alumno/observaciondiaria/guardar}
+                              ">
 
                             <input type="hidden" th:field="*{id}" />
 
-                            <!-- Info del Alumno -->
+                            <!-- 🔹 Alumno -->
                             <div class="row mb-4" th:if="*{alumno != null}">
                                 <div class="col-12">
                                     <div class="alert alert-info">
@@ -37,96 +46,108 @@
                                 </div>
                             </div>
 
-                            <!-- Fecha y Horas -->
+                            <!-- 🔹 Fecha y Horas -->
                             <div class="row mb-4">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-calendar"></i> Fecha
                                     </label>
-                                    <input type="date" 
-                                    	  	id="fecha"
-       										name="fecha"
-       									    th:value="${observacionDiaria.fecha != null ? observacionDiaria.fecha.toString() : ''}"
-       									    class="form-control"/>
+                                    <input type="date"
+                                           id="fecha"
+                                           name="fecha"
+                                           th:value="${observacionDiaria.fecha != null ? observacionDiaria.fecha.toString() : ''}"
+                                           class="form-control"
+                                           th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"/>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-clock"></i> Horas Realizadas
                                     </label>
-                                    <input type="number" th:field="*{horasRealizadas}"
-                                           class="form-control"/>
+                                    <input type="number"
+                                           th:field="*{horasRealizadas}"
+                                           class="form-control"
+                                           th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"/>
                                 </div>
                             </div>
 
-                            <!-- Actividades -->
+                            <!-- 🔹 Actividades -->
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-tasks"></i> Actividades Realizadas
                                     </label>
-                                    <textarea th:field="*{actividades}"
-                                              class="form-control"
-                                              rows="4"></textarea>
+                                    <textarea th:field="*{actividades}" class="form-control" rows="4"
+                                              th:readonly="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')} ||
+                                                           ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"></textarea>
                                 </div>
                             </div>
 
-                            <!-- Explicaciones -->
+                            <!-- 🔹 Explicaciones -->
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-info-circle"></i> Explicaciones
                                     </label>
-                                    <textarea th:field="*{explicaciones}"
-                                              class="form-control"
-                                              rows="4"></textarea>
+                                    <textarea th:field="*{explicaciones}" class="form-control" rows="4"
+                                              th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"></textarea>
                                 </div>
                             </div>
 
-                            <!-- Observaciones -->
+                            <!-- 🔹 Observaciones -->
                             <div class="row mb-4">
                                 <div class="col-md-6 mb-3 mb-md-0">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-user-graduate"></i> Observaciones del Alumno
                                     </label>
-                                    <textarea th:field="*{observacionesAlumno}"
-                                              class="form-control"
-                                              rows="4"></textarea>
+                                    <textarea th:field="*{observacionesAlumno}" class="form-control" rows="4"
+                                              th:readonly="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')} ||
+                                                           ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"></textarea>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-chalkboard-teacher"></i> Observaciones del Tutor
                                     </label>
-                                    <textarea th:field="*{observacionesTutor}"
-                                              class="form-control"
-                                              rows="4"></textarea>
+                                    <textarea th:field="*{observacionesTutor}" class="form-control" rows="4"
+                                              th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"></textarea>
                                 </div>
                             </div>
 
-                            <!-- Botones -->
+                            <!-- 🔹 Botones -->
                             <div class="row mt-4">
                                 <div class="col-12">
                                     <div class="d-flex gap-2">
-                                       
-                                       <!-- <a th:if="${modo != 'editar'}"
-                                           th:href="@{/admin/alumno/observaciondiaria/{id}/editar(id=*{id})}"
-                                           class="btn btn-warning px-4">
-                                            <i class="fas fa-edit"></i> Guardar
-                                        </a> -->
-                                         <button type="submit" class="btn btn-primary">
-                                    			<i class="bi bi-save"></i> Guardar
-                                		</button>
 
-                                        <button th:if="${modo != 'editar'}" type="button"
-                                                class="btn btn-danger px-4"
+                                        <!-- Guardar (solo roles que pueden editar) -->
+                                        <button type="submit" class="btn btn-primary"
+                                                th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') or
+                                                        #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') or
+                                                        #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') or
+                                                        #lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+                                            <i class="bi bi-save"></i> Guardar
+                                        </button>
+
+                                        <!-- Eliminar (solo admin o tutor curso) -->
+                                        <button th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') or
+                                                        #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}"
+                                                type="button" class="btn btn-danger px-4"
                                                 data-bs-toggle="modal"
                                                 th:data-bs-target="'#deleteModal' + *{id}">
                                             <i class="fas fa-trash"></i> Eliminar
                                         </button>
 
-                                        <a th:href="@{/admin/alumno/observaciondiaria}"
-                                           class="btn btn-secondary px-4">
+                                        <!-- Volver -->
+                                        <a class="btn btn-secondary px-4"
+                                           th:href="
+                                             ${#lists.contains(#authentication.authorities.![authority], 'ADMIN')} ?
+                                               @{/admin/alumno/observaciondiaria} :
+                                             ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')} ?
+                                               @{/tutorcurso/observaciondiaria} :
+                                             ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')} ?
+                                               @{/tutorpracticas/observaciondiaria} :
+                                               @{/alumno/observaciondiaria}
+                                           ">
                                             <i class="fas fa-arrow-left"></i> Volver
                                         </a>
                                     </div>
@@ -138,7 +159,7 @@
             </div>
         </div>
 
-        <!-- Modal de confirmación para eliminar -->
+        <!-- 🔹 Modal Eliminar -->
         <div class="modal fade" th:id="'deleteModal' + *{id}" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -161,3 +182,5 @@
         </div>
     </div>
 </div>
+
+

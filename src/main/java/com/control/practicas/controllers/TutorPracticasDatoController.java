@@ -45,6 +45,7 @@ public class TutorPracticasDatoController {
     private final TutorPracticasRepository tutorPracticasRepository;
     private final CursoRepository cursoRepository;
     private final EmpresaRepository empresaRepository;
+    private final TutorPracticasService tutorPracticasService;
     
     
     public TutorPracticasDatoController(
@@ -65,6 +66,7 @@ public class TutorPracticasDatoController {
         this.tutorPracticasRepository = tutorPracticasRepository;
         this.cursoRepository=cursoRepository;
         this.empresaRepository=empresaRepository;
+        this.tutorPracticasService=tutorPracticasService;
     }
     
     // Método auxiliar para obtener el tutor de prácticas autenticado
@@ -88,43 +90,34 @@ public class TutorPracticasDatoController {
         try {
             TutorPracticas tutor = getTutorAutenticado(authentication);
             
-            // Obtener todos los alumnos del tutor
             List<Alumno> alumnosDelTutor = alumnoRepository.findByTutorPracticas(tutor);
-            
-            System.out.println("Tutor: " + tutor.getNombre());
-            System.out.println("Alumnos del tutor: " + alumnosDelTutor.size());
             
             List<ObservacionDiaria> observaciones;
             Alumno alumnoSeleccionado = null;
             
             if (alumnoId != null) {
-                // Filtrar por alumno específico
                 alumnoSeleccionado = alumnoRepository.findById(alumnoId)
                     .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
                 
-                // Verificar que el alumno pertenece al tutor
                 if (!alumnoSeleccionado.getTutorPracticas().getId().equals(tutor.getId())) {
                     throw new RuntimeException("No tiene permisos para ver las observaciones de este alumno");
                 }
                 
                 observaciones = observacionDiariaService.listarPorAlumnoOrdenadas(alumnoId);
             } else {
-                // Mostrar observaciones de todos sus alumnos
                 if (alumnosDelTutor.isEmpty()) {
-                    observaciones = List.of(); // Lista vacía si no tiene alumnos
+                    observaciones = List.of();
                 } else {
                     observaciones = observacionDiariaRepository.findByAlumnoInOrderByFechaDesc(alumnosDelTutor);
                 }
             }
-            
-            System.out.println("Observaciones encontradas: " + observaciones.size());
             
             model.addAttribute("observaciones", observaciones);
             model.addAttribute("alumnosDelTutor", alumnosDelTutor);
             model.addAttribute("alumnoSeleccionado", alumnoSeleccionado);
             model.addAttribute("tutorActual", tutor);
             model.addAttribute("tieneObservaciones", !observaciones.isEmpty());
-            model.addAttribute("viewName", "tutorpracticas/observaciondiaria/listar");
+            model.addAttribute("viewName", "admin/alumno/observaciondiaria/observaciones"); // <- cambio aquí
             return "layout";
             
         } catch (Exception e) {
@@ -134,13 +127,13 @@ public class TutorPracticasDatoController {
             return "layout";
         }
     }
+
     @GetMapping("/observaciondiaria/ver/{id}")
     public String ver(@PathVariable Long id, Model model, Authentication authentication) {
         TutorPracticas tutor = getTutorAutenticado(authentication);
         ObservacionDiaria observacionDiaria = observacionDiariaService.buscarPorId(id)
             .orElseThrow(() -> new RuntimeException("Observación no encontrada"));
         
-        // Verificar que la observación pertenece a un alumno del tutor
         if (!observacionDiaria.getAlumno().getTutorPracticas().getId().equals(tutor.getId())) {
             throw new RuntimeException("No tiene permisos para ver esta observación");
         }
@@ -148,11 +141,11 @@ public class TutorPracticasDatoController {
         model.addAttribute("observacionDiaria", observacionDiaria);
         model.addAttribute("alumnoActual", observacionDiaria.getAlumno());
         model.addAttribute("tutorActual", tutor);
-        model.addAttribute("soloLectura", false); // El tutor puede editar sus observaciones
-        model.addAttribute("viewName", "tutorpracticas/observaciondiaria/form");
+        model.addAttribute("soloLectura", false);
+        model.addAttribute("viewName", "admin/alumno/observaciondiaria/form"); // <- cambio aquí
         return "layout";
     }
-    
+
     @PostMapping("/observaciondiaria/guardar")
     public String guardar(
             @ModelAttribute ObservacionDiaria observacionDiaria,
@@ -162,18 +155,14 @@ public class TutorPracticasDatoController {
         try {
             TutorPracticas tutor = getTutorAutenticado(authentication);
             
-            // Buscar la observación existente
             ObservacionDiaria observacionExistente = observacionDiariaService.buscarPorId(observacionDiaria.getId())
                 .orElseThrow(() -> new RuntimeException("Observación no encontrada"));
             
-            // Verificar que el alumno pertenece al tutor
             if (!observacionExistente.getAlumno().getTutorPracticas().getId().equals(tutor.getId())) {
                 throw new RuntimeException("No tiene permisos para editar esta observación");
             }
             
-            // Solo actualizar las observaciones del tutor (no tocar datos del alumno)
             observacionExistente.setObservacionesTutor(observacionesTutor);
-            
             observacionDiariaService.guardar(observacionExistente);
             redirectAttributes.addFlashAttribute("success", "Observaciones del tutor actualizadas exitosamente");
             
@@ -181,8 +170,9 @@ public class TutorPracticasDatoController {
             redirectAttributes.addFlashAttribute("error", "Error al guardar las observaciones: " + e.getMessage());
             e.printStackTrace();
         }
-        return "redirect:/tutorpracticas/observaciondiaria/listar";
+        return "redirect:/admin/alumno/observaciondiaria/observaciones"; // <- cambio aquí
     }
+
     
     @GetMapping("/alumno")
     public String listarAlumnosDelTutor(Model model, 
@@ -314,7 +304,14 @@ public class TutorPracticasDatoController {
         
         return "redirect:/tutorpracticas/alumno";
     }
-
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        List<TutorPracticas> tutores = tutorPracticasService.listarTodos();
+        model.addAttribute("tutores", tutores);
+        model.addAttribute("pageTitle", "Dashboard Tutor Practicas");
+        model.addAttribute("viewName", "tutorpracticas/dashboard"); // Para que tu layout lo incluya
+        return "layout";  // O el nombre del template principal que uses
+    }
     
     
     

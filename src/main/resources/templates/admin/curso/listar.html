@@ -1,5 +1,5 @@
-<!-- <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"> -->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <div th:fragment="content">
     <div class="container-fluid">
@@ -8,7 +8,10 @@
                 <i class="bi bi-book-fill me-2"></i>
                 Gestión de Cursos
             </h2>
-            <a th:href="@{/admin/curso/nuevo}" class="btn btn-primary">
+            
+            <!-- Nuevo Curso: Solo ADMIN -->
+            <a th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}"
+               th:href="@{/admin/curso/nuevo}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nuevo Curso
             </a>
         </div>
@@ -71,18 +74,48 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
-                                    			
-                                        <a th:href="@{/admin/curso/editar/{id}(id=${curso.id})}" 
-                                           class="btn btn-sm btn-warning" 
-                                           title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a th:href="@{/admin/curso/eliminar/{id}(id=${curso.id})}" 
+
+                                        
+										<!-- Botón Editar / Ver según el rol -->
+										<a th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}"
+										   th:href="@{/admin/curso/editar/{id}(id=${curso.id})}"
+										   class="btn btn-sm btn-warning"
+										   title="Editar (ADMIN)">
+										    <i class="bi bi-pencil"></i>
+										</a>
+
+										<a th:if="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}"
+										   th:href="@{/tutorcurso/cursos/editar/{id}(id=${curso.id})}"
+										   class="btn btn-sm btn-warning"
+										   title="Editar (Tutor de Curso)">
+										    <i class="bi bi-pencil"></i>
+										</a>
+
+										<a th:if="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"
+										   th:href="@{/tutorpracticas/cursos/editar/{id}(id=${curso.id})}"
+										   class="btn btn-sm btn-warning"
+										   title="Editar (Tutor de Prácticas)">
+										    <i class="bi bi-pencil"></i>
+										</a>
+
+										<!-- Los alumnos solo pueden ver -->
+										<a th:if="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"
+										   th:href="@{/alumno/curso/ver/{id}(id=${curso.id})}"
+										   class="btn btn-sm btn-outline-primary"
+										   title="Ver curso (solo lectura)">
+										    <i class="bi bi-eye"></i>
+										</a>
+
+
+                                        <!-- Eliminar: solo ADMIN -->
+                                        <a th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}"
+                                           th:href="@{/admin/curso/eliminar/{id}(id=${curso.id})}" 
                                            class="btn btn-sm btn-danger" 
                                            title="Eliminar"
                                            onclick="return confirm('¿Está seguro de eliminar este curso?')">
                                             <i class="bi bi-trash"></i>
                                         </a>
+
                                     </div>
                                 </td>
                             </tr>
@@ -91,34 +124,36 @@
                 </div>
             </div>
         </div>
-		<!-- Estadísticas -->
-				        <div class="row mt-4">
-				            <div class="col-md-4">
-				                <div class="card bg-primary text-white">
-				                    <div class="card-body">
-				                        <h5>Total Cursos</h5>
-				                        <h2 th:text="${#lists.size(cursos)}"></h2>
-				                    </div>
-				                </div>
-				            </div>
-				            <div class="col-md-4">
-				                <div class="card bg-success text-white">
-				                    <div class="card-body">
-				                        <h5>Cursos Activos</h5>
-				                        <h2 th:text="${#lists.size(cursos.?[activo == true])}"></h2>
-				                    </div>
-				                </div>
-				            </div>
-				            <div class="col-md-4">
-				                <div class="card bg-secondary text-white">
-				                    <div class="card-body">
-				                        <h5>Cursos Inactivos</h5>
-				                        <h2 th:text="${#lists.size(cursos.?[activo == false])}"></h2>
-				                    </div>
-				                </div>
-				            </div>
 
+        <!-- Estadísticas -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5>Total Cursos</h5>
+                        <h2 th:text="${#lists.size(cursos)}"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5>Cursos Activos</h5>
+                        <h2 th:text="${#lists.size(cursos.?[activo == true])}"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body">
+                        <h5>Cursos Inactivos</h5>
+                        <h2 th:text="${#lists.size(cursos.?[activo == false])}"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
 
 </html>
