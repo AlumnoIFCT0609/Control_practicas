@@ -1,10 +1,14 @@
 package com.control.practicas.controllers;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -112,12 +116,13 @@ public class TutorPracticasDatoController {
                 }
             }
             
-            model.addAttribute("observaciones", observaciones);
+         //   model.addAttribute("observaciones", observaciones);
+            model.addAttribute("ObservacionDiaria", observaciones); 
             model.addAttribute("alumnosDelTutor", alumnosDelTutor);
             model.addAttribute("alumnoSeleccionado", alumnoSeleccionado);
             model.addAttribute("tutorActual", tutor);
             model.addAttribute("tieneObservaciones", !observaciones.isEmpty());
-            model.addAttribute("viewName", "admin/alumno/observaciondiaria/observaciones"); // <- cambio aquí
+            model.addAttribute("viewName", "admin/alumno/observaciondiaria/observaciones");
             return "layout";
             
         } catch (Exception e) {
@@ -128,7 +133,7 @@ public class TutorPracticasDatoController {
         }
     }
 
-    @GetMapping("/observaciondiaria/ver/{id}")
+    @GetMapping("/observaciondiaria/editar/{id}")
     public String ver(@PathVariable Long id, Model model, Authentication authentication) {
         TutorPracticas tutor = getTutorAutenticado(authentication);
         ObservacionDiaria observacionDiaria = observacionDiariaService.buscarPorId(id)
@@ -142,7 +147,7 @@ public class TutorPracticasDatoController {
         model.addAttribute("alumnoActual", observacionDiaria.getAlumno());
         model.addAttribute("tutorActual", tutor);
         model.addAttribute("soloLectura", false);
-        model.addAttribute("viewName", "admin/alumno/observaciondiaria/form"); // <- cambio aquí
+        model.addAttribute("viewName", "admin/alumno/observaciondiaria/form"); 
         return "layout";
     }
 
@@ -170,7 +175,7 @@ public class TutorPracticasDatoController {
             redirectAttributes.addFlashAttribute("error", "Error al guardar las observaciones: " + e.getMessage());
             e.printStackTrace();
         }
-        return "redirect:/admin/alumno/observaciondiaria/observaciones"; // <- cambio aquí
+        return "redirect:/tutorpracticas/observaciondiaria/listar"; 
     }
 
     
@@ -304,15 +309,40 @@ public class TutorPracticasDatoController {
         
         return "redirect:/tutorpracticas/alumno";
     }
-    @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        List<TutorPracticas> tutores = tutorPracticasService.listarTodos();
-        model.addAttribute("tutores", tutores);
-        model.addAttribute("pageTitle", "Dashboard Tutor Practicas");
-        model.addAttribute("viewName", "tutorpracticas/dashboard"); // Para que tu layout lo incluya
-        return "layout";  // O el nombre del template principal que uses
-    }
     
+    @GetMapping("/dashboard")
+    public String dashboard(Model model, Authentication authentication) {
+        // Obtenemos el tutor autenticado
+        TutorPracticas tutor = getTutorAutenticado(authentication);
+
+        // Empresa asociada al tutor
+        Empresa empresa = tutor.getEmpresa();
+
+        // Lista de alumnos del tutor
+        List<Alumno> alumnos = alumnoRepository.findByTutorPracticas(tutor);
+
+        // Contar observaciones e incidencias
+        long totalObservaciones = tutorPracticasService.contarObservaciones(tutor);
+        long totalIncidencias = tutorPracticasService.contarIncidencias(tutor);
+
+        // Obtener horas por alumno desde el servicio
+        Map<String, Integer> horasPorAlumno = tutorPracticasService.obtenerHorasPorAlumno(alumnos);
+        Map<Long, Integer> horasPendientes = tutorPracticasService.obtenerHorasPendientesPorAlumno(alumnos);
+        
+        model.addAttribute("horasPendientes", horasPendientes);
+        model.addAttribute("tutor", tutor);
+        model.addAttribute("empresa", empresa);
+        model.addAttribute("alumnos", alumnos);
+        model.addAttribute("horasPorAlumno", horasPorAlumno);
+        model.addAttribute("totalObservaciones", totalObservaciones);
+        model.addAttribute("totalIncidencias", totalIncidencias);
+
+        model.addAttribute("pageTitle", "Dashboard Tutor Practicas");
+        model.addAttribute("viewName", "tutorpracticas/dashboard");
+
+        return "layout";
+    }
+
     
     
 }

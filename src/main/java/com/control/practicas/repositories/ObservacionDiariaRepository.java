@@ -1,10 +1,13 @@
 package com.control.practicas.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.control.practicas.models.Alumno;
 import com.control.practicas.models.ObservacionDiaria;
+import com.control.practicas.models.TutorPracticas;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +17,8 @@ public interface ObservacionDiariaRepository extends JpaRepository<ObservacionDi
     
     // Buscar por el ID del alumno (relación @ManyToOne)
     List<ObservacionDiaria> findByAlumno_Id(Long alumnoId);
+    long countByAlumnoIn(List<Alumno> alumnos);
+
     
     // Buscar por el ID del alumno ordenado por fecha descendente
     List<ObservacionDiaria> findByAlumno_IdOrderByFechaDesc(Long alumnoId);
@@ -28,4 +33,12 @@ public interface ObservacionDiariaRepository extends JpaRepository<ObservacionDi
     List<ObservacionDiaria> findByAlumno_IdAndFecha(Long alumnoId, LocalDate fecha);
 
 	List<ObservacionDiaria> findByAlumnoInOrderByFechaDesc(List<Alumno> alumnosDelTutor);
+	
+	@Query("SELECT COUNT(o) FROM ObservacionDiaria o WHERE o.alumno.tutorPracticas = :tutor")
+	long countByTutorPracticas(@Param("tutor") TutorPracticas tutor);
+	
+	@Query("SELECT SUM(o.horasRealizadas) FROM ObservacionDiaria o WHERE o.alumno.id = :alumnoId")
+	Integer sumarHorasRealizadasPorAlumno(@Param("alumnoId") Long alumnoId);
+
+
 }
