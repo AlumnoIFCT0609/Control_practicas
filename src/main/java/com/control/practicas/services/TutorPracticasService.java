@@ -3,25 +3,40 @@ package com.control.practicas.services;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.control.practicas.models.Alumno;
 import com.control.practicas.models.TutorPracticas;
 import com.control.practicas.models.Usuario;
 import com.control.practicas.models.Usuario.Rol;
+import com.control.practicas.repositories.AlumnoRepository;
+import com.control.practicas.repositories.IncidenciaRepository;
+import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.TutorPracticasRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Transactional
 public class TutorPracticasService {
- 
+	
+    private final AlumnoRepository alumnoRepository;
+    private final ObservacionDiariaRepository observacionDiariaRepository;
+    private final IncidenciaRepository incidenciaRepository;
+
  private final TutorPracticasRepository tutorPracticasRepository;
  private final UsuarioService usuarioService;
  
  public TutorPracticasService(TutorPracticasRepository tutorPracticasRepository,
-		 						UsuarioService usuarioService) {
+		 						UsuarioService usuarioService,AlumnoRepository alumnoRepository,
+                                ObservacionDiariaRepository observacionDiariaRepository,
+                                IncidenciaRepository incidenciaRepository) {
      this.tutorPracticasRepository = tutorPracticasRepository;
      this.usuarioService = usuarioService;
+     this.alumnoRepository = alumnoRepository;
+     this.observacionDiariaRepository = observacionDiariaRepository;
+     this.incidenciaRepository = incidenciaRepository;
  }
  
  
@@ -60,4 +75,55 @@ public class TutorPracticasService {
 	        tutor.getActivo()
 	    );
 	}
+ public long contarObservaciones(TutorPracticas tutor) {
+     List<Alumno> alumnos = alumnoRepository.findByTutorPracticas(tutor);
+     return alumnos.isEmpty() ? 0 : observacionDiariaRepository.countByAlumnoIn(alumnos);
+ }
+
+ public long contarIncidencias(TutorPracticas tutor) {
+     List<Alumno> alumnos = alumnoRepository.findByTutorPracticas(tutor);
+     return alumnos.isEmpty() ? 0 : incidenciaRepository.countByAlumnoIn(alumnos);
+ }
+
+ // También podemos devolver la lista de alumnos del tutor
+ public List<Alumno> listarAlumnos(TutorPracticas tutor) {
+     return alumnoRepository.findByTutorPracticas(tutor);
+ }
+ 
+ public int obtenerTotalHorasAlumno(Long alumnoId) {
+     Integer horas = observacionDiariaRepository.sumarHorasRealizadasPorAlumno(alumnoId);
+     return horas != null ? horas : 0;
+ }
+
+ /*public Map<Alumno, Integer> obtenerHorasPorAlumno(List<Alumno> alumnos) {
+	    Map<Alumno, Integer> horasPorAlumno = new HashMap<>();
+	    for (Alumno alumno : alumnos) {
+	        int horas = obtenerTotalHorasAlumno(alumno.getId());
+	        horasPorAlumno.put(alumno, horas);
+	    }
+	    return horasPorAlumno;
+	}*/
+ public Map<String, Integer> obtenerHorasPorAlumno(List<Alumno> alumnos) {
+	    Map<String, Integer> horasPorAlumno = new HashMap<>();
+	    for (Alumno alumno : alumnos) {
+	        int horas = obtenerTotalHorasAlumno(alumno.getId());
+	        horasPorAlumno.put(alumno.getId().toString(), horas); // clave como String
+	    }
+	    return horasPorAlumno;
+	}
+
+ public Map<Long, Integer> obtenerHorasPendientesPorAlumno(List<Alumno> alumnos) {
+	    Map<Long, Integer> horasPendientes = new HashMap<>();
+	    for (Alumno alumno : alumnos) {
+	        int horasRealizadas = obtenerTotalHorasAlumno(alumno.getId());
+	        int pendientes = alumno.getDuracionPracticas() - horasRealizadas;
+	        if (pendientes < 0) pendientes = 0;
+	        horasPendientes.put(alumno.getId(), pendientes);
+	    }
+	    return horasPendientes;
+	}
+
+
+ 
+
 }

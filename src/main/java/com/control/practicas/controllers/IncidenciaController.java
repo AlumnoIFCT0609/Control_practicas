@@ -1,6 +1,5 @@
 package com.control.practicas.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +9,15 @@ import com.control.practicas.services.IncidenciaService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/incidencias")
+@RequestMapping("/incidencias")
 public class IncidenciaController {
 
-    @Autowired
-    private IncidenciaService incidenciaService;
+    private final IncidenciaService incidenciaService;
+
+    // Inyección de dependencias por constructor
+    public IncidenciaController(IncidenciaService incidenciaService) {
+        this.incidenciaService = incidenciaService;
+    }
 
     @GetMapping
     public List<Incidencia> listarTodas() {
@@ -52,3 +55,4 @@ public class IncidenciaController {
         return ResponseEntity.notFound().build();
     }
 }
+

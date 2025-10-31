@@ -21,17 +21,13 @@
                     <div class="card-body p-4">
 
                         <!-- 🔹 FORMULARIO UNIFICADO -->
-                        <form th:object="${observacionDiaria}"
-                              method="post"
-                              th:action="
-                                ${#lists.contains(#authentication.authorities.![authority], 'ADMIN')} ?
-                                    @{/admin/alumno/observaciondiaria/guardar} :
-                                ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')} ?
-                                    @{/tutorcurso/observaciondiaria/guardar} :
-                                ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')} ?
-                                    @{/tutorpracticas/observaciondiaria/guardar} :
-                                    @{/alumno/observaciondiaria/guardar}
-                              ">
+                        <form 	th:object="${observacionDiaria}"
+     							 method="post"
+      							th:action="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') ? '/admin/alumno/observaciondiaria/guardar' :
+          									(#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') ? '/tutorcurso/observaciondiaria/guardar' :
+          									(#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') ? '/tutorpracticas/observaciondiaria/guardar' :
+          									'/alumno/observaciondiaria/guardar'))}">
+
 
                             <input type="hidden" th:field="*{id}" />
 
@@ -77,9 +73,14 @@
                                     <label class="form-label fw-bold">
                                         <i class="fas fa-tasks"></i> Actividades Realizadas
                                     </label>
-                                    <textarea th:field="*{actividades}" class="form-control" rows="4"
-                                              th:readonly="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')} ||
-                                                           ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"></textarea>
+                                    <textarea
+    										th:field="*{actividades}"
+    										class="form-control"
+    										rows="4"
+   											th:readonly="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') 
+                  								or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}">
+									</textarea>
+
                                 </div>
                             </div>
 
@@ -95,64 +96,70 @@
                             </div>
 
                             <!-- 🔹 Observaciones -->
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <label class="form-label fw-bold">
-                                        <i class="fas fa-user-graduate"></i> Observaciones del Alumno
-                                    </label>
-                                    <textarea th:field="*{observacionesAlumno}" class="form-control" rows="4"
-                                              th:readonly="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')} ||
-                                                           ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"></textarea>
-                                </div>
+							<div class="row mb-4">
+    							<div class="col-md-6 mb-3 mb-md-0">
+        							<label class="form-label fw-bold">
+            							<i class="fas fa-user-graduate"></i> Observaciones del Alumno
+       									 </label>
+        								<textarea
+            								th:field="*{observacionesAlumno}"
+            								class="form-control"
+            								rows="4"
+            								th:readonly="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') 
+                         					or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}">
+        								</textarea>
+    							</div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">
-                                        <i class="fas fa-chalkboard-teacher"></i> Observaciones del Tutor
-                                    </label>
-                                    <textarea th:field="*{observacionesTutor}" class="form-control" rows="4"
-                                              th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"></textarea>
-                                </div>
-                            </div>
+    							<div class="col-md-6">
+        							<label class="form-label fw-bold">
+           							 <i class="fas fa-chalkboard-teacher"></i> Observaciones del Tutor
+       								 </label>
+        							<textarea
+            							th:field="*{observacionesTutor}"
+            							class="form-control"
+            							rows="4"
+            							th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+        						</textarea>
+    							</div>
+							</div>
 
                             <!-- 🔹 Botones -->
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <div class="d-flex gap-2">
+                           <!-- 🔹 Botonera corregida -->
+							<div class="row mt-4">
+    							<div class="col-12">
+        							<div class="d-flex gap-2">
 
-                                        <!-- Guardar (solo roles que pueden editar) -->
-                                        <button type="submit" class="btn btn-primary"
-                                                th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') or
-                                                        #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') or
-                                                        #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') or
-                                                        #lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
-                                            <i class="bi bi-save"></i> Guardar
-                                        </button>
+           				 <!-- Guardar (visible para todos los roles que pueden editar) -->
+           					 <button type="submit" class="btn btn-primary"
+                    				th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') or
+                            			#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') or
+                           				#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') or
+                            			#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+                					<i class="bi bi-save"></i> Guardar
+							</button>
 
-                                        <!-- Eliminar (solo admin o tutor curso) -->
-                                        <button th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') or
-                                                        #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}"
-                                                type="button" class="btn btn-danger px-4"
-                                                data-bs-toggle="modal"
-                                                th:data-bs-target="'#deleteModal' + *{id}">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
+            			<!-- Eliminar (solo admin o tutor curso) -->
+           				 <button type="button" class="btn btn-danger px-4"
+                   				 th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') or
+                            			#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}"
+                    			data-bs-toggle="modal"
+                    			th:data-bs-target="'#deleteModal' + *{id}">
+                				<i class="fas fa-trash"></i> Eliminar
+            			</button>
 
-                                        <!-- Volver -->
-                                        <a class="btn btn-secondary px-4"
-                                           th:href="
-                                             ${#lists.contains(#authentication.authorities.![authority], 'ADMIN')} ?
-                                               @{/admin/alumno/observaciondiaria} :
-                                             ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')} ?
-                                               @{/tutorcurso/observaciondiaria} :
-                                             ${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')} ?
-                                               @{/tutorpracticas/observaciondiaria} :
-                                               @{/alumno/observaciondiaria}
-                                           ">
-                                            <i class="fas fa-arrow-left"></i> Volver
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- Volver -->
+            <a class="btn btn-secondary px-4"
+               th:href="
+                 ${#lists.contains(#authentication.authorities.![authority], 'ADMIN') ? '/admin/alumno/observaciondiaria' :
+                   (#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') ? '/tutorcurso/observaciondiaria' :
+                   (#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') ? '/tutorpracticas/observaciondiaria/listar' :
+                   '/alumno/observaciondiaria'))}">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+
+        </div>
+    </div>
+</div>
                         </form>
                     </div>
                 </div>

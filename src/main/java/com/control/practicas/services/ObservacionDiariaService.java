@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.control.practicas.models.ObservacionDiaria;
+import com.control.practicas.models.TutorPracticas;
 import com.control.practicas.repositories.ObservacionDiariaRepository;
 
 import java.time.LocalDate;
@@ -47,4 +48,16 @@ public class ObservacionDiariaService {
     public List<ObservacionDiaria> listarPorFecha(LocalDate fecha) {
         return observacionDiariaRepository.findByFecha(fecha);
     }
-}
+        public ObservacionDiariaService(ObservacionDiariaRepository observacionDiariaRepository) {
+            this.observacionDiariaRepository = observacionDiariaRepository;
+        }
+
+        public long contarObservaciones(TutorPracticas tutor) {
+            if (tutor == null) return 0;
+            return observacionDiariaRepository.countByTutorPracticas(tutor);
+        }
+    }
+
+    
+    
+

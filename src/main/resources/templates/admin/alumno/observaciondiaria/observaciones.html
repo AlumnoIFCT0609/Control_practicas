@@ -69,7 +69,7 @@
                                              
 												<!-- ADMIN -->
 												<div th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
-												    <a th:href="@{/admin/alumno/observaciondiaria/{id}/editar(id=${observacion.id})}"
+												    <a th:href="@{/admin/alumno/observaciondiaria/editar/{id}(id=${observacion.id})}"
 												       class="btn btn-sm btn-info"
 												       title="Ver detalle">
 												        <i class="bi bi-eye"></i>
@@ -78,7 +78,7 @@
 
 												<!-- TUTOR_PRACTICAS -->
 												<div th:if="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}">
-												    <a th:href="@{/tutorpracticas/observaciondiaria/{id}/editar(id=${observacion.id})}"
+												    <a th:href="@{/tutorpracticas/observaciondiaria/editar/{id}(id=${observacion.id})}"
 												       class="btn btn-sm btn-info"
 												       title="Ver detalle">
 												        <i class="bi bi-eye"></i>
@@ -87,7 +87,7 @@
 
 												<!-- TUTOR_CURSO -->
 												<div th:if="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}">
-												    <a th:href="@{/tutorcurso/observaciondiaria/editar(id=${observacion.id})}"
+												    <a th:href="@{/tutorcurso/observaciondiaria/editar/{id}(id=${observacion.id})}"
 												       class="btn btn-sm btn-info"
 												       title="Ver detalle">
 												        <i class="bi bi-eye"></i>
