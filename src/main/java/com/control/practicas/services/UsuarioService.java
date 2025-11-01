@@ -112,4 +112,25 @@ public class UsuarioService {
 	public boolean existeUsuarioPorEmail(String email) {
 		return usuarioRepository.findByEmail(email).isPresent();	
 	}
+	
+	public void cambiarPassword(Long usuarioId, String passwordActual, String passwordNueva) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        
+        // Verificar que la contraseña actual es correcta
+        if (!passwordEncoder.matches(passwordActual, usuario.getPassword())) {
+            throw new IllegalStateException("La contraseña actual es incorrecta");
+        }
+        
+        // Actualizar con la nueva contraseña
+        usuario.setPassword(passwordEncoder.encode(passwordNueva));
+        usuario.setUltimoAcceso();
+        usuarioRepository.save(usuario);
+    }
+	 public Optional<Usuario> findByEmail(String email) {
+	        return usuarioRepository.findByEmail(email);
+	    }
+	
+	
+	
 }

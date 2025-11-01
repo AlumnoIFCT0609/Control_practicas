@@ -3,7 +3,9 @@ package com.control.practicas.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,8 @@ import com.control.practicas.models.Curso;
 import com.control.practicas.models.Empresa;
 import com.control.practicas.models.TutorCurso;
 import com.control.practicas.models.TutorPracticas;
+import com.control.practicas.models.Usuario;
+import com.control.practicas.repositories.UsuarioRepository;
 import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.CursoService;
 import com.control.practicas.services.EmpresaService;
@@ -25,7 +29,7 @@ import com.control.practicas.services.TutorPracticasService;
 @RequestMapping("/admin")
 public class AdminController {
     
-    
+    private final UsuarioRepository usuarioRepository;
     private final CursoService cursoService;
     private final EmpresaService empresaService;
     private final TutorPracticasService tutorPracticasService;
@@ -34,12 +38,14 @@ public class AdminController {
     public AdminController(CursoService cursoService, EmpresaService empresaService, 
     						TutorPracticasService tutorPracticasService,
     						TutorCursoService tutorCursoService,
+    						UsuarioRepository usuarioRepository,
     						AlumnoService alumnoService){
     	 this.cursoService = cursoService;
     	 this.empresaService= empresaService;
     	 this.tutorPracticasService=tutorPracticasService;
     	 this.alumnoService=alumnoService;
     	 this.tutorCursoService=tutorCursoService;
+    	 this.usuarioRepository=usuarioRepository;
     }
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -66,6 +72,17 @@ public class AdminController {
         model.addAttribute("viewName", "admin/dashboard");
         return "layout";
     }
+ // Método auxiliar para obtener el tutor de prácticas autenticado
+    private Optional<Usuario> getTutorAutenticado(Authentication authentication) {
+        String email = authentication.getName();
+        Usuario user = usuarioRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+       return usuarioRepository.findByEmail(email);
+    }
+  
+    
+    
     @GetMapping("/reportes/report")
     public String reports(Model model) {
         List<Curso> cursos = cursoService.listarTodos();
@@ -113,6 +130,7 @@ public class AdminController {
         model.addAttribute("viewName", "admin/reportes/report");
         return "layout";
     }   
+    
     
     
     
