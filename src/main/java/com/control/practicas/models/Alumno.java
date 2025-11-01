@@ -299,7 +299,7 @@ public class Alumno {
         this.tutorPracticas = tutorPracticas;
     }
 
-
+/*
     @PostLoad
     protected void postLoad() {
         if (this.curso == null) {
@@ -312,7 +312,7 @@ public class Alumno {
             this.tutorPracticas = new TutorPracticas();
         }
     }
-
+*/
 
 	public boolean isActivo() {
 		// TODO Auto-generated method stub

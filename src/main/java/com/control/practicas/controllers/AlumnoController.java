@@ -248,6 +248,13 @@ public class AlumnoController {
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
         try {
+        	 // 🔥 LIMPIAR RELACIONES VACÍAS QUE SPRING CREA AUTOMÁTICAMENTE
+            if (alumno.getEmpresa() != null && alumno.getEmpresa().getId() == null) {
+                alumno.setEmpresa(null);
+            }
+            if (alumno.getTutorPracticas() != null && alumno.getTutorPracticas().getId() == null) {
+                alumno.setTutorPracticas(null);
+            }
             // Validar curso obligatorio
             if (alumno.getCursoId() == null || alumno.getCursoId() == 0) {
                 redirectAttributes.addFlashAttribute("error", "Debe seleccionar un curso");

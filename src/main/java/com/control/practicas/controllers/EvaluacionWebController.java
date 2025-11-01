@@ -32,11 +32,12 @@ public class EvaluacionWebController {
         this.capacidadService = capacidadService;
     }
 
-    @GetMapping
+    @GetMapping("/listar")
     public String listar(Model model) {
         List<Evaluacion> evaluaciones = evaluacionService.listarTodas();
         model.addAttribute("evaluaciones", evaluaciones);
-        return "admin/evaluacion/lista";
+        model.addAttribute("viewName", "enconstruccion"); // a cambiar
+        return "layout";
     }
 
     @GetMapping("/nuevo")

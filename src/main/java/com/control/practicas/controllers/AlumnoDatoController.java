@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.control.practicas.models.Alumno;
 import com.control.practicas.models.Curso;
 import com.control.practicas.models.Empresa;
+import com.control.practicas.models.Evaluacion;
 import com.control.practicas.models.ObservacionDiaria;
 import com.control.practicas.models.TutorPracticas;
 import com.control.practicas.models.Usuario;
@@ -24,6 +25,7 @@ import com.control.practicas.repositories.AlumnoRepository;
 import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.UsuarioRepository;
 import com.control.practicas.services.AlumnoService;
+import com.control.practicas.services.EvaluacionService;
 import com.control.practicas.services.ObservacionDiariaService;
 
 @Controller
@@ -35,17 +37,20 @@ public class AlumnoDatoController {
     private final AlumnoRepository alumnoRepository;
     private final AlumnoService alumnoService;
     private final UsuarioRepository usuarioRepository;
+    private final EvaluacionService evaluacionService;
     
     public AlumnoDatoController(ObservacionDiariaRepository observacionDiariaRepository,
                                       ObservacionDiariaService observacionDiariaService,
                                       AlumnoRepository alumnoRepository,
                                       AlumnoService alumnoService,
+                                      EvaluacionService evaluacionService,
                                       UsuarioRepository usuarioRepository) {
         this.observacionDiariaRepository = observacionDiariaRepository;
         this.observacionDiariaService = observacionDiariaService;
         this.alumnoRepository = alumnoRepository;
         this.usuarioRepository = usuarioRepository;
         this.alumnoService= alumnoService;
+        this.evaluacionService= evaluacionService;
     }
     
     
@@ -63,6 +68,21 @@ public class AlumnoDatoController {
             .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
     }
 
+    @GetMapping("/evaluacion/listar")
+    public String listar(Model model) {
+        List<Evaluacion> evaluaciones = evaluacionService.listarTodas();
+        model.addAttribute("evaluaciones", evaluaciones);
+        model.addAttribute("viewName", "enconstruccion"); // a cambiar
+        return "layout";
+    }
+    @GetMapping("/evaluacion/incidencia")
+    public String incidencia(Model model) {
+        List<Evaluacion> evaluaciones = evaluacionService.listarTodas();
+        model.addAttribute("evaluaciones", evaluaciones);
+        model.addAttribute("viewName", "enconstruccion"); // a cambiar
+        return "layout";
+    }
+    
     @GetMapping("/perfil")
     public String verPerfilAlumno(Authentication authentication, 
     		Model model) {
@@ -159,7 +179,11 @@ public class AlumnoDatoController {
 
         return "layout"; // layout principal que incluye header y contenido
     }
-
+/**************************************************************************************************************************
+ *  hay que poner una restriccion, para poder hacer observaciones, la empresa debe estar registrada en el perfil del alumno
+ *  Al menos o si no tambien el tutor de practicas para poder hacer nuevas observaciones.
+ ***************************************************************************************************************************/
+    
     
     @GetMapping("/observaciondiaria/listar")
     public String listar(Model model, Authentication authentication) {
@@ -174,8 +198,14 @@ public class AlumnoDatoController {
     }
     
     @GetMapping("/observaciondiaria/nuevo")
-    public String mostrarFormularioNuevo(Model model, Authentication authentication) {
+    public String mostrarFormularioNuevo(Model model, Authentication authentication,RedirectAttributes redirectAttributes) {
         Alumno alumno = getAlumnoAutenticado(authentication);
+     // 🔒 Restricción: comprobar si tiene empresa y tutor asignados
+        if (alumno.getEmpresa() == null || alumno.getTutorPracticas() == null) {
+            redirectAttributes.addFlashAttribute("error",
+                    "No puedes crear una observación diaria sin tener una empresa y un tutor asignados.");
+            return "redirect:/alumno/dashboard"; // o donde quieras redirigirlo
+        }
         ObservacionDiaria observacionDiaria = new ObservacionDiaria();
        // model.addAttribute("observacionDiaria", new ObservacionDiaria());
         observacionDiaria.setHorasRealizadas(0); // ← INICIALIZA ESTO

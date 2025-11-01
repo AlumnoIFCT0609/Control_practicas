@@ -136,16 +136,28 @@ public class TutorPracticasDatoController {
     @GetMapping("/observaciondiaria/editar/{id}")
     public String ver(@PathVariable Long id, Model model, Authentication authentication) {
         TutorPracticas tutor = getTutorAutenticado(authentication);
+       
         ObservacionDiaria observacionDiaria = observacionDiariaService.buscarPorId(id)
             .orElseThrow(() -> new RuntimeException("Observación no encontrada"));
         
         if (!observacionDiaria.getAlumno().getTutorPracticas().getId().equals(tutor.getId())) {
-            throw new RuntimeException("No tiene permisos para ver esta observación");
+            //throw new RuntimeException("No tiene permisos para ver esta observación");
+        	model.addAttribute("error", " no hay observaciones");
+        }else {
+        	model.addAttribute("observacionDiaria", observacionDiaria);
+        }
+        if (tutor==null) {
+        	model.addAttribute("error", "Error: no hay datos");
+        }else {
+        	 model.addAttribute("tutorActual", tutor);
         }
         
-        model.addAttribute("observacionDiaria", observacionDiaria);
+      
+        	
+        
+        
         model.addAttribute("alumnoActual", observacionDiaria.getAlumno());
-        model.addAttribute("tutorActual", tutor);
+       
         model.addAttribute("soloLectura", false);
         model.addAttribute("viewName", "admin/alumno/observaciondiaria/form"); 
         return "layout";

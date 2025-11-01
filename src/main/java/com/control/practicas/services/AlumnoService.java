@@ -137,7 +137,7 @@ public class AlumnoService {
     public Usuario crearUsuarioParaAlumno(Long alumnoId) {
         Alumno alumno = alumnoRepository.findById(alumnoId)
             .orElseThrow(() -> new IllegalArgumentException("Alumno no encontrado"));
-        
+       
         return usuarioService.crearUsuarioParaEntidad(
             alumno.getEmail(),
             alumno.getDni(),
