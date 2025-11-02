@@ -1,8 +1,6 @@
 package com.control.practicas.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.control.practicas.models.CriterioEvaluacion;
 import com.control.practicas.repositories.CriterioEvaluacionRepository;
 
@@ -12,8 +10,12 @@ import java.util.Optional;
 @Service
 public class CriterioEvaluacionService {
 
-    @Autowired
-    private CriterioEvaluacionRepository criterioEvaluacionRepository;
+    private final CriterioEvaluacionRepository criterioEvaluacionRepository;
+
+    // 🔹 Inyección por constructor
+    public CriterioEvaluacionService(CriterioEvaluacionRepository criterioEvaluacionRepository) {
+        this.criterioEvaluacionRepository = criterioEvaluacionRepository;
+    }
 
     public List<CriterioEvaluacion> listarTodos() {
         return criterioEvaluacionRepository.findAll();
@@ -35,3 +37,4 @@ public class CriterioEvaluacionService {
         return criterioEvaluacionRepository.existsById(id);
     }
 }
+

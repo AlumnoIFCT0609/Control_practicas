@@ -1,14 +1,14 @@
 package com.control.practicas.controllers;
 
-import java.time.LocalDate;
-import java.util.HashMap;
+//import java.time.LocalDate;
+//import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+//import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
+//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +32,8 @@ import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.TutorPracticasRepository;
 import com.control.practicas.repositories.UsuarioRepository;
 import com.control.practicas.services.AlumnoService;
-import com.control.practicas.services.CursoService;
-import com.control.practicas.services.EmpresaService;
+//import com.control.practicas.services.CursoService;
+//import com.control.practicas.services.EmpresaService;
 import com.control.practicas.services.ObservacionDiariaService;
 import com.control.practicas.services.TutorPracticasService;
 
@@ -146,11 +146,11 @@ public class TutorPracticasDatoController {
         }else {
         	model.addAttribute("observacionDiaria", observacionDiaria);
         }
-        if (tutor==null) {
+      /*  if (tutor==null) {
         	model.addAttribute("error", "Error: no hay datos");
         }else {
         	 model.addAttribute("tutorActual", tutor);
-        }
+        }*/
         
       
         	

@@ -1,8 +1,6 @@
 package com.control.practicas.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.control.practicas.models.EvaluacionTutor;
 import com.control.practicas.repositories.EvaluacionTutorRepository;
 
@@ -12,8 +10,12 @@ import java.util.Optional;
 @Service
 public class EvaluacionTutorService {
 
-    @Autowired
-    private EvaluacionTutorRepository evaluacionTutorRepository;
+    private final EvaluacionTutorRepository evaluacionTutorRepository;
+
+    // 🔹 Inyección de dependencias por constructor
+    public EvaluacionTutorService(EvaluacionTutorRepository evaluacionTutorRepository) {
+        this.evaluacionTutorRepository = evaluacionTutorRepository;
+    }
 
     public List<EvaluacionTutor> listarTodas() {
         return evaluacionTutorRepository.findAll();
@@ -35,3 +37,4 @@ public class EvaluacionTutorService {
         return evaluacionTutorRepository.existsById(id);
     }
 }
+

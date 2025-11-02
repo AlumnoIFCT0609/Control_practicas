@@ -1,7 +1,7 @@
 package com.control.practicas.controllers;
 
 
-import org.springframework.format.annotation.DateTimeFormat;
+//import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,21 +16,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.control.practicas.models.Alumno;
 import com.control.practicas.models.TutorCurso;
 import com.control.practicas.models.TutorPracticas;
-import com.control.practicas.services.TutorCursoService;
+//import com.control.practicas.services.TutorCursoService;
 import com.control.practicas.models.Curso;
 import com.control.practicas.models.Empresa;
 import com.control.practicas.models.ObservacionDiaria;
-import com.control.practicas.models.Usuario;
+//import com.control.practicas.models.Usuario;
 import com.control.practicas.repositories.AlumnoRepository;
 import com.control.practicas.repositories.CursoRepository;
 import com.control.practicas.repositories.EmpresaRepository;
 import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.TutorCursoRepository;
 import com.control.practicas.repositories.TutorPracticasRepository;
-import com.control.practicas.repositories.UsuarioRepository;
-import com.control.practicas.services.AlumnoService;
-import com.control.practicas.services.CursoService;
-import com.control.practicas.services.EmpresaService;
+//import com.control.practicas.repositories.UsuarioRepository;
+//import com.control.practicas.services.AlumnoService;
+//import com.control.practicas.services.CursoService;
+//import com.control.practicas.services.EmpresaService;
 import com.control.practicas.services.ObservacionDiariaService;
 import com.control.practicas.services.TutorPracticasService;
 
@@ -39,8 +39,8 @@ import java.util.Objects;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.time.LocalDate;
-import java.util.Optional;
+//import java.time.LocalDate;
+//import java.util.Optional;
 import java.util.Map;
 
 
@@ -48,41 +48,41 @@ import java.util.Map;
 @Controller
 @RequestMapping("/tutorcurso")
 public class TutorCursoDatoController {
-    private final TutorCursoService tutorCursoService;
+   //private final TutorCursoService tutorCursoService;
     private final TutorCursoRepository tutorCursoRepository;
     private final ObservacionDiariaRepository observacionDiariaRepository;
     private final ObservacionDiariaService observacionDiariaService;
     private final AlumnoRepository alumnoRepository;
-    private final AlumnoService alumnoService;
-    private final UsuarioRepository usuarioRepository;
+    //private final AlumnoService alumnoService;
+   // private final UsuarioRepository usuarioRepository;
     private final TutorPracticasRepository tutorPracticasRepository;
     private final CursoRepository cursoRepository;
     private final EmpresaRepository empresaRepository;
-    private final TutorPracticasService tutorPracticasService;
+    //private final TutorPracticasService tutorPracticasService;
     
     
     public TutorCursoDatoController(
             ObservacionDiariaRepository observacionDiariaRepository,
             ObservacionDiariaService observacionDiariaService,
             AlumnoRepository alumnoRepository,
-            TutorCursoService tutorCursoService,
-            AlumnoService alumnoService,
+           // TutorCursoService tutorCursoService,
+           // AlumnoService alumnoService,
             CursoRepository cursoRepository,
             TutorCursoRepository tutorCursoRepository,
             EmpresaRepository empresaRepository,
-            UsuarioRepository usuarioRepository,
+           // UsuarioRepository usuarioRepository,
             TutorPracticasRepository tutorPracticasRepository,
             TutorPracticasService tutorPracticasService) {
-    	this.tutorCursoService = tutorCursoService;
+    	//this.tutorCursoService = tutorCursoService;
         this.observacionDiariaRepository = observacionDiariaRepository;
         this.observacionDiariaService = observacionDiariaService;
         this.alumnoRepository = alumnoRepository;
-        this.alumnoService = alumnoService;
-        this.usuarioRepository = usuarioRepository;
+       // this.alumnoService = alumnoService;
+       // this.usuarioRepository = usuarioRepository;
         this.tutorPracticasRepository = tutorPracticasRepository;
         this.cursoRepository=cursoRepository;
         this.empresaRepository=empresaRepository;
-        this.tutorPracticasService=tutorPracticasService;
+        //this.tutorPracticasService=tutorPracticasService;
         this.tutorCursoRepository=tutorCursoRepository;
     }
 

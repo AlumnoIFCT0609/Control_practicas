@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.control.practicas.models.CapacidadEvaluacion;
-import com.control.practicas.models.CriterioEvaluacion;
+//import com.control.practicas.models.CriterioEvaluacion;
 import com.control.practicas.services.CapacidadEvaluacionService;
 import com.control.practicas.services.CriterioEvaluacionService;
 
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin/evaluacion/capacidad")
+@RequestMapping("/admin/evaluacion/capacidades")
 public class CapacidadEvaluacionController {
 
     private final CapacidadEvaluacionService capacidadService;
@@ -29,14 +29,18 @@ public class CapacidadEvaluacionController {
     public String listar(Model model) {
         List<CapacidadEvaluacion> capacidades = capacidadService.listarTodas();
         model.addAttribute("capacidades", capacidades);
-        return "admin/evaluacion/capacidades";
+        
+        model.addAttribute("viewName", "admin/evaluacion/capacidades");
+        return "layout"; 
     }
 
-    @GetMapping("/nueva")
+    @GetMapping("/nuevo")
     public String mostrarFormularioNueva(Model model) {
         model.addAttribute("capacidad", new CapacidadEvaluacion());
         model.addAttribute("criterios", criterioService.listarTodos());
-        return "admin/evaluacion/capacidad-form";
+        model.addAttribute("soloLectura", false); // ✅ AÑADE ESTO
+        model.addAttribute("viewName", "admin/evaluacion/capacidad-form"); 
+        return "layout";
     }
 
     @GetMapping("/editar/{id}")
@@ -45,11 +49,11 @@ public class CapacidadEvaluacionController {
             .map(capacidad -> {
                 model.addAttribute("capacidad", capacidad);
                 model.addAttribute("criterios", criterioService.listarTodos());
-                return "admin/evaluacion/capacidad-form";
+                return "admin/evaluacion/form";
             })
             .orElseGet(() -> {
                 redirectAttributes.addFlashAttribute("error", "Capacidad no encontrada");
-                return "redirect:/admin/evaluacion/capacidad";
+                return "redirect:/admin/evaluacion/capacidades";
             });
     }
 
@@ -61,7 +65,7 @@ public class CapacidadEvaluacionController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar la capacidad: " + e.getMessage());
         }
-        return "redirect:/admin/evaluacion/capacidad";
+        return "redirect:/admin/evaluacion/capacidades";
     }
 
     @PostMapping("/eliminar/{id}")
@@ -76,7 +80,7 @@ public class CapacidadEvaluacionController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar la capacidad: " + e.getMessage());
         }
-        return "redirect:/admin/evaluacion/capacidad";
+        return "redirect:/admin/evaluacion/capacidades";
     }
 
     @PostMapping("/activar/{id}")
@@ -87,11 +91,11 @@ public class CapacidadEvaluacionController {
                 capacidadService.guardar(capacidad);
                 redirectAttributes.addFlashAttribute("success", 
                     capacidad.getActivo() ? "Capacidad activada" : "Capacidad desactivada");
-                return "redirect:/admin/evaluacion/capacidad";
+                return "redirect:/admin/evaluacion/capacidades";
             })
             .orElseGet(() -> {
                 redirectAttributes.addFlashAttribute("error", "Capacidad no encontrada");
-                return "redirect:/admin/evaluacion/capacidad";
+                return "redirect:/admin/evaluacion/capacidades";
             });
     }
 }

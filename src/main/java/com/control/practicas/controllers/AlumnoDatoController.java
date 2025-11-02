@@ -22,7 +22,7 @@ import com.control.practicas.models.ObservacionDiaria;
 import com.control.practicas.models.TutorPracticas;
 import com.control.practicas.models.Usuario;
 import com.control.practicas.repositories.AlumnoRepository;
-import com.control.practicas.repositories.ObservacionDiariaRepository;
+//import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.UsuarioRepository;
 import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.EvaluacionService;
@@ -32,20 +32,21 @@ import com.control.practicas.services.ObservacionDiariaService;
 @RequestMapping("/alumno")
 public class AlumnoDatoController {
     
-    private final ObservacionDiariaRepository observacionDiariaRepository;
+  //  private final ObservacionDiariaRepository observacionDiariaRepository;
     private final ObservacionDiariaService observacionDiariaService;
     private final AlumnoRepository alumnoRepository;
     private final AlumnoService alumnoService;
     private final UsuarioRepository usuarioRepository;
     private final EvaluacionService evaluacionService;
     
-    public AlumnoDatoController(ObservacionDiariaRepository observacionDiariaRepository,
+    public AlumnoDatoController(
+    								//ObservacionDiariaRepository observacionDiariaRepository,
                                       ObservacionDiariaService observacionDiariaService,
                                       AlumnoRepository alumnoRepository,
                                       AlumnoService alumnoService,
                                       EvaluacionService evaluacionService,
                                       UsuarioRepository usuarioRepository) {
-        this.observacionDiariaRepository = observacionDiariaRepository;
+     //   this.observacionDiariaRepository = observacionDiariaRepository;
         this.observacionDiariaService = observacionDiariaService;
         this.alumnoRepository = alumnoRepository;
         this.usuarioRepository = usuarioRepository;
@@ -130,7 +131,8 @@ public class AlumnoDatoController {
     @PostMapping("/perfil")
     public String guardarPerfilAlumno(@ModelAttribute("alumno") Alumno alumno, 
                                       Authentication authentication, 
-                                      RedirectAttributes redirectAttrs) {
+                                      RedirectAttributes redirectAttrs
+                                      ) {
         String email = authentication.getName();
         Alumno alumnoActual = alumnoService.findByEmailUsuario(email)
             .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));

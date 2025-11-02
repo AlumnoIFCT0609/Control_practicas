@@ -9,7 +9,7 @@ import com.control.practicas.models.Alumno;
 import com.control.practicas.models.Curso;
 import com.control.practicas.models.Empresa;
 import com.control.practicas.models.TutorPracticas;
-import com.control.practicas.models.Usuario;
+//import com.control.practicas.models.Usuario;
 
 import java.util.List;
 import java.util.Optional;

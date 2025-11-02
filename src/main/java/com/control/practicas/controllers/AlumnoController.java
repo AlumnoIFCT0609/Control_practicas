@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
+//import org.springframework.http.HttpStatus;
 //import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 //import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+//import org.springframework.stereotype.Controller;
+//import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -28,8 +28,8 @@ import java.util.Optional;
 @RequestMapping("/admin/alumno")
 public class AlumnoController {
     
-    private final UsuarioRepository usuarioRepository;
-    private final AlumnoRepository alumnoRepository;
+    //private final UsuarioRepository usuarioRepository;
+    //private final AlumnoRepository alumnoRepository;
     private final AlumnoService alumnoService;
     private final CursoRepository cursoRepository;
     private final CursoService cursoService;
@@ -39,8 +39,9 @@ public class AlumnoController {
     private final TutorPracticasRepository tutorPracticasRepository;
     private final ObservacionDiariaRepository observacionDiariaRepository;
     
-    public AlumnoController(UsuarioRepository usuarioRepository,
-                          AlumnoRepository alumnoRepository,
+    public AlumnoController(
+    					  // UsuarioRepository usuarioRepository,
+                         // AlumnoRepository alumnoRepository,
                           AlumnoService alumnoService,
                           CursoRepository cursoRepository,
                           EmpresaRepository empresaRepository,
@@ -49,8 +50,8 @@ public class AlumnoController {
                           TutorPracticasService tutorPracticasService,
                           ObservacionDiariaRepository observacionDiariaRepository,
                           TutorPracticasRepository tutorPracticasRepository) {
-        this.usuarioRepository = usuarioRepository;
-        this.alumnoRepository = alumnoRepository;
+        //this.usuarioRepository = usuarioRepository;
+       // this.alumnoRepository = alumnoRepository;
         this.alumnoService = alumnoService;
         this.cursoRepository = cursoRepository;
         this.empresaRepository = empresaRepository;

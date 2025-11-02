@@ -27,9 +27,9 @@ public class DataInitializer implements CommandLineRunner {
         
         // Usuarios de prueba originales
         createUserIfNotExists("admin@controlpracticas.com", "admin123", Usuario.Rol.ADMIN, 0, "administrador de prueba");
-        createUserIfNotExists("alumno@controlpracticas.com", "alumno123", Usuario.Rol.ALUMNO, 0, "alumno de prueba");
-        createUserIfNotExists("tutor@controlpracticas.com", "tutor123", Usuario.Rol.TUTOR_CURSO, 0, "tutor de prueba");
-        createUserIfNotExists("practicas@controlpracticas.com", "practicas123", Usuario.Rol.TUTOR_PRACTICAS, 0, "tutor de prácticas de prueba");
+        createUserIfNotExists("alumno@controlpracticas.com", "alumno123", Usuario.Rol.ALUMNO, 8, "alumno de prueba");
+        createUserIfNotExists("tutor@controlpracticas.com", "tutor123", Usuario.Rol.TUTOR_CURSO, 5, "tutor de prueba");
+        createUserIfNotExists("practicas@controlpracticas.com", "practicas123", Usuario.Rol.TUTOR_PRACTICAS, 5, "tutor de prácticas de prueba");
         
         // Usuarios reales del sistema
         createUserIfNotExists("admin@practicas.edu", "admin123", Usuario.Rol.ADMIN, 1, "administrador");

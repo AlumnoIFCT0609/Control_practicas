@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.control.practicas.models.CriterioEvaluacion;
 import com.control.practicas.models.Evaluacion;
 import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.CapacidadEvaluacionService;
@@ -36,17 +37,19 @@ public class EvaluacionWebController {
     public String listar(Model model) {
         List<Evaluacion> evaluaciones = evaluacionService.listarTodas();
         model.addAttribute("evaluaciones", evaluaciones);
-        model.addAttribute("viewName", "enconstruccion"); // a cambiar
+       // model.addAttribute("viewName", "enconstruccion"); // a cambiar
+        model.addAttribute("viewName", "admin/evaluacion/listar");
         return "layout";
     }
 
-    @GetMapping("/nuevo")
+    @GetMapping("/nueva")
     public String mostrarFormularioNueva(Model model) {
         model.addAttribute("evaluacion", new Evaluacion());
         model.addAttribute("alumnos", alumnoService.listarTodos());
         model.addAttribute("tutores", tutorService.listarTodos());
         model.addAttribute("capacidades", capacidadService.listarTodas());
-        return "admin/evaluacion/evaluacion-form";
+        model.addAttribute("soloLectura", false); // <-- AÑADE ESTO
+        return "admin/evaluacion/form";
     }
 
     @GetMapping("/editar/{id}")
@@ -65,7 +68,7 @@ public class EvaluacionWebController {
             });
     }
 
-    @PostMapping("/guardar")
+    /*@PostMapping("/guardar")
     public String guardar(@ModelAttribute Evaluacion evaluacion, RedirectAttributes redirectAttributes) {
         try {
             evaluacionService.guardar(evaluacion);
@@ -75,7 +78,33 @@ public class EvaluacionWebController {
         }
         
         return "redirect:/admin/evaluacion";
+    }*/
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute CriterioEvaluacion criterio, RedirectAttributes redirectAttributes) {
+        try {
+            if (criterio.getId() != null) {
+                // Traer del repositorio la entidad existente
+                CriterioEvaluacion existente = criterioService.buscarPorId(criterio.getId())
+                                            .orElseThrow(() -> new IllegalArgumentException("Criterio no encontrado"));
+                // Copiar los campos editados
+                existente.setNombre(criterio.getNombre());
+                existente.setPeso(criterio.getPeso());
+                existente.setDescripcion(criterio.getDescripcion());
+                existente.setActivo(criterio.getActivo());
+
+                criterioService.guardar(existente); // actualiza
+            } else {
+                // nuevo
+                criterioService.guardar(criterio);
+            }
+            redirectAttributes.addFlashAttribute("success", "Criterio guardado exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el criterio: " + e.getMessage());
+        }
+        return "redirect:/admin/evaluacion/criterios";
     }
+
+
 
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
