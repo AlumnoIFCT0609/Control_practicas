@@ -87,9 +87,10 @@ public class AdminController {
     public String reports(Model model) {
         List<Curso> cursos = cursoService.listarTodos();
         List<Empresa> empresas = empresaService.listarTodas();
-        List<TutorPracticas> tutoresPracticas = tutorPracticasService.listarTodos();
-        List<TutorCurso> tutoresCurso = tutorCursoService.listarTodos(); // ← AGREGAR ESTO
-                
+     
+
+        List<TutorCurso> tutorC = tutorCursoService.listarTodos(); 
+        List<TutorPracticas> tutorP = tutorPracticasService.listarTodos();        
 
         List<Alumno> alumnos = alumnoService.listarTodos();
 
@@ -111,21 +112,36 @@ public class AdminController {
         // Calcular estadísticas de alumnos
         long alumnosEnPracticas = alumnos.stream().filter(Alumno::isActivo).count();
         long alumnosFinalizados = alumnos.stream().filter(a -> !a.isActivo()).count();
-
+        //Calcular estadisticas de Tutores
+        long tutorCurso = tutorC.stream().filter(TutorCurso::getActivo).count();
+        long tutorCursoInac = tutorC.stream().filter(tc ->!tc.getActivo()).count();
+        
+        long tutorPracticas = tutorP.stream().filter(TutorPracticas::getActivo).count();
+        long tutorPracticasInac = tutorP.stream().filter(tp ->!tp.getActivo()).count();
+        System.out.println("========================");
+        System.out.println("Todos los tutores de Curso: "+ tutorC.size());
+        System.out.println("Todas las empresas de Curso: "+ empresas.size());
+        System.out.println("========================");
         model.addAttribute("cursos", cursos);
         model.addAttribute("alumnosPorCurso", alumnosPorCurso);
         model.addAttribute("empresas", empresas);
-        model.addAttribute("tutoresPracticas", tutoresPracticas);
-        model.addAttribute("tutoresCurso", tutoresCurso);
+        model.addAttribute("tutorP", tutorP.size());
+        model.addAttribute("tutorC", tutorC.size());
         model.addAttribute("alumnos", alumnos);
         
         // Agregar estadísticas calculadas
+        model.addAttribute("tutorCurso",tutorCurso);
+        model.addAttribute("tutorCursoInac",tutorCursoInac);
+        model.addAttribute("tutorPracticas",tutorPracticas);
+        model.addAttribute("tutorPracticasInac",tutorPracticasInac);
         model.addAttribute("cursosActivos", cursosActivos);
         model.addAttribute("cursosFinalizados", cursosFinalizados);
         model.addAttribute("empresasActivas", empresasActivas);
         model.addAttribute("empresasInactivas", empresasInactivas);
         model.addAttribute("alumnosEnPracticas", alumnosEnPracticas);
         model.addAttribute("alumnosFinalizados", alumnosFinalizados);
+
+        
 
         model.addAttribute("viewName", "admin/reportes/report");
         return "layout";

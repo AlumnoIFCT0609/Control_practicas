@@ -10,6 +10,7 @@ import com.control.practicas.models.Usuario.Rol;
 import com.control.practicas.repositories.AlumnoRepository;
 import com.control.practicas.repositories.IncidenciaRepository;
 import com.control.practicas.repositories.ObservacionDiariaRepository;
+import com.control.practicas.repositories.TutorCursoRepository;
 import com.control.practicas.repositories.TutorPracticasRepository;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ public class TutorPracticasService {
     private final AlumnoRepository alumnoRepository;
     private final ObservacionDiariaRepository observacionDiariaRepository;
     private final IncidenciaRepository incidenciaRepository;
+    private final TutorCursoRepository tutorCursoRepository;
 
  private final TutorPracticasRepository tutorPracticasRepository;
  private final UsuarioService usuarioService;
@@ -31,12 +33,14 @@ public class TutorPracticasService {
  public TutorPracticasService(TutorPracticasRepository tutorPracticasRepository,
 		 						UsuarioService usuarioService,AlumnoRepository alumnoRepository,
                                 ObservacionDiariaRepository observacionDiariaRepository,
+                                TutorCursoRepository tutorCursoRepository,
                                 IncidenciaRepository incidenciaRepository) {
      this.tutorPracticasRepository = tutorPracticasRepository;
      this.usuarioService = usuarioService;
      this.alumnoRepository = alumnoRepository;
      this.observacionDiariaRepository = observacionDiariaRepository;
      this.incidenciaRepository = incidenciaRepository;
+     this.tutorCursoRepository=tutorCursoRepository;
  }
  
  
@@ -123,7 +127,12 @@ public class TutorPracticasService {
 	    return horasPendientes;
 	}
 
-
+ /**
+  * Contar tutores activos
+  */
+ public long contarActivos() {
+     return tutorCursoRepository.countByActivoTrue();
+ }
  
 
 }
