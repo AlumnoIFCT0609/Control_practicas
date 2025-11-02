@@ -48,11 +48,15 @@ public class CapacidadEvaluacionController {
         return capacidadService.buscarPorId(id)
             .map(capacidad -> {
                 model.addAttribute("capacidad", capacidad);
+                model.addAttribute("soloLectura", false);
                 model.addAttribute("criterios", criterioService.listarTodos());
-                return "admin/evaluacion/form";
+                model.addAttribute("viewName","admin/evaluacion/capacidad-form");
+                return "layout";
             })
             .orElseGet(() -> {
                 redirectAttributes.addFlashAttribute("error", "Capacidad no encontrada");
+                
+                
                 return "redirect:/admin/evaluacion/capacidades";
             });
     }

@@ -31,9 +31,12 @@
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <form th:action="@{${capacidad.id != null ? '/admin/evaluacion/capacidades/editar/' + capacidad.id : '/admin/evaluacion/capacidades/guardar'}}" 
+                    <!--   <form th:action="@{${capacidad.id != null ? '/admin/evaluacion/capacidades/editar/' + capacidad.id : '/admin/evaluacion/capacidades/guardar'}}" 
                           th:object="${capacidad}" 
-                          method="post">
+                          method="post">-->
+                          <form th:action="@{/admin/evaluacion/capacidades/guardar}"
+      							th:object="${capacidad}"
+      							method="post">
                         
                         <!-- ID oculto para edición -->
                         <input type="hidden" th:field="*{id}" th:if="${capacidad.id != null}">

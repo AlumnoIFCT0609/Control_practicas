@@ -14,15 +14,15 @@ import java.util.List;
 @RequestMapping("/admin/evaluacion/criterios")
 public class CriterioEvaluacionController {
 
-    private final CriterioEvaluacionService criterioService;
+    private final CriterioEvaluacionService criterioEvaluacionService;
 
-    public CriterioEvaluacionController(CriterioEvaluacionService criterioService) {
-        this.criterioService = criterioService;
+    public CriterioEvaluacionController(CriterioEvaluacionService criterioEvaluacionService) {
+        this.criterioEvaluacionService = criterioEvaluacionService;
     }
 
     @GetMapping
     public String listar(Model model) {
-        List<CriterioEvaluacion> criterios = criterioService.listarTodos();
+        List<CriterioEvaluacion> criterios = criterioEvaluacionService.listarTodos();
         model.addAttribute("criterios", criterios);
         model.addAttribute("soloLectura", false); // <-- Añade esto
         model.addAttribute("viewName", "admin/evaluacion/criterios-lista");
@@ -39,12 +39,18 @@ public class CriterioEvaluacionController {
 
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        return criterioService.buscarPorId(id)
+        return criterioEvaluacionService.buscarPorId(id)
             .map(criterio -> {
+                // LOGS DE DEPURACIÓN
+                System.out.println("=== CARGAR FORMULARIO EDITAR ===");
+                System.out.println("ID recibido en URL: " + id);
+                System.out.println("ID del objeto criterio: " + criterio.getId());
+                System.out.println("Nombre: " + criterio.getNombre());
+                System.out.println("================================");
+                
                 model.addAttribute("criterio", criterio);
                 model.addAttribute("viewName", "admin/evaluacion/criterios-form");
                 return "layout";
-
             })
             .orElseGet(() -> {
                 redirectAttributes.addFlashAttribute("error", "Criterio no encontrado");
@@ -55,19 +61,43 @@ public class CriterioEvaluacionController {
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute CriterioEvaluacion criterio, RedirectAttributes redirectAttributes) {
         try {
-            criterioService.guardar(criterio);
+        	 // LOGS DE DEPURACIÓN
+            System.out.println("=== DEBUG GUARDAR ===");
+            System.out.println("ID: " + criterio.getId());
+            System.out.println("Nombre: " + criterio.getNombre());
+            System.out.println("Peso: " + criterio.getPeso());
+            System.out.println("====================");
+        	
+        	
+        	
+            if (criterio.getId() != null) {
+                // Verificar que existe
+                CriterioEvaluacion existente = criterioEvaluacionService.buscarPorId(criterio.getId())
+                                            .orElseThrow(() -> new IllegalArgumentException("Criterio no encontrado"));
+                
+                // Actualizar los campos del existente
+                existente.setNombre(criterio.getNombre());
+                existente.setPeso(criterio.getPeso());
+                existente.setDescripcion(criterio.getDescripcion());
+                existente.setActivo(criterio.getActivo());
+                
+                // Guardar el objeto existente (no el nuevo)
+                criterioEvaluacionService.guardar(existente);
+            } else {
+                // Para nuevos registros, guardar directamente
+                criterioEvaluacionService.guardar(criterio);
+            }
             redirectAttributes.addFlashAttribute("success", "Criterio guardado exitosamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar el criterio: " + e.getMessage());
         }
         return "redirect:/admin/evaluacion/criterios";
     }
-
-    @PostMapping("/eliminar/{id}")
+        @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            if (criterioService.existePorId(id)) {
-                criterioService.eliminar(id);
+            if (criterioEvaluacionService.existePorId(id)) {
+                criterioEvaluacionService.eliminar(id);
                 redirectAttributes.addFlashAttribute("success", "Criterio eliminado exitosamente");
             } else {
                 redirectAttributes.addFlashAttribute("error", "Criterio no encontrado");
@@ -80,10 +110,10 @@ public class CriterioEvaluacionController {
 
     @PostMapping("/activar/{id}")
     public String activar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        return criterioService.buscarPorId(id)
+        return criterioEvaluacionService.buscarPorId(id)
             .map(criterio -> {
                 criterio.setActivo(!criterio.getActivo());
-                criterioService.guardar(criterio);
+                criterioEvaluacionService.guardar(criterio);
                 redirectAttributes.addFlashAttribute("success", 
                     criterio.getActivo() ? "Criterio activado" : "Criterio desactivado");
                 

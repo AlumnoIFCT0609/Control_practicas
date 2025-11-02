@@ -10,6 +10,7 @@
                     <span th:if="${criterio.id != null}">Editar Criterio</span>
                     <span th:if="${criterio.id == null}">Nuevo Criterio</span>
                 </h2>
+				
             </div>
 
             <!-- Mensajes de éxito -->
@@ -30,10 +31,10 @@
                           th:object="${criterio}" 
                           method="post">
                         
-                        <!-- ID oculto para edición 
-                        <input type="hidden" th:field="*{id}" th:if="${criterio.id != null}">-->
-                        
-                        <input type="hidden" th:field="*{id}">
+                         ID oculto para edición 
+                        <input type="hidden" th:field="*{id}" th:if="${criterio.id != null}">
+                       <!-- <input type="hidden" th:field="*{id}">
+                        <input type="hidden" name="id" th:value="${criterio.id}">-->
                         
                         <div class="row">
                             <!-- Nombre -->
