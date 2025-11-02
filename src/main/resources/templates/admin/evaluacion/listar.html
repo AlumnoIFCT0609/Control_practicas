@@ -4,6 +4,9 @@
             <h2>
                 <i class="bi bi-clipboard-check-fill me-2"></i>
                 Gestión de Evaluaciones
+                 <a th:href="@{/admin/evaluacion/nuevo}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Evaluación
+            </a>
             </h2>
 			<a th:href="@{/admin/evaluacion/capacidades}" class="btn btn-success me-2">
 			            <i class="bi bi-award"></i> Capacidades
@@ -11,9 +14,7 @@
 			<a th:href="@{/admin/evaluacion/criterios}" class="btn btn-info me-2">
 			            <i class="bi bi-list-check"></i> Criterios
 			</a>
-            <a th:href="@{/admin/evaluacion/nuevo}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Nueva Evaluación
-            </a>
+           
         </div>
 
         <!-- Mensajes de feedback -->

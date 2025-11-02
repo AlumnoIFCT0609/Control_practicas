@@ -36,7 +36,7 @@
                                     <span th:text="${cursosActivos}">0</span>
                                 </div>
                                 <div class="small text-muted">
-                                    <strong>Cursos Finalizados:</strong> 
+                                    <strong>Cursos Finalizados (Inactivos):</strong> 
                                     <span th:text="${cursosFinalizados}">0</span>
                                 </div>
                             </div>
@@ -75,17 +75,27 @@
                     <div class="col-xl-6 col-lg-6 mb-4">
                         <div class="card border-left-info shadow h-100 py-2">
                             <div class="card-body">
-                                <div class="row no-gutters align-items-center">
+                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                            Total Tutores de Curso
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Total Tutores de Curso Registrados
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorp != null ? tutorp.size() : 0}">0</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorC}">0</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                                        <i class="fas fa-building fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
+                                <hr>
+                                <div class="small text-muted">
+                                    <strong>Tutores de Curso Activos:</strong> 
+                                    <span th:text="${tutorCurso}">0</span>
+                                </div>
+                                <div class="small text-muted">
+                                    <strong>Tutores Inactivos:</strong> 
+                                    <span th:text="${tutorCursoInac}">0</span>
+                                </div>
+                               
                             </div>
                         </div>
                     </div>
@@ -96,15 +106,25 @@
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Total Tutores de Prácticas
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Total Tutores de Prácticas Registrados
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorp != null ? tutorp.size() : 0}">0</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorP}">0</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-user-tie fa-2x text-gray-300"></i>
+                                        <i class="fas fa-building fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
+                                <hr>
+                                <div class="small text-muted">
+                                    <strong>Tutores de Prácticas Activos:</strong> 
+                                    <span th:text="${tutorPracticas}">0</span>
+                                </div>
+                                <div class="small text-muted">
+                                    <strong>Tutores Inactivos:</strong> 
+                                    <span th:text="${tutorPracticasInac}">0</span>
+                                </div>
+                               
                             </div>
                         </div>
                     </div>
