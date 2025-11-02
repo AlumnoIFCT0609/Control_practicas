@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.stereotype.Component;
+//import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "tutorcurso")

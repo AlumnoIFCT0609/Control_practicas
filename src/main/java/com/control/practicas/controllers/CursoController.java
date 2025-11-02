@@ -8,7 +8,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.control.practicas.models.Curso;
 import com.control.practicas.models.TutorCurso;
-import com.control.practicas.models.TutorPracticas;
+//import com.control.practicas.models.TutorPracticas;
 import com.control.practicas.repositories.TutorCursoRepository;
 import com.control.practicas.services.CursoService;
 import com.control.practicas.services.TutorCursoService;
@@ -16,7 +16,7 @@ import com.control.practicas.services.TutorCursoService;
 import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+//import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin/curso")

@@ -1,20 +1,20 @@
 package com.control.practicas.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.control.practicas.models.Evaluacion;
 import com.control.practicas.services.EvaluacionService;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/evaluaciones")
 public class EvaluacionController {
+    
+    private final EvaluacionService evaluacionService;
 
-    @Autowired
-    private EvaluacionService evaluacionService;
+    public EvaluacionController(EvaluacionService evaluacionService) {
+        this.evaluacionService = evaluacionService;
+    }
 
     @GetMapping
     public List<Evaluacion> listarTodas() {

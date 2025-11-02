@@ -7,11 +7,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.control.practicas.models.Usuario;
 import com.control.practicas.repositories.UsuarioRepository;
-import com.control.practicas.services.UsuarioService;
+//import com.control.practicas.services.UsuarioService;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.security.Principal;
+//import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,12 +21,15 @@ public class UsuarioController {
         
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UsuarioService usuarioService;
+//    private final UsuarioService usuarioService;
     
-    public UsuarioController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,UsuarioService usuarioService) {
+    public UsuarioController(UsuarioRepository usuarioRepository, 
+    						PasswordEncoder passwordEncoder) {
+    		//				UsuarioService usuarioService 
+    		
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
-        this.usuarioService = usuarioService;
+        //this.usuarioService = usuarioService;
     }
      
     // Listar todos los usuarios

@@ -11,7 +11,7 @@ import com.control.practicas.services.CriterioEvaluacionService;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin/evaluacion/criterio")
+@RequestMapping("/admin/evaluacion/criterios")
 public class CriterioEvaluacionController {
 
     private final CriterioEvaluacionService criterioService;
@@ -24,13 +24,15 @@ public class CriterioEvaluacionController {
     public String listar(Model model) {
         List<CriterioEvaluacion> criterios = criterioService.listarTodos();
         model.addAttribute("criterios", criterios);
-        return "admin/evaluacion/criterios";
+        model.addAttribute("soloLectura", false); // <-- Añade esto
+        model.addAttribute("viewName", "admin/evaluacion/criterios-lista");
+        return "layout";
     }
 
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("criterio", new CriterioEvaluacion());
-        model.addAttribute("viewName", "admin/evaluacion/criterios");
+        model.addAttribute("viewName", "admin/evaluacion/criterios-form");
         return "layout";
 
     }
@@ -40,13 +42,13 @@ public class CriterioEvaluacionController {
         return criterioService.buscarPorId(id)
             .map(criterio -> {
                 model.addAttribute("criterio", criterio);
-                model.addAttribute("viewName", "admin/evaluacion/criterios");
+                model.addAttribute("viewName", "admin/evaluacion/criterios-form");
                 return "layout";
 
             })
             .orElseGet(() -> {
                 redirectAttributes.addFlashAttribute("error", "Criterio no encontrado");
-                return "redirect:/admin/evaluacion";
+                return "redirect:/admin/evaluacion/criterios";
             });
     }
 
@@ -58,7 +60,7 @@ public class CriterioEvaluacionController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar el criterio: " + e.getMessage());
         }
-        return "redirect:/admin/evaluacion";
+        return "redirect:/admin/evaluacion/criterios";
     }
 
     @PostMapping("/eliminar/{id}")
@@ -73,7 +75,7 @@ public class CriterioEvaluacionController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar el criterio: " + e.getMessage());
         }
-        return "redirect:/admin/evaluacion";
+        return "redirect:/admin/evaluacion/criterios";
     }
 
     @PostMapping("/activar/{id}")
@@ -89,7 +91,7 @@ public class CriterioEvaluacionController {
             })
             .orElseGet(() -> {
                 redirectAttributes.addFlashAttribute("error", "Criterio no encontrado");
-                return "redirect:/admin/evaluacion";
+                return "redirect:/admin/evaluacion/criterios";
             });
     }
 }
