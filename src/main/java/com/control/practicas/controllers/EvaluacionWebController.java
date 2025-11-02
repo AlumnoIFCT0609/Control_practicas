@@ -9,6 +9,7 @@ import com.control.practicas.models.CriterioEvaluacion;
 import com.control.practicas.models.Evaluacion;
 import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.CapacidadEvaluacionService;
+import com.control.practicas.services.CriterioEvaluacionService;
 import com.control.practicas.services.EvaluacionService;
 import com.control.practicas.services.TutorPracticasService;
 
@@ -21,16 +22,18 @@ public class EvaluacionWebController {
     private final EvaluacionService evaluacionService;
     private final AlumnoService alumnoService;
     private final TutorPracticasService tutorService;
-    private final CapacidadEvaluacionService capacidadService;
-
+    private final CapacidadEvaluacionService capacidadEvaluacionService;
+    private final CriterioEvaluacionService criterioEvaluacionService;
     public EvaluacionWebController(EvaluacionService evaluacionService, 
                                     AlumnoService alumnoService,
                                     TutorPracticasService tutorService,
-                                    CapacidadEvaluacionService capacidadService) {
+                                    CriterioEvaluacionService criterioEvaluacionService,
+                                    CapacidadEvaluacionService capacidadEvaluacionService) {
         this.evaluacionService = evaluacionService;
         this.alumnoService = alumnoService;
         this.tutorService = tutorService;
-        this.capacidadService = capacidadService;
+        this.capacidadEvaluacionService = capacidadEvaluacionService;
+        this.criterioEvaluacionService = criterioEvaluacionService;
     }
 
     @GetMapping("/listar")
@@ -47,7 +50,7 @@ public class EvaluacionWebController {
         model.addAttribute("evaluacion", new Evaluacion());
         model.addAttribute("alumnos", alumnoService.listarTodos());
         model.addAttribute("tutores", tutorService.listarTodos());
-        model.addAttribute("capacidades", capacidadService.listarTodas());
+        model.addAttribute("capacidades", capacidadEvaluacionService.listarTodas());
         model.addAttribute("soloLectura", false); // <-- AÑADE ESTO
         return "admin/evaluacion/form";
     }
@@ -59,7 +62,7 @@ public class EvaluacionWebController {
                 model.addAttribute("evaluacion", evaluacion);
                 model.addAttribute("alumnos", alumnoService.listarTodos());
                 model.addAttribute("tutores", tutorService.listarTodos());
-                model.addAttribute("capacidades", capacidadService.listarTodas());
+                model.addAttribute("capacidades", capacidadEvaluacionService.listarTodas());
                 return "admin/evaluacion/evaluacion-form";
             })
             .orElseGet(() -> {
@@ -68,7 +71,7 @@ public class EvaluacionWebController {
             });
     }
 
-    /*@PostMapping("/guardar")
+    @PostMapping("/guardar")
     public String guardar(@ModelAttribute Evaluacion evaluacion, RedirectAttributes redirectAttributes) {
         try {
             evaluacionService.guardar(evaluacion);
@@ -78,32 +81,9 @@ public class EvaluacionWebController {
         }
         
         return "redirect:/admin/evaluacion";
-    }*/
-    @PostMapping("/guardar")
-    public String guardar(@ModelAttribute CriterioEvaluacion criterio, RedirectAttributes redirectAttributes) {
-        try {
-            if (criterio.getId() != null) {
-                // Traer del repositorio la entidad existente
-                CriterioEvaluacion existente = criterioService.buscarPorId(criterio.getId())
-                                            .orElseThrow(() -> new IllegalArgumentException("Criterio no encontrado"));
-                // Copiar los campos editados
-                existente.setNombre(criterio.getNombre());
-                existente.setPeso(criterio.getPeso());
-                existente.setDescripcion(criterio.getDescripcion());
-                existente.setActivo(criterio.getActivo());
-
-                criterioService.guardar(existente); // actualiza
-            } else {
-                // nuevo
-                criterioService.guardar(criterio);
-            }
-            redirectAttributes.addFlashAttribute("success", "Criterio guardado exitosamente");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al guardar el criterio: " + e.getMessage());
-        }
-        return "redirect:/admin/evaluacion/criterios";
-    }
-
+    }/*
+   
+*/
 
 
     @PostMapping("/eliminar/{id}")
