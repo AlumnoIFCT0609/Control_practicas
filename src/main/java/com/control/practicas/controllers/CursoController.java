@@ -8,7 +8,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.control.practicas.models.Curso;
 import com.control.practicas.models.TutorCurso;
-//import com.control.practicas.models.TutorPracticas;
 import com.control.practicas.repositories.TutorCursoRepository;
 import com.control.practicas.services.CursoService;
 import com.control.practicas.services.TutorCursoService;
@@ -16,7 +15,6 @@ import com.control.practicas.services.TutorCursoService;
 import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.util.List;
-//import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin/curso")
@@ -32,37 +30,6 @@ public class CursoController {
     }
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        // Binder para TutorCurso (propiedad tutorCurso en Curso)
-     //   binder.registerCustomEditor(Long.class, new CustomNumberEditor(Long.class, true));
-   	
-    	 binder.registerCustomEditor(TutorCurso.class, "tutorCurso", new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) {
-                if (text == null || text.trim().isEmpty() || "0".equals(text)) {
-                    setValue(null);
-                } else {
-                    TutorCurso t = new TutorCurso();
-                    t.setId(Long.parseLong(text));
-                    setValue(t);
-                }
-            }
-        }); 
-
-        // Opcional: binder para Course si necesitas recibir directamente curso.id en alguna petición
-        binder.registerCustomEditor(Curso.class, "curso", new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) {
-                if (text == null || text.trim().isEmpty() || "0".equals(text)) {
-                    setValue(null);
-                } else {
-                    Curso c = new Curso();
-                    c.setId(Long.parseLong(text));
-                    setValue(c);
-                }
-            }
-        });
-
-        // Opcional: binder para LocalDate si recibes fechas en formato yyyy-MM-dd
         binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
@@ -75,8 +42,6 @@ public class CursoController {
         });
     }
 
-    
-    
     // Listar todos los cursos
     @GetMapping("/listar")
     public String listar(Model model) {

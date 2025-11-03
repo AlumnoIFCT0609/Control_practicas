@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.control.practicas.models.CapacidadEvaluacion;
-//import com.control.practicas.models.CriterioEvaluacion;
 import com.control.practicas.services.CapacidadEvaluacionService;
 import com.control.practicas.services.CriterioEvaluacionService;
 

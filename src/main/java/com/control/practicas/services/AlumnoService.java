@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @Service
 public class AlumnoService {
-	
+
     private final CursoRepository cursoRepository;
     private final AlumnoRepository alumnoRepository;
     private final EmpresaRepository empresaRepository;
@@ -30,7 +30,7 @@ public class AlumnoService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
     private final ObservacionDiariaRepository observacionDiariaRepository;
-    
+ // 🔹 Inyección de dependencias por constructor
     public AlumnoService(AlumnoRepository alumnoRepository,
                         CursoRepository cursoRepository, 
                         EmpresaRepository empresaRepository,

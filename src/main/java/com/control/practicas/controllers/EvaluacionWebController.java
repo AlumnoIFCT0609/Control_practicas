@@ -5,11 +5,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.control.practicas.models.CriterioEvaluacion;
+
 import com.control.practicas.models.Evaluacion;
 import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.CapacidadEvaluacionService;
-import com.control.practicas.services.CriterioEvaluacionService;
 import com.control.practicas.services.EvaluacionService;
 import com.control.practicas.services.TutorPracticasService;
 
@@ -23,17 +22,15 @@ public class EvaluacionWebController {
     private final AlumnoService alumnoService;
     private final TutorPracticasService tutorService;
     private final CapacidadEvaluacionService capacidadEvaluacionService;
-    private final CriterioEvaluacionService criterioEvaluacionService;
     public EvaluacionWebController(EvaluacionService evaluacionService, 
                                     AlumnoService alumnoService,
                                     TutorPracticasService tutorService,
-                                    CriterioEvaluacionService criterioEvaluacionService,
                                     CapacidadEvaluacionService capacidadEvaluacionService) {
         this.evaluacionService = evaluacionService;
         this.alumnoService = alumnoService;
         this.tutorService = tutorService;
         this.capacidadEvaluacionService = capacidadEvaluacionService;
-        this.criterioEvaluacionService = criterioEvaluacionService;
+
     }
 
     @GetMapping("/listar")
@@ -81,9 +78,7 @@ public class EvaluacionWebController {
         }
         
         return "redirect:/admin/evaluacion";
-    }/*
-   
-*/
+    }
 
 
     @PostMapping("/eliminar/{id}")

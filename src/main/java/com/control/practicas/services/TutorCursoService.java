@@ -17,7 +17,8 @@ public class TutorCursoService {
     
     private final TutorCursoRepository tutorCursoRepository;
     private final UsuarioService usuarioService;
-    
+ 
+    // 🔹 Inyección de dependencias por constructor
     public TutorCursoService(TutorCursoRepository tutorCursoRepository,
     		 UsuarioService usuarioService) {
         this.tutorCursoRepository = tutorCursoRepository;
