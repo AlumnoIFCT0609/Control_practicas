@@ -20,7 +20,7 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
     
     private final UsuarioRepository usuarioRepository;
-    
+ // 🔹 Inyección de dependencias por constructor
     public CustomUserDetailsService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }

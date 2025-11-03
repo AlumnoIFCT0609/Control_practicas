@@ -14,7 +14,7 @@ import java.util.Optional;
 public class EmpresaService {
     
     private final EmpresaRepository empresaRepository;
-    
+ // 🔹 Inyección de dependencias por constructor
     public EmpresaService(EmpresaRepository empresaRepository) {
         this.empresaRepository = empresaRepository;
     }

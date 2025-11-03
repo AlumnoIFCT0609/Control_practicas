@@ -24,7 +24,7 @@ public class CriterioEvaluacionController {
     public String listar(Model model) {
         List<CriterioEvaluacion> criterios = criterioEvaluacionService.listarTodos();
         model.addAttribute("criterios", criterios);
-        model.addAttribute("soloLectura", false); // <-- Añade esto
+        model.addAttribute("soloLectura", false); 
         model.addAttribute("viewName", "admin/evaluacion/criterios-lista");
         return "layout";
     }
@@ -41,7 +41,7 @@ public class CriterioEvaluacionController {
     public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         return criterioEvaluacionService.buscarPorId(id)
             .map(criterio -> {
-                // LOGS DE DEPURACIÓN
+                // Testeo de paso de datos entre java y html para depuración
                 System.out.println("=== CARGAR FORMULARIO EDITAR ===");
                 System.out.println("ID recibido en URL: " + id);
                 System.out.println("ID del objeto criterio: " + criterio.getId());
@@ -61,7 +61,7 @@ public class CriterioEvaluacionController {
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute CriterioEvaluacion criterio, RedirectAttributes redirectAttributes) {
         try {
-        	 // LOGS DE DEPURACIÓN
+        	 // Testeo de paso de datos entre java y html para depuración
             System.out.println("=== DEBUG GUARDAR ===");
             System.out.println("ID: " + criterio.getId());
             System.out.println("Nombre: " + criterio.getNombre());

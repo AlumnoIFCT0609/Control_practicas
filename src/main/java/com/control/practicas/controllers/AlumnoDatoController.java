@@ -22,7 +22,6 @@ import com.control.practicas.models.ObservacionDiaria;
 import com.control.practicas.models.TutorPracticas;
 import com.control.practicas.models.Usuario;
 import com.control.practicas.repositories.AlumnoRepository;
-//import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.UsuarioRepository;
 import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.EvaluacionService;
@@ -32,7 +31,6 @@ import com.control.practicas.services.ObservacionDiariaService;
 @RequestMapping("/alumno")
 public class AlumnoDatoController {
     
-  //  private final ObservacionDiariaRepository observacionDiariaRepository;
     private final ObservacionDiariaService observacionDiariaService;
     private final AlumnoRepository alumnoRepository;
     private final AlumnoService alumnoService;
@@ -40,13 +38,11 @@ public class AlumnoDatoController {
     private final EvaluacionService evaluacionService;
     
     public AlumnoDatoController(
-    								//ObservacionDiariaRepository observacionDiariaRepository,
                                       ObservacionDiariaService observacionDiariaService,
                                       AlumnoRepository alumnoRepository,
                                       AlumnoService alumnoService,
                                       EvaluacionService evaluacionService,
                                       UsuarioRepository usuarioRepository) {
-     //   this.observacionDiariaRepository = observacionDiariaRepository;
         this.observacionDiariaService = observacionDiariaService;
         this.alumnoRepository = alumnoRepository;
         this.usuarioRepository = usuarioRepository;
@@ -58,7 +54,7 @@ public class AlumnoDatoController {
     
     
     
-    // Método auxiliar para obtener el alumno autenticado
+    // Método auxiliar para obtener el alumno autenticado  -> moverlo al service
     private Alumno getAlumnoAutenticado(Authentication authentication) {
         String email = authentication.getName();
         Usuario user = usuarioRepository.findByEmail(email)
@@ -92,7 +88,6 @@ public class AlumnoDatoController {
         String email = authentication.getName();
 
         // Buscar el alumno correspondiente
-        
         Alumno alumno = alumnoService.findByEmailUsuario(email)
             .orElseThrow(() -> new RuntimeException("Alumno no encontrado con email: " + email));
 
@@ -143,7 +138,6 @@ public class AlumnoDatoController {
         alumnoActual.setDuracionPracticas(alumno.getDuracionPracticas());
         alumnoActual.setFechaInicio(alumno.getFechaInicio());
         alumnoActual.setFechaFin(alumno.getFechaFin());
-        // ⚠️ No modificar curso, empresa, tutor, DNI, etc.
 
         alumnoService.guardar(alumnoActual);
 
@@ -155,14 +149,14 @@ public class AlumnoDatoController {
     
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
-        // 1️⃣ Obtener el email del alumno autenticado
+        // Obtener el email del alumno autenticado
         String email = authentication.getName();
 
-        // 2️⃣ Buscar el alumno completo
+        // Buscar el alumno completo
         Alumno alumno = alumnoService.findByEmailUsuario(email)
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado con email: " + email));
 
-        // 3️⃣ Opcional: cargar relaciones para la vista
+        // Opcional: cargar relaciones para la vista
         // Esto asegura que curso, empresa y tutor no sean nulos en la vista
         if (alumno.getCurso() == null) {
             alumno.setCurso(new Curso()); // Evita NullPointerException en la vista
@@ -174,18 +168,15 @@ public class AlumnoDatoController {
             alumno.setTutorPracticas(new TutorPracticas());
         }
 
-        // 4️⃣ Pasar los datos al modelo
+        // Pasar los datos al modelo
         model.addAttribute("alumno", alumno);
         model.addAttribute("pageTitle", "Dashboard Alumno");
         model.addAttribute("viewName", "alumno/dashboard"); // tu fragmento principal
 
         return "layout"; // layout principal que incluye header y contenido
     }
-/**************************************************************************************************************************
- *  hay que poner una restriccion, para poder hacer observaciones, la empresa debe estar registrada en el perfil del alumno
- *  Al menos o si no tambien el tutor de practicas para poder hacer nuevas observaciones.
- ***************************************************************************************************************************/
-    
+
+   
     
     @GetMapping("/observaciondiaria/listar")
     public String listar(Model model, Authentication authentication) {
@@ -202,15 +193,14 @@ public class AlumnoDatoController {
     @GetMapping("/observaciondiaria/nuevo")
     public String mostrarFormularioNuevo(Model model, Authentication authentication,RedirectAttributes redirectAttributes) {
         Alumno alumno = getAlumnoAutenticado(authentication);
-     // 🔒 Restricción: comprobar si tiene empresa y tutor asignados
+     // Restricción: comprobar si tiene empresa y tutor asignados
         if (alumno.getEmpresa() == null || alumno.getTutorPracticas() == null) {
             redirectAttributes.addFlashAttribute("error",
                     "No puedes crear una observación diaria sin tener una empresa y un tutor asignados.");
-            return "redirect:/alumno/dashboard"; // o donde quieras redirigirlo
+            return "redirect:/alumno/dashboard"; 
         }
         ObservacionDiaria observacionDiaria = new ObservacionDiaria();
-       // model.addAttribute("observacionDiaria", new ObservacionDiaria());
-        observacionDiaria.setHorasRealizadas(0); // ← INICIALIZA ESTO
+        observacionDiaria.setHorasRealizadas(0); 
         observacionDiaria.setFecha(LocalDate.now());
         
         model.addAttribute("observacionDiaria", observacionDiaria);
@@ -235,14 +225,7 @@ public class AlumnoDatoController {
         model.addAttribute("viewName", "alumno/observaciondiaria/form");
         return "layout";
     }
-    
-    /* Error al guardar la observación: could not execute statement [Column 'fecha' cannot be null] 
-     * [update observaciondiaria set actividades=?,alumno=?,explicaciones=?,fecha=?,
-     * horas_realizadas=?,observaciones_alumno=?,observaciones_tutor=? where id=?]; 
-     * SQL [update observaciondiaria set actividades=?,alumno=?,explicaciones=?,
-     * fecha=?,horas_realizadas=?,observaciones_alumno=?,observaciones_tutor=? where id=?]; 
-     * constraint [null]*/
-    
+           
     @PostMapping("/observaciondiaria/guardar")
     public String guardar(@ModelAttribute ObservacionDiaria observacionDiaria, 
                          Authentication authentication, 
