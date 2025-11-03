@@ -19,7 +19,6 @@ application.properties
 *.iws
 *.iml
 *.ipr
-application.properties
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

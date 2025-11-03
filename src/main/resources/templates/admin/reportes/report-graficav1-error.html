@@ -361,23 +361,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- Variables de datos serializadas como JSON -->
-    <script>
-        var cursosData = JSON.parse('[(${cursosJson})]');
-        var empresasData = JSON.parse('[(${empresasJson})]');
-        var alumnosPorCursoData = JSON.parse('[(${alumnosPorCursoJson})]');
-        var tutoresCursoData = JSON.parse('[(${tutoresCursoJson})]');
-        var tutoresPracticasData = JSON.parse('[(${tutoresPracticasJson})]');
-        
-        console.log('Variables cargadas:', {
-            cursos: cursosData.length,
-            empresas: empresasData.length,
-            tutores: tutoresCursoData.length
-        });
-    </script>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
     
-    <script>
-    // Esperar a que el DOM esté completamente cargado
+    // Esperar a que el DOM y Chart.js estén completamente cargados
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM cargado, inicializando gráficos...');
         
@@ -387,12 +374,12 @@
             return;
         }
         
-        // Usar las variables globales definidas arriba
-        const cursos = cursosData || [];
-        const empresas = empresasData || [];
-        const alumnosPorCurso = alumnosPorCursoData || {};
-        const tutoresCurso = tutoresCursoData || [];
-        const tutoresPracticas = tutoresPracticasData || [];
+        // Datos desde Thymeleaf
+        const cursos = /*[[${cursos}]]*/ [];
+        const empresas = /*[[${empresas}]]*/ [];
+        const alumnosPorCurso = /*[[${alumnosPorCurso}]]*/ {};
+        const tutoresCurso = /*[[${tutoresCurso}]]*/ [];
+        const tutoresPracticas = /*[[${tutoresPracticas}]]*/ [];
 
         console.log('Datos cargados:', {
             cursos: cursos.length,
@@ -459,7 +446,7 @@
             }
         });
 
-        // Gráfico: Ranking Tutores de Curso
+        // Gráfico: Ranking Tutores de Curso (CORREGIDO - usar 'bar' con indexAxis)
         const tutoresOrdenados = tutoresCurso
             .map(t => ({nombre: t.nombre + ' ' + t.apellidos, cursos: t.cursos ? t.cursos.length : 0}))
             .sort((a, b) => b.cursos - a.cursos)
@@ -489,7 +476,7 @@
             }
         });
 
-        // Gráfico: Ranking Tutores de Prácticas
+        // Gráfico: Ranking Tutores de Prácticas (CORREGIDO)
         const tutoresPracticasOrdenados = tutoresPracticas
             .map(t => ({nombre: t.nombre + ' ' + t.apellidos, alumnos: t.alumnos ? t.alumnos.length : 0}))
             .sort((a, b) => b.alumnos - a.alumnos)
@@ -748,5 +735,7 @@
         };
         html2pdf().set(opt).from(element).save();
     }
+    
+    /*]]>*/
     </script>
 </div>
