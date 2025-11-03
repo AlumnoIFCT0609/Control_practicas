@@ -12,21 +12,6 @@ import com.control.practicas.models.CriterioEvaluacion;
 @Repository
 public interface CriterioEvaluacionRepository extends JpaRepository<CriterioEvaluacion, Long> {
    
-	  // Buscar criterios activos
-    List<CriterioEvaluacion> findByActivoTrue();
-    
-    // Buscar criterios por capacidades
-    List<CriterioEvaluacion> findByCapacidades(CapacidadEvaluacion capacidad);
-    
-    // Buscar criterios activos por capacidades
-    List<CriterioEvaluacion> findByCapacidadAndActivoTrue(CapacidadEvaluacion capacidad);
-    
-    
- // Query para obtener criterios con su capacidad
-    @Query("SELECT DISTINCT c FROM CriterioEvaluacion c " +
-    	       "LEFT JOIN FETCH c.capacidad cap " +
-    	       "WHERE c.activo = true " +
-    	       "ORDER BY cap.nombre NULLS LAST, c.nombre")
-    	List<CriterioEvaluacion> findAllActivasWithCapacidad();
+	 //no tiene nada que hacer un criterio, ya que el no conoce evaluacion ni capacidad , son ellos los que le conocen a él
 }
 

@@ -80,7 +80,7 @@
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             Total Tutores de Curso Registrados
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorC}">0</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorC.size()}">0</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-building fa-2x text-gray-300"></i>
@@ -109,7 +109,7 @@
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             Total Tutores de Prácticas Registrados
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorP}">0</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tutorP.size()}">0</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-building fa-2x text-gray-300"></i>
@@ -224,51 +224,68 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 3: DIAGRAMA DE GANTT - DISPONIBILIDAD DE TUTORES -->
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">3. Cronología de Cursos (Diagrama de Gantt)</h6>
-                <small class="text-muted">Visualización de períodos de cursos para detectar solapamientos</small>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-sm">
-                        <thead>
-                            <tr>
-                                <th>Curso</th>
-                                <th>Tutor</th>
-                                <th>Fecha Inicio</th>
-                                <th>Fecha Fin</th>
-                                <th>Duración (días)</th>
-                                <th>Timeline</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="curso : ${cursos}">
-                                <td th:text="${curso.nombre}">Curso</td>
-                                <td th:text="${curso.tutorCurso != null ? curso.tutorCurso.nombre + ' ' + curso.tutorCurso.apellidos : 'Sin asignar'}">Tutor</td>
-                                <td th:text="${curso.fechaInicio != null ? #temporals.format(curso.fechaInicio, 'dd/MM/yyyy') : 'N/A'}">01/01/2024</td>
-                                <td th:text="${curso.fechaFin != null ? #temporals.format(curso.fechaFin, 'dd/MM/yyyy') : 'N/A'}">31/12/2024</td>
-                                <td th:text="${curso.duracion != null ? curso.duracion + ' días' : 'N/A'}">365</td>
-                                <td>
-                                    <div class="progress" style="height: 20px;">
-                                        <div class="progress-bar bg-info" role="progressbar" 
-                                             style="width: 100%" 
-                                             th:title="${curso.nombre}">
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="alert alert-info mt-3">
-                    <i class="fas fa-info-circle"></i> 
-                    <strong>Nota:</strong> Revise si hay tutores asignados a múltiples cursos con fechas solapadas.
-                </div>
-            </div>
+<!-- SECCIÓN 3: DIAGRAMA DE GANTT - CRONOLOGÍA DE CURSOS -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">3. Cronología de Cursos (Diagrama de Gantt)</h6>
+        <small class="text-muted">Visualización de períodos de cursos para detectar solapamientos de tutores</small>
+    </div>
+    <div class="card-body">
+        <!-- Canvas para el Diagrama de Gantt -->
+        <div style="position: relative; height: 400px; overflow-x: auto;">
+            <canvas id="ganttChart"></canvas>
         </div>
+        
+        <!-- Tabla de Datos Detallada -->
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered table-sm table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Curso</th>
+                        <th>Tutor</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Duración (días)</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="curso : ${cursos}">
+                        <td><strong th:text="${curso.nombre}">Curso</strong></td>
+                        <td>
+                            <span th:if="${curso.tutorCurso != null}" 
+                                  th:text="${curso.tutorCurso.nombre + ' ' + curso.tutorCurso.apellidos}"
+                                  class="badge badge-info">
+                                Tutor
+                            </span>
+                            <span th:unless="${curso.tutorCurso != null}" class="badge badge-secondary">Sin asignar</span>
+                        </td>
+                        <td th:text="${curso.fechaInicio != null ? #temporals.format(curso.fechaInicio, 'dd/MM/yyyy') : 'N/A'}">01/01/2024</td>
+                        <td th:text="${curso.fechaFin != null ? #temporals.format(curso.fechaFin, 'dd/MM/yyyy') : 'N/A'}">31/12/2024</td>
+                        <td>
+                            <span th:if="${curso.duracion != null}" th:text="${curso.duracion + ' días'}">365 días</span>
+                            <span th:unless="${curso.duracion != null}" class="text-muted">N/A</span>
+                        </td>
+                        <td>
+                            <span th:if="${curso.activo}" class="badge badge-success">Activo</span>
+                            <span th:unless="${curso.activo}" class="badge badge-warning">Finalizado</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Alertas de Solapamiento -->
+        <div id="solapamientoAlerts" class="mt-3"></div>
+        
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-info-circle"></i> 
+            <strong>Nota:</strong> El diagrama muestra visualmente los períodos de cada curso. 
+            Los cursos con el mismo color tienen el mismo tutor. 
+            Si hay barras del mismo color que se solapan en el tiempo, indica que el tutor tiene múltiples cursos simultáneos.
+        </div>
+    </div>
+</div>
 
         <!-- SECCIÓN 4: RANKINGS DE TUTORES -->
         <div class="card shadow mb-4">
@@ -292,13 +309,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="tutor, iterStat : ${tutoresCurso}">
+                                    <tr th:each="tC, iterStat : ${tutorC}">
                                         <td th:text="${iterStat.count}">1</td>
-                                        <td th:text="${tutor.nombre + ' ' + tutor.apellidos}">Nombre Tutor</td>
-                                        <td th:text="${tutor.cursos != null ? tutor.cursos.size() : 0}">0</td>
+                                        <td th:text="${tC.nombre + ' ' + tC.apellidos}">Nombre Tutor</td>
+                                        <td th:text="${tC.cursos != null ? tC.cursos.size() : 0}">0</td>
                                         <td>
-                                            <span th:if="${tutor.activo}" class="badge badge-success">Activo</span>
-                                            <span th:unless="${tutor.activo}" class="badge badge-secondary">Inactivo</span>
+                                            <span th:if="${tC.activo}" class="badge badge-success">Activo</span>
+                                            <span th:unless="${tC.activo}" class="badge badge-secondary">Inactivo</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -322,14 +339,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="tutorP, iterStat : ${tutoresPracticas}">
+                                    <tr th:each="tP, iterStat : ${tutorP}">
                                         <td th:text="${iterStat.count}">1</td>
-                                        <td th:text="${tutorP.nombre + ' ' + tutorP.apellidos}">Nombre Tutor</td>
-                                        <td th:text="${tutorP.empresa != null ? tutorP.empresa.nombre : 'Sin empresa'}">Empresa</td>
-                                        <td th:text="${tutorP.alumnos != null ? tutorP.alumnos.size() : 0}">0</td>
+                                        <td th:text="${tP.nombre + ' ' + tP.apellidos}">Nombre Tutor</td>
+                                        <td th:text="${tP.empresa != null ? tP.empresa.nombre : 'Sin empresa'}">Empresa</td>
+                                        <td th:text="${tP.alumnos != null ? tP.alumnos.size() : 0}">0</td>
                                         <td>
-                                            <span th:if="${tutorP.activo}" class="badge badge-success">Activo</span>
-                                            <span th:unless="${tutorP.activo}" class="badge badge-secondary">Inactivo</span>
+                                            <span th:if="${tP.activo}" class="badge badge-success">Activo</span>
+                                            <span th:unless="${tP.activo}" class="badge badge-secondary">Inactivo</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -491,4 +508,213 @@
     
     /*]]>*/
     </script>
+    <!-- Este script debe ir DESPUÉS del script principal que tiene Chart.js -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+// Script del Diagrama de Gantt - debe ejecutarse después de que Chart.js esté disponible
+(function inicializarGantt() {
+    // Esperar a que Chart esté disponible
+    if (typeof Chart === 'undefined') {
+        console.log('Esperando a que Chart.js se cargue...');
+        setTimeout(inicializarGantt, 100);
+        return;
+    }
+    
+    console.log('Iniciando Diagrama de Gantt...');
+    
+    const cursosDataGantt = /*[[${cursos}]]*/ [];
+    console.log('Cursos cargados:', cursosDataGantt.length);
+    
+    // Procesar datos de cursos
+    const cursosConFechas = cursosDataGantt
+        .filter(c => c.fechaInicio && c.fechaFin)
+        .map(c => ({
+            nombre: c.nombre,
+            tutor: c.tutorCurso ? (c.tutorCurso.nombre + ' ' + c.tutorCurso.apellidos) : 'Sin asignar',
+            tutorId: c.tutorCurso ? c.tutorCurso.id : null,
+            fechaInicio: new Date(c.fechaInicio),
+            fechaFin: new Date(c.fechaFin),
+            activo: c.activo
+        }))
+        .sort((a, b) => a.fechaInicio - b.fechaInicio);
+
+    console.log('Cursos con fechas:', cursosConFechas.length);
+
+    if (cursosConFechas.length === 0) {
+        const ganttContainer = document.getElementById('ganttChart');
+        if (ganttContainer) {
+            ganttContainer.parentElement.innerHTML = 
+                '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> No hay cursos con fechas definidas para mostrar en el diagrama.</div>';
+        }
+        return;
+    }
+
+    // Crear paleta de colores por tutor
+    const tutoresUnicos = [...new Set(cursosConFechas.map(c => c.tutor))];
+    console.log('Tutores únicos:', tutoresUnicos);
+    
+    const coloresPorTutor = {};
+    const paleta = [
+        'rgba(78, 115, 223, 0.8)',
+        'rgba(28, 200, 138, 0.8)',
+        'rgba(54, 185, 204, 0.8)',
+        'rgba(246, 194, 62, 0.8)',
+        'rgba(231, 74, 59, 0.8)',
+        'rgba(133, 135, 150, 0.8)',
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(255, 159, 64, 0.8)',
+        'rgba(255, 205, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)'
+    ];
+    
+    tutoresUnicos.forEach((tutor, idx) => {
+        coloresPorTutor[tutor] = paleta[idx % paleta.length];
+    });
+
+    // Encontrar rango de fechas
+    const todasLasFechas = cursosConFechas.flatMap(c => [c.fechaInicio.getTime(), c.fechaFin.getTime()]);
+    const minFecha = new Date(Math.min(...todasLasFechas));
+    const maxFecha = new Date(Math.max(...todasLasFechas));
+    
+    console.log('Rango de fechas:', minFecha.toLocaleDateString(), '-', maxFecha.toLocaleDateString());
+
+    // Crear el gráfico
+    const ctx = document.getElementById('ganttChart');
+    if (!ctx) {
+        console.error('No se encontró el canvas con id "ganttChart"');
+        return;
+    }
+    
+    try {
+        const ganttChart = new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: cursosConFechas.map(c => c.nombre),
+                datasets: [{
+                    label: 'Duración del curso',
+                    data: cursosConFechas.map((c) => {
+                        const duracion = c.fechaFin.getTime() - c.fechaInicio.getTime();
+                        const totalRango = maxFecha.getTime() - minFecha.getTime();
+                        return (duracion / totalRango) * 100;
+                    }),
+                    backgroundColor: cursosConFechas.map(c => coloresPorTutor[c.tutor]),
+                    borderColor: cursosConFechas.map(c => coloresPorTutor[c.tutor].replace('0.8', '1')),
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            generateLabels: function() {
+                                return tutoresUnicos.map(tutor => ({
+                                    text: tutor,
+                                    fillStyle: coloresPorTutor[tutor],
+                                    strokeStyle: coloresPorTutor[tutor].replace('0.8', '1'),
+                                    lineWidth: 2
+                                }));
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const curso = cursosConFechas[context.dataIndex];
+                                const inicio = curso.fechaInicio.toLocaleDateString('es-ES');
+                                const fin = curso.fechaFin.toLocaleDateString('es-ES');
+                                const dias = Math.ceil((curso.fechaFin - curso.fechaInicio) / (1000 * 60 * 60 * 24));
+                                return [
+                                    `Tutor: ${curso.tutor}`,
+                                    `Inicio: ${inicio}`,
+                                    `Fin: ${fin}`,
+                                    `Duración: ${dias} días`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                const fechaCalculada = new Date(minFecha.getTime() + (value / 100) * (maxFecha.getTime() - minFecha.getTime()));
+                                return fechaCalculada.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: `Línea de Tiempo (${minFecha.toLocaleDateString('es-ES')} - ${maxFecha.toLocaleDateString('es-ES')})`
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Cursos'
+                        }
+                    }
+                }
+            }
+        });
+        
+        console.log('Gráfico de Gantt creado exitosamente');
+    } catch (error) {
+        console.error('Error al crear el gráfico de Gantt:', error);
+    }
+
+    // Detectar solapamientos
+    const solapamientos = [];
+    for (let i = 0; i < cursosConFechas.length; i++) {
+        for (let j = i + 1; j < cursosConFechas.length; j++) {
+            const curso1 = cursosConFechas[i];
+            const curso2 = cursosConFechas[j];
+            
+            // Verificar si tienen el mismo tutor y no es "Sin asignar"
+            if (curso1.tutorId && curso1.tutorId === curso2.tutorId) {
+                // Verificar solapamiento de fechas
+                const seSuperponen = curso1.fechaInicio <= curso2.fechaFin && 
+                                     curso2.fechaInicio <= curso1.fechaFin;
+                
+                if (seSuperponen) {
+                    solapamientos.push({
+                        tutor: curso1.tutor,
+                        curso1: curso1.nombre,
+                        curso2: curso2.nombre,
+                        inicio1: curso1.fechaInicio.toLocaleDateString('es-ES'),
+                        fin1: curso1.fechaFin.toLocaleDateString('es-ES'),
+                        inicio2: curso2.fechaInicio.toLocaleDateString('es-ES'),
+                        fin2: curso2.fechaFin.toLocaleDateString('es-ES')
+                    });
+                }
+            }
+        }
+    }
+
+    console.log('Solapamientos detectados:', solapamientos.length);
+
+    // Mostrar alertas de solapamiento
+    const alertContainer = document.getElementById('solapamientoAlerts');
+    if (alertContainer) {
+        if (solapamientos.length > 0) {
+            let alertHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> <strong>¡Atención! Solapamientos detectados:</strong><ul class="mb-0 mt-2">';
+            solapamientos.forEach(s => {
+                alertHTML += `<li><strong>${s.tutor}</strong> tiene asignados:<br>
+                    - "${s.curso1}" (${s.inicio1} - ${s.fin1})<br>
+                    - "${s.curso2}" (${s.inicio2} - ${s.fin2})</li>`;
+            });
+            alertHTML += '</ul></div>';
+            alertContainer.innerHTML = alertHTML;
+        } else {
+            alertContainer.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i> No se detectaron solapamientos de tutores en los cursos.</div>';
+        }
+    }
+})();
+/*]]>*/
+</script>
 </div>

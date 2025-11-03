@@ -112,8 +112,8 @@ public class AdminController {
         model.addAttribute("cursos", cursos);
         model.addAttribute("alumnosPorCurso", alumnosPorCurso);
         model.addAttribute("empresas", empresas);
-        model.addAttribute("tutorP", tutorP.size());
-        model.addAttribute("tutorC", tutorC.size());
+        model.addAttribute("tutorP", tutorP);
+        model.addAttribute("tutorC", tutorC);
         model.addAttribute("alumnos", alumnos);
         
         // Campos calculados
@@ -133,6 +133,59 @@ public class AdminController {
         model.addAttribute("viewName", "admin/reportes/report");
         return "layout";
     }   
+    
+    /*
+     *  @GetMapping("/reportes/report")
+    public String reports(Model model) {
+        List<Curso> cursos = cursoService.listarTodos();
+
+        LocalDate fechaMin = cursos.stream()
+                .map(Curso::getFechaInicio)
+                .min(LocalDate::compareTo)
+                .orElse(LocalDate.now());
+        LocalDate fechaMax = cursos.stream()
+                .map(Curso::getFechaFin)
+                .max(LocalDate::compareTo)
+                .orElse(LocalDate.now());
+        long totalDias = ChronoUnit.DAYS.between(fechaMin, fechaMax);
+
+        // Colores para tutores (puede ser un mapa fijo)
+        Map<String, String> coloresTutor = new HashMap<>();
+        String[] paleta = {"#007bff","#28a745","#ffc107","#dc3545","#6f42c1","#fd7e14"};
+        int index = 0;
+
+        List<Map<String,Object>> cursosConTimeline = new ArrayList<>();
+        for(Curso c : cursos){
+            Map<String,Object> map = new HashMap<>();
+            map.put("curso", c);
+
+            long diasDesdeInicio = ChronoUnit.DAYS.between(fechaMin, c.getFechaInicio());
+            long duracion = ChronoUnit.DAYS.between(c.getFechaInicio(), c.getFechaFin());
+
+            double inicioPct = (diasDesdeInicio*100.0)/totalDias;
+            double duracionPct = (duracion*100.0)/totalDias;
+            map.put("inicioPct", inicioPct);
+            map.put("duracionPct", duracionPct);
+
+            String tutorNombre = (c.getTutorCurso()!=null)?c.getTutorCurso().getNombre():"Sin asignar";
+            if(!coloresTutor.containsKey(tutorNombre)){
+                coloresTutor.put(tutorNombre, paleta[index%paleta.length]);
+                index++;
+            }
+            map.put("color", coloresTutor.get(tutorNombre));
+
+            cursosConTimeline.add(map);
+        }
+        
+        model.addAttribute("cursosConTimeline", cursosConTimeline);
+        model.addAttribute("coloresTutor", coloresTutor);
+        model.addAttribute("viewName", "admin/reportes/report");
+
+        return "layout";
+    }
+     * 
+     * 
+     * */
     
     
     
