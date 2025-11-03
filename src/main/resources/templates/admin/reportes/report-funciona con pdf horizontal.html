@@ -3,7 +3,7 @@
     <div class="container-fluid py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0 text-gray-800">Reportes del Sistema</h1>
-            <button onclick="exportToPDF()" class="btn btn-danger">
+            <button onclick="exportToPDF()" class="btn btn-danger" id="btnExportPDF">
                 <i class="fas fa-file-pdf"></i> Exportar a PDF
             </button>
         </div>
@@ -361,10 +361,23 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <script th:inline="javascript">
-    /*<![CDATA[*/
+    <!-- Variables de datos serializadas como JSON -->
+    <script>
+        var cursosData = JSON.parse('[(${cursosJson})]');
+        var empresasData = JSON.parse('[(${empresasJson})]');
+        var alumnosPorCursoData = JSON.parse('[(${alumnosPorCursoJson})]');
+        var tutoresCursoData = JSON.parse('[(${tutoresCursoJson})]');
+        var tutoresPracticasData = JSON.parse('[(${tutoresPracticasJson})]');
+        
+        console.log('Variables cargadas:', {
+            cursos: cursosData.length,
+            empresas: empresasData.length,
+            tutores: tutoresCursoData.length
+        });
+    </script>
     
-    // Esperar a que el DOM y Chart.js estén completamente cargados
+    <script>
+    // Esperar a que el DOM esté completamente cargado
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM cargado, inicializando gráficos...');
         
@@ -374,12 +387,12 @@
             return;
         }
         
-        // Datos desde Thymeleaf
-        const cursos = /*[[${cursos}]]*/ [];
-        const empresas = /*[[${empresas}]]*/ [];
-        const alumnosPorCurso = /*[[${alumnosPorCurso}]]*/ {};
-        const tutoresCurso = /*[[${tutoresCurso}]]*/ [];
-        const tutoresPracticas = /*[[${tutoresPracticas}]]*/ [];
+        // Usar las variables globales definidas arriba
+        const cursos = cursosData || [];
+        const empresas = empresasData || [];
+        const alumnosPorCurso = alumnosPorCursoData || {};
+        const tutoresCurso = tutoresCursoData || [];
+        const tutoresPracticas = tutoresPracticasData || [];
 
         console.log('Datos cargados:', {
             cursos: cursos.length,
@@ -446,7 +459,7 @@
             }
         });
 
-        // Gráfico: Ranking Tutores de Curso (CORREGIDO - usar 'bar' con indexAxis)
+        // Gráfico: Ranking Tutores de Curso
         const tutoresOrdenados = tutoresCurso
             .map(t => ({nombre: t.nombre + ' ' + t.apellidos, cursos: t.cursos ? t.cursos.length : 0}))
             .sort((a, b) => b.cursos - a.cursos)
@@ -476,7 +489,7 @@
             }
         });
 
-        // Gráfico: Ranking Tutores de Prácticas (CORREGIDO)
+        // Gráfico: Ranking Tutores de Prácticas
         const tutoresPracticasOrdenados = tutoresPracticas
             .map(t => ({nombre: t.nombre + ' ' + t.apellidos, alumnos: t.alumnos ? t.alumnos.length : 0}))
             .sort((a, b) => b.alumnos - a.alumnos)
@@ -725,17 +738,103 @@
 
     // Función para exportar a PDF
     function exportToPDF() {
-        const element = document.querySelector('[th\\:fragment="content"]');
-        const opt = {
-            margin: 10,
-            filename: 'reporte_sistema.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
+        // Mostrar mensaje de carga
+        const btnExport = document.getElementById('btnExportPDF');
+        const btnOriginalText = btnExport.innerHTML;
+        btnExport.disabled = true;
+        btnExport.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando PDF...';
+        
+        // Convertir todos los canvas de Chart.js a imágenes antes de exportar
+        const charts = document.querySelectorAll('canvas');
+        const imagePromises = [];
+        
+        charts.forEach((canvas, index) => {
+            const promise = new Promise((resolve) => {
+                try {
+                    // Crear una imagen del canvas
+                    const imgData = canvas.toDataURL('image/png');
+                    const img = document.createElement('img');
+                    img.src = imgData;
+                    img.style.width = canvas.style.width || canvas.width + 'px';
+                    img.style.height = canvas.style.height || canvas.height + 'px';
+                    
+                    // Guardar referencia al canvas y su padre
+                    img.dataset.canvasIndex = index;
+                    const parent = canvas.parentNode;
+                    
+                    // Reemplazar canvas con imagen temporalmente
+                    parent.replaceChild(img, canvas);
+                    
+                    resolve({ img, canvas, parent });
+                } catch (error) {
+                    console.error('Error al convertir canvas:', error);
+                    resolve(null);
+                }
+            });
+            
+            imagePromises.push(promise);
+        });
+        
+        // Esperar a que todas las imágenes estén listas
+        Promise.all(imagePromises).then((replacements) => {
+            const element = document.querySelector('.container-fluid.py-4');
+            
+            const opt = {
+                margin: [5, 5, 5, 5],
+                filename: 'reporte_sistema_' + new Date().toISOString().split('T')[0] + '.pdf',
+                image: { 
+                    type: 'jpeg', 
+                    quality: 0.95 
+                },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    letterRendering: true,
+                    allowTaint: true
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'landscape',
+                    compress: true
+                },
+                pagebreak: { 
+                    mode: ['avoid-all', 'css', 'legacy'],
+                    before: '.card'
+                }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restaurar los canvas después de generar el PDF
+                replacements.forEach(replacement => {
+                    if (replacement) {
+                        replacement.parent.replaceChild(replacement.canvas, replacement.img);
+                    }
+                });
+                
+                // Restaurar el botón
+                btnExport.disabled = false;
+                btnExport.innerHTML = btnOriginalText;
+                
+                console.log('PDF generado exitosamente');
+            }).catch((error) => {
+                console.error('Error al generar PDF:', error);
+                
+                // Restaurar los canvas en caso de error
+                replacements.forEach(replacement => {
+                    if (replacement) {
+                        replacement.parent.replaceChild(replacement.canvas, replacement.img);
+                    }
+                });
+                
+                // Restaurar el botón
+                btnExport.disabled = false;
+                btnExport.innerHTML = btnOriginalText;
+                
+                alert('Error al generar el PDF. Por favor, intenta de nuevo.');
+            });
+        });
     }
-    
-    /*]]>*/
     </script>
 </div>

@@ -3,7 +3,7 @@
     <div class="container-fluid py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0 text-gray-800">Reportes del Sistema</h1>
-            <button onclick="exportToPDF()" class="btn btn-danger" id="btnExportPDF">
+            <button onclick="exportToPDF()" class="btn btn-danger">
                 <i class="fas fa-file-pdf"></i> Exportar a PDF
             </button>
         </div>
@@ -359,8 +359,7 @@
 
     <!-- Scripts para Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <!-- Variables de datos serializadas como JSON -->
     <script>
@@ -737,84 +736,17 @@
         console.log('Todos los gráficos inicializados correctamente');
     });
 
-    // Función para exportar a PDF mejorada
-    async function exportToPDF() {
-        const btnExport = document.getElementById('btnExportPDF');
-        const btnOriginalText = btnExport.innerHTML;
-        btnExport.disabled = true;
-        btnExport.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando PDF...';
-        
-        try {
-            const { jsPDF } = window.jspdf;
-            
-            // Crear PDF en orientación horizontal
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: 'a4',
-                compress: true
-            });
-            
-            // Obtener todas las secciones (cards)
-            const sections = document.querySelectorAll('.card.shadow.mb-4');
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            const margin = 10;
-            const contentWidth = pageWidth - (margin * 2);
-            
-            let isFirstSection = true;
-            
-            for (let i = 0; i < sections.length; i++) {
-                const section = sections[i];
-                
-                // Añadir nueva página para cada sección (excepto la primera)
-                if (!isFirstSection) {
-                    pdf.addPage();
-                } else {
-                    isFirstSection = false;
-                }
-                
-                // Capturar la sección como imagen
-                const canvas = await html2canvas(section, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    windowWidth: section.scrollWidth,
-                    windowHeight: section.scrollHeight,
-                    backgroundColor: '#ffffff'
-                });
-                
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const imgWidth = contentWidth;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                // Si la imagen es muy alta, ajustar para que quepa en la página
-                if (imgHeight > pageHeight - (margin * 2)) {
-                    const scale = (pageHeight - (margin * 2)) / imgHeight;
-                    const adjustedWidth = imgWidth * scale;
-                    const adjustedHeight = imgHeight * scale;
-                    pdf.addImage(imgData, 'JPEG', margin, margin, adjustedWidth, adjustedHeight);
-                } else {
-                    pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
-                }
-                
-                console.log(`Sección ${i + 1}/${sections.length} agregada al PDF`);
-            }
-            
-            // Guardar el PDF
-            const filename = 'reporte_sistema_' + new Date().toISOString().split('T')[0] + '.pdf';
-            pdf.save(filename);
-            
-            console.log('PDF generado exitosamente');
-            
-        } catch (error) {
-            console.error('Error al generar PDF:', error);
-            alert('Error al generar el PDF: ' + error.message);
-        } finally {
-            // Restaurar el botón
-            btnExport.disabled = false;
-            btnExport.innerHTML = btnOriginalText;
-        }
+    // Función para exportar a PDF
+    function exportToPDF() {
+        const element = document.querySelector('[th\\:fragment="content"]');
+        const opt = {
+            margin: 10,
+            filename: 'reporte_sistema.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
     }
     </script>
 </div>
