@@ -77,9 +77,9 @@
                     <i class="bi bi-speedometer2 me-2"></i>Dashboard
                 </a>
                 
-                <a class="nav-link" th:href="@{/admin/users}">
+                <!--  <a class="nav-link" th:href="@{/admin/users}">
     				<i class="bi bi-people me-2"></i> Usuarios
-				</a>
+				</a>-->
                 <a class="nav-link" th:href="@{/admin/alumno/listar}">
                     <i class="bi bi-person-badge me-2"></i>Alumnos
                 </a>
@@ -98,6 +98,9 @@
 				<a class="nav-link" th:href="@{/admin/evaluacion/listar}">
 				    <i class="bi bi-briefcase me-2"></i>Evaluaciones
 				</a>
+				<a th:href="@{/incidencia/listar}	" class="nav-link">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Incidencia
+                 </a>	
             </div>
             
             <!-- Tutor Curso Menu -->
@@ -124,6 +127,13 @@
                 <a class="nav-link" th:href="@{/tutorpracticas/alumno}">
                     <i class="bi bi-person-badge me-2"></i>Mis Alumnos
                 </a>
+                 <a th:href="@{/incidencias/listar}	" class="nav-link">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Incidencia
+                 </a>
+                 <a th:href="@{/enconstruccion}	" class="nav-link">
+                    <i class="bi bi-clipboard-check me-2"></i>Evaluación
+                 </a>
+                
             </div>
             
             <!-- Alumno Menu -->

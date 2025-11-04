@@ -105,7 +105,19 @@
 										   title="Ver curso (solo lectura)">
 										    <i class="bi bi-eye"></i>
 										</a>
-
+										 <!-- Botón Activar/Desactivar -->
+                                        <form th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}"
+                                        		th:action="@{/admin/curso/cambiar-estado/{id}(id=${curso.id})}" 
+                                              method="post" 
+                                              style="display: inline;">
+                                            <button type="submit" 
+                                                    class="btn btn-sm"
+                                                    th:classappend="${curso.activo} ? 'btn-success' : 'btn-secondary'"
+                                                    th:title="${curso.activo} ? 'Desactivar' : 'Activar'">
+                                                <i th:class="${curso.activo} ? 'bi bi-toggle-off' : 'bi bi-toggle-on'"></i>
+                                            </button>
+                                        </form>
+                                       
 
                                         <!-- Eliminar: solo ADMIN -->
                                         <a th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}"
@@ -115,6 +127,9 @@
                                            onclick="return confirm('¿Está seguro de eliminar este curso?')">
                                             <i class="bi bi-trash"></i>
                                         </a>
+                                        
+                                        
+                                        
 
                                     </div>
                                 </td>

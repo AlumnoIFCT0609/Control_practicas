@@ -1,58 +1,145 @@
 package com.control.practicas.controllers;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.control.practicas.models.Incidencia;
 import com.control.practicas.services.IncidenciaService;
+import com.control.practicas.services.AlumnoService;
+import com.control.practicas.services.TutorPracticasService;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-@RestController
-@RequestMapping("/incidencias")
+@Controller
+@RequestMapping("/incidencia")
 public class IncidenciaController {
 
+    private final CommonController commonController;
+
     private final IncidenciaService incidenciaService;
+    private final AlumnoService alumnoService;
+    private final TutorPracticasService tutorPracticasService;
 
     // Inyección de dependencias por constructor
-    public IncidenciaController(IncidenciaService incidenciaService) {
+    public IncidenciaController(IncidenciaService incidenciaService,
+                               AlumnoService alumnoService,
+                               TutorPracticasService tutorPracticasService, CommonController commonController) {
         this.incidenciaService = incidenciaService;
+        this.alumnoService = alumnoService;
+        this.tutorPracticasService = tutorPracticasService;
+        this.commonController = commonController;
     }
 
-    @GetMapping
-    public List<Incidencia> listarTodas() {
-        return incidenciaService.listarTodas();
+    // Listar todas las incidencias
+    @GetMapping({"/listar", ""})
+    public String listar(Model model,
+                        @RequestParam(required = false) String estado,
+                        @RequestParam(required = false) String tipo,
+                        @RequestParam(required = false) String alumno) {
+        
+        // TODO: Implementar filtros cuando sea necesario
+        model.addAttribute("incidencias", incidenciaService.listarTodas());
+        System.out.println("****************************************************************"+incidenciaService.listarTodas());
+        model.addAttribute("viewName", "incidencia/listar");
+        return "layout";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Incidencia> obtenerPorId(@PathVariable Long id) {
+    // Mostrar formulario para nueva incidencia
+    @GetMapping("/nueva")
+    public String nuevaIncidencia(Model model) {
+        model.addAttribute("incidencia", new Incidencia());
+        model.addAttribute("alumnos", alumnoService.listarTodos());
+        model.addAttribute("tutoresPracticas", tutorPracticasService.listarTodos());
+        model.addAttribute("viewName", "incidencia/form");
+        return "layout";
+    }
+
+    // Mostrar formulario para editar incidencia
+    @GetMapping("/editar/{id}")
+    public String editarIncidencia(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         return incidenciaService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public Incidencia crear(@RequestBody Incidencia incidencia) {
-        return incidenciaService.guardar(incidencia);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Incidencia> actualizar(@PathVariable Long id, @RequestBody Incidencia incidencia) {
-        return incidenciaService.buscarPorId(id)
-                .map(i -> {
-                    incidencia.setId(id);
-                    return ResponseEntity.ok(incidenciaService.guardar(incidencia));
+                .map(incidencia -> {
+                    model.addAttribute("incidencia", incidencia);
+                    model.addAttribute("alumnos", alumnoService.listarTodos());
+                    model.addAttribute("tutoresPracticas", tutorPracticasService.listarTodos());
+                    model.addAttribute("viewName", "incidencia/form");
+                    return "layout";
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseGet(() -> {
+                    redirectAttributes.addFlashAttribute("error", "Incidencia no encontrada");
+                    return "redirect:/incidencia/listar";
+                });
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (incidenciaService.existePorId(id)) {
-            incidenciaService.eliminar(id);
-            return ResponseEntity.noContent().build();
+
+
+
+    // Guardar incidencia (crear o actualizar)
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
+        try {
+            // Si el estado es RESUELTA y no tiene fecha de resolución, la establecemos
+            if (incidencia.getEstado() == Incidencia.Estado.RESUELTA && 
+                incidencia.getFechaResolucion() == null) {
+                incidencia.setFechaResolucion(LocalDateTime.now());
+            }
+            
+            incidenciaService.guardar(incidencia);
+            
+            String mensaje = incidencia.getId() != null ? 
+                "Incidencia actualizada correctamente" : 
+                "Incidencia creada correctamente";
+            
+            redirectAttributes.addFlashAttribute("success", mensaje);
+            
+            return "redirect:/incidencia/listar";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar la incidencia: " + e.getMessage());
+            return "redirect:/incidencia/nueva";
         }
-        return ResponseEntity.notFound().build();
+        
+    }
+
+    // Eliminar incidencia
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            if (incidenciaService.existePorId(id)) {
+                incidenciaService.eliminar(id);
+                redirectAttributes.addFlashAttribute("success", "Incidencia eliminada correctamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Incidencia no encontrada");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar la incidencia: " + e.getMessage());
+        }
+        return "redirect:/incidencia/listar";
+    }
+
+    // Cambiar estado de una incidencia (opcional)
+    @PostMapping("/cambiar-estado/{id}")
+    public String cambiarEstado(@PathVariable Long id, 
+                               @RequestParam Incidencia.Estado nuevoEstado,
+                               RedirectAttributes redirectAttributes) {
+        return incidenciaService.buscarPorId(id)
+                .map(incidencia -> {
+                    incidencia.setEstado(nuevoEstado);
+                    
+                    // Si se marca como resuelta, establecer fecha de resolución
+                    if (nuevoEstado == Incidencia.Estado.RESUELTA && 
+                        incidencia.getFechaResolucion() == null) {
+                        incidencia.setFechaResolucion(LocalDateTime.now());
+                    }
+                    
+                    incidenciaService.guardar(incidencia);
+                    redirectAttributes.addFlashAttribute("success", "Estado actualizado correctamente");
+                    return "redirect:/incidencia/listar";
+                })
+                .orElseGet(() -> {
+                    redirectAttributes.addFlashAttribute("error", "Incidencia no encontrada");
+                    return "redirect:/incidencia/listar";
+                });
     }
 }
-

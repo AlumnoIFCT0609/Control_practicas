@@ -253,7 +253,7 @@
                                 <td>
                                     <span th:if="${curso.tutorCurso != null}" 
                                           th:text="${curso.tutorCurso.nombre + ' ' + curso.tutorCurso.apellidos}"
-                                          class="badge badge-info">
+                                          class="text-dark badge badge-primary">
                                         Tutor
                                     </span>
                                     <span th:unless="${curso.tutorCurso != null}" class="badge badge-secondary">Sin asignar</span>
@@ -265,8 +265,8 @@
                                     <span th:unless="${curso.duracion != null}" class="text-muted">N/A</span>
                                 </td>
                                 <td>
-                                    <span th:if="${curso.activo}" class="badge badge-success">Activo</span>
-                                    <span th:unless="${curso.activo}" class="badge badge-warning">Finalizado</span>
+                                    <span th:if="${curso.activo}" class="text-dark badge badge-success">Activo</span>
+                                    <span th:unless="${curso.activo}" class="text-dark badge badge-warning">Finalizado</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -312,8 +312,8 @@
                                         <td th:text="${tC.nombre + ' ' + tC.apellidos}">Nombre Tutor</td>
                                         <td th:text="${tC.cursos != null ? tC.cursos.size() : 0}">0</td>
                                         <td>
-                                            <span th:if="${tC.activo}" class="badge badge-success">Activo</span>
-                                            <span th:unless="${tC.activo}" class="badge badge-secondary">Inactivo</span>
+                                            <span th:if="${tC.activo}" class="text-dark badge badge-success">Activo</span>
+                                            <span th:unless="${tC.activo}" class="text-dark badge badge-secondary">Inactivo</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -343,8 +343,8 @@
                                         <td th:text="${tP.empresa != null ? tP.empresa.nombre : 'Sin empresa'}">Empresa</td>
                                         <td th:text="${tP.alumnos != null ? tP.alumnos.size() : 0}">0</td>
                                         <td>
-                                            <span th:if="${tP.activo}" class="badge badge-success">Activo</span>
-                                            <span th:unless="${tP.activo}" class="badge badge-secondary">Inactivo</span>
+                                            <span th:if="${tP.activo}" class="text-dark badge badge-success">Activo</span>
+                                            <span th:unless="${tP.activo}" class="text-dark badge badge-secondary">Inactivo</span>
                                         </td>
                                     </tr>
                                 </tbody>

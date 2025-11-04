@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<body>
+    <div th:fragment="content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i th:class="${soloLectura ? 'bi bi-eye-fill me-2' : 'bi bi-award me-2'}"></i>
+                    <span th:if="${soloLectura}">Ver Capacidad de Evaluación</span>
+                    <span th:if="${!soloLectura && capacidad.id != null}">Editar Capacidad</span>
+                    <span th:if="${!soloLectura && capacidad.id == null}">Nueva Capacidad</span>
+                </h2>
+                <div>
+                    <a th:if="${soloLectura}" 
+                       th:href="@{/admin/evaluacion/capacidad/editar/{id}(id=${capacidad.id})}" 
+                       class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a th:href="@{/admin/evaluacion/capacidades}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al listado
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mensajes de error -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!--   <form th:action="@{${capacidad.id != null ? '/admin/evaluacion/capacidades/editar/' + capacidad.id : '/admin/evaluacion/capacidades/guardar'}}" 
+                          th:object="${capacidad}" 
+                          method="post">-->
+                          <form th:action="@{/admin/evaluacion/capacidades/guardar}"
+      							th:object="${capacidad}"
+      							method="post">
+                        
+                        <!-- ID oculto para edición -->
+                        <input type="hidden" th:field="*{id}" th:if="${capacidad.id != null}">
+                        
+                        <div class="row">
+                            <!-- Criterio de Evaluación -->
+                            <div class="col-md-6 mb-3">
+                                <label for="criterio" class="form-label">
+                                    <i class="bi bi-clipboard-data"></i> Criterio de Evaluación <span class="text-danger" th:if="${!soloLectura}">*</span>
+                                </label>
+                                <select class="form-select" 
+                                        id="criterio" 
+                                        th:field="*{criterio.id}" 
+                                        th:required="${!soloLectura}"
+                                        th:disabled="${soloLectura}">
+                                    <option value="">Seleccione un criterio</option>
+                                    <option th:each="crit : ${criterios}" 
+                                            th:value="${crit.id}" 
+                                            th:text="${crit.nombre + ' (Peso: ' + crit.peso + '%)'}"
+                                            th:selected="${capacidad.criterio != null && capacidad.criterio.id == crit.id}">
+                                    </option>
+                                </select>
+                                <div class="form-text" th:if="${!soloLectura}">Criterio al que pertenece esta capacidad</div>
+                            </div>
+
+                            <!-- Nombre -->
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre" class="form-label">
+                                    <i class="bi bi-card-heading"></i> Nombre <span class="text-danger" th:if="${!soloLectura}">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="nombre" 
+                                       th:field="*{nombre}" 
+                                       maxlength="100"
+                                       th:required="${!soloLectura}"
+                                       th:readonly="${soloLectura}"
+                                       placeholder="Ej: Comunicación efectiva">
+                                <div class="form-text" th:if="${!soloLectura}">Nombre descriptivo de la capacidad (máx. 100 caracteres)</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Puntuación Máxima -->
+                            <div class="col-md-4 mb-3">
+                                <label for="puntuacionMaxima" class="form-label">
+                                    <i class="bi bi-star-fill"></i> Puntuación Máxima <span class="text-danger" th:if="${!soloLectura}">*</span>
+                                </label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="puntuacionMaxima" 
+                                       th:field="*{puntuacionMaxima}" 
+                                       min="1" 
+                                       max="100"
+                                       th:required="${!soloLectura}"
+                                       th:readonly="${soloLectura}"
+                                       placeholder="10">
+                                <div class="form-text" th:if="${!soloLectura}">Puntuación máxima alcanzable (1-100)</div>
+                            </div>
+
+                            <!-- Estado Activo -->
+                            <div class="col-md-4 mb-3" th:if="${!soloLectura}">
+                                <label for="activo" class="form-label">
+                                    <i class="bi bi-toggle-on"></i> Estado
+                                </label>
+                                <select class="form-select" 
+                                        id="activo" 
+                                        th:field="*{activo}">
+                                    <option th:value="true">Activa</option>
+                                    <option th:value="false">Inactiva</option>
+                                </select>
+                                <div class="form-text">Las capacidades inactivas no aparecerán en evaluaciones</div>
+                            </div>
+
+                            <!-- Badge de estado en modo ver -->
+                            <div class="col-md-4 mb-3" th:if="${soloLectura}">
+                                <label class="form-label">
+                                    <i class="bi bi-info-circle"></i> Estado
+                                </label>
+                                <div>
+                                    <span class="badge" 
+                                          th:classappend="${capacidad.activo} ? 'bg-success' : 'bg-secondary'"
+                                          th:text="${capacidad.activo ? 'Activa' : 'Inactiva'}"
+                                          style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">
+                                <i class="bi bi-card-text"></i> Descripción
+                            </label>
+                            <textarea class="form-control" 
+                                      id="descripcion" 
+                                      th:field="*{descripcion}" 
+                                      rows="4" 
+                                      th:readonly="${soloLectura}"
+                                      placeholder="Describa en detalle qué evalúa esta capacidad..."></textarea>
+                            <div class="form-text" th:if="${!soloLectura}">Descripción detallada de la capacidad y criterios de evaluación</div>
+                        </div>
+
+                        <!-- Información adicional solo en modo ver -->
+                        <div th:if="${soloLectura && capacidad.fechaCreacion != null}" class="alert alert-info">
+                            <i class="bi bi-clock"></i> Fecha de creación: 
+                            <strong th:text="${#temporals.format(capacidad.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></strong>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex gap-2 justify-content-end mt-4" th:if="${!soloLectura}">
+                            <a th:href="@{/admin/evaluacion/capacidades}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> 
+                                <span th:text="${capacidad.id != null ? 'Actualizar' : 'Guardar'}">Guardar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="card shadow-sm mt-4 bg-light" th:if="${!soloLectura}">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-info-circle"></i> Información</h5>
+                    <ul class="mb-0">
+                        <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+                        <li>Cada capacidad debe estar asociada a un criterio de evaluación</li>
+                        <li>La puntuación máxima define el valor máximo que puede obtener un alumno en esta capacidad</li>
+                        <li>Las capacidades inactivas no aparecerán disponibles al crear nuevas evaluaciones</li>
+                        <li>La descripción es opcional pero recomendada para clarificar qué se evalúa</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -84,6 +84,20 @@
 									           title="Editar">
 									            <i class="bi bi-pencil"></i>
 									        </a>
+									        
+									        <!-- Botón Activar/Desactivar -->
+                                        <form th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}"
+                                        		th:action="@{/admin/alumno/cambiar-estado/{id}(id=${alumno.id})}" 
+                                              method="post" 
+                                              style="display: inline;">
+                                            <button type="submit" 
+                                                    class="btn btn-sm"
+                                                    th:classappend="${alumno.activo} ? 'btn-success' : 'btn-secondary'"
+                                                    th:title="${alumno.activo} ? 'Desactivar' : 'Activar'">
+                                                <i th:class="${alumno.activo} ? 'bi bi-toggle-off' : 'bi bi-toggle-on'"></i>
+                                            </button>
+                                        </form>
+									        
 									        <a th:href="@{/admin/alumno/eliminar/{id}(id=${alumno.id})}"
 									           class="btn btn-sm btn-danger"
 									           title="Eliminar"

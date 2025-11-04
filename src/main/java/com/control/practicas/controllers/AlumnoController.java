@@ -2,8 +2,6 @@ package com.control.practicas.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.WebDataBinder;
@@ -316,6 +314,23 @@ public class AlumnoController {
         return "redirect:/admin/alumno/listar";
     }
     
-    
+    @PostMapping("/cambiar-estado/{id}")
+    public String cambiarEstado(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<Alumno> alumnoOpt = alumnoService.buscarPorId(id);
+            if (alumnoOpt.isPresent()) {
+                Alumno alumno = alumnoOpt.get();
+                alumno.setActivo(!alumno.getActivo());
+                alumnoService.guardar(alumno);
+                redirectAttributes.addFlashAttribute("success", 
+                    alumno.getActivo() ? "Alumno activado" : "Alumno desactivado");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Alumno no encontrado");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cambiar el estado del alumno: " + e.getMessage());
+        }
+        return "redirect:/admin/alumno/listar";
+    }
     
 }
