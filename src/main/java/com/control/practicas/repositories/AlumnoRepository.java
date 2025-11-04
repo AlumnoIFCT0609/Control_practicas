@@ -19,7 +19,7 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
     Optional<Alumno> findById(Long id);
     List<Alumno> findByCurso(Curso curso);
     List<Alumno> findByEmpresa(Empresa empresa);
-    List<Alumno> findByTutorPracticas_Id(Long tutorPracticasId);
+    List<Alumno> findByTutorPracticas_Id(Long tutorPracticasId); //filtro para dinamica de seleccion en base a otro select
     List<Alumno> findByCurso_Id(Long cursoId);
     List<Alumno> findByEmpresa_Id(Long empresaId);
     Optional<Alumno> findByDni(String dni);

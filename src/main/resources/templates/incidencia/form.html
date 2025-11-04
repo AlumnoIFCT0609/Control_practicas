@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="content">
@@ -23,27 +22,9 @@
 
                             <!-- Información de la incidencia -->
                             <h5 class="border-bottom pb-2 mb-3">Información de la Incidencia</h5>
-                            
+                            <!-- 
                             <div class="row">
-                                <!-- Alumno -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="alumno" class="form-label">
-                                        Alumno <span cl="alumno : ${alumnos}"
-                                                th:valuass="text-danger">*</span>
-                                    </label>
-                                    <select class="form-select"
-                                            id="alumno"
-                                            th:field="*{alumno.id}"
-                                            required
-                                            th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
-                                        <option value="">Seleccione un alumno</option>
-                                        <option th:eache="${alumno.id}"
-                                                th:text="${alumno.nombre + ' ' + alumno.apellidos}">
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <!-- Tutor de Prácticas -->
+                                 <!-- Tutor de Prácticas -->
                                 <div class="col-md-6 mb-3">
                                     <label for="tutorPracticas" class="form-label">
                                         Tutor de Prácticas <span class="text-danger">*</span>
@@ -60,6 +41,67 @@
                                         </option>
                                     </select>
                                 </div>
+                                
+                                <!-- Alumno -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="alumno" class="form-label">
+                                        Alumno <span cl="alumno : ${alumnos}"
+                                                th:valuass="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select"
+                                            id="alumno"
+                                            th:field="*{alumno.id}"
+                                            required
+                                            th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+                                        <option value="">Seleccione un alumno</option>
+                                        <option th:each="alumno : ${alumnos}" 
+        										th:if="${alumno != null}"
+        										th:value="${alumno.id}"
+        										th:text="${alumno.nombre + ' ' + alumno.apellidos}">
+										</option>
+                                    </select>
+                                </div>
+								-->
+								<div class="row">
+    <!-- Tutor de Prácticas -->
+    <div class="col-md-6 mb-3">
+        <label for="tutorPracticas" class="form-label">
+            Tutor de Prácticas <span class="text-danger">*</span>
+        </label>
+        <select class="form-select"
+                id="tutorPracticas"
+                th:field="*{tutorPracticas.id}"
+                required
+                onchange="cargarAlumnosPorTutor()"
+                th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+            <option value="">Seleccione un tutor</option>
+            <option th:each="tutor : ${tutoresPracticas}"
+                    th:value="${tutor.id}"
+                    th:text="${tutor.nombre + ' ' + tutor.apellidos}">
+            </option>
+        </select>
+    </div>
+
+    <!-- Alumno -->
+    <div class="col-md-6 mb-3">
+        <label for="alumno" class="form-label">
+            Alumno <span class="text-danger">*</span>
+        </label>
+        <select class="form-select"
+                id="alumno"
+                th:field="*{alumno.id}"
+                required
+                th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+            <option value="">Primero seleccione un tutor</option>
+        </select>
+    </div>
+</div>
+
+
+								
+								
+								
+                               
                             </div>
 
                             <div class="row">
@@ -68,12 +110,19 @@
                                     <label for="fecha" class="form-label">
                                         Fecha de la Incidencia <span class="text-danger">*</span>
                                     </label>
-                                    <input type="date"
+                                   <!--  <input type="date"
                                            class="form-control"
                                            id="fecha"
                                            th:field="*{fecha}"
                                            required
-                                           th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+                                           th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"> -->
+                                      <input type="date"
+       													class="form-control"
+       													id="fecha"
+       													name="fecha"
+       													th:value="${incidencia != null ? incidencia.fecha : ''}"
+       													required
+       													th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">     
                                 </div>
 
                                 <!-- Tipo -->
@@ -244,5 +293,40 @@
         </div>
     </div>
 </div>
-
+<script th:inline="javascript">
+function cargarAlumnosPorTutor() {
+    const tutorId = document.getElementById('tutorPracticas').value;
+    const alumnoSelect = document.getElementById('alumno');
+    
+    // Limpiar opciones
+    alumnoSelect.innerHTML = '<option value="">Cargando...</option>';
+    
+    if (!tutorId) {
+        alumnoSelect.innerHTML = '<option value="">Primero seleccione un tutor</option>';
+        return;
+    }
+    
+    // Petición AJAX
+    fetch(`/incidencia/alumnos-por-tutor/${tutorId}`)
+        .then(response => response.json())
+        .then(alumnos => {
+            alumnoSelect.innerHTML = '<option value="">Seleccione un alumno</option>';
+            
+            alumnos.forEach(alumno => {
+                const option = document.createElement('option');
+                option.value = alumno.id;
+                option.textContent = alumno.nombre;
+                alumnoSelect.appendChild(option);
+            });
+            
+            if (alumnos.length === 0) {
+                alumnoSelect.innerHTML = '<option value="">No hay alumnos para este tutor</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alumnoSelect.innerHTML = '<option value="">Error al cargar alumnos</option>';
+        });
+}
+</script>
 </html>

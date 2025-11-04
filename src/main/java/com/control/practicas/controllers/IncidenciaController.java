@@ -5,12 +5,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.control.practicas.dto.AlumnoDTO;
+import com.control.practicas.models.Alumno;
 import com.control.practicas.models.Incidencia;
 import com.control.practicas.services.IncidenciaService;
 import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.TutorPracticasService;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/incidencia")
@@ -50,12 +55,41 @@ public class IncidenciaController {
     @GetMapping("/nueva")
     public String nuevaIncidencia(Model model) {
         model.addAttribute("incidencia", new Incidencia());
-        model.addAttribute("alumnos", alumnoService.listarTodos());
         model.addAttribute("tutoresPracticas", tutorPracticasService.listarTodos());
+        model.addAttribute("alumnos", alumnoService.listarTodos());
         model.addAttribute("viewName", "incidencia/form");
         return "layout";
     }
 
+ /*   @GetMapping("/alumnos-por-tutor/{tutorId}")
+    @ResponseBody
+    public List<Map<String, Object>> obtenerAlumnosPorTutor(@PathVariable Long tutorId) {
+        List<Alumno> alumnos = alumnoService.listarPorTutorPracticas(tutorId);
+        
+        // Convertir a JSON simple
+        return alumnos.stream()
+            .map(a -> Map.of(
+                "id", a.getId(),
+                "nombre", a.getNombre() + " " + a.getApellidos()
+            ))
+            .collect(Collectors.toList());
+    }*/
+    
+    @GetMapping("/alumnos-por-tutor/{tutorId}")
+    @ResponseBody
+   // public List<AlumnoDTO> obtenerAlumnosPorTutor(@PathVariable Long tutorId, Model model) {
+    	public String obtenerAlumnosPorTutor(@PathVariable Long tutorId, Model model) {
+        List<Alumno> alumnos = alumnoService.listarPorTutorPracticas(tutorId);
+         model.addAttribute("alumnos", alumnos);
+         return "incidencia/form :: selectAlumnosFragment";
+        
+       /* return alumnos.stream()
+            .map(a -> new AlumnoDTO(a.getId(), a.getNombre() + " " + a.getApellidos()))
+            .collect(Collectors.toList());*/
+    }
+    
+    
+    
     // Mostrar formulario para editar incidencia
     @GetMapping("/editar/{id}")
     public String editarIncidencia(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
@@ -72,10 +106,6 @@ public class IncidenciaController {
                     return "redirect:/incidencia/listar";
                 });
     }
-
-
-
-
     // Guardar incidencia (crear o actualizar)
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
