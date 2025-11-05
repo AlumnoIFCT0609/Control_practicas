@@ -86,7 +86,7 @@ public class IncidenciaController {
             .collect(Collectors.toList());
     } 
     
-    @GetMapping({"/nuevo", "/editar/{id}"})
+    @GetMapping({"/nueva", "/editar/{id}"})
     public String formIncidencia(@PathVariable(required = false) Long id,
                                  Model model,
                                  RedirectAttributes redirectAttributes) {
