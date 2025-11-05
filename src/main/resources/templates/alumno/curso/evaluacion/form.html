@@ -192,11 +192,6 @@
         </div>
     </div>
 </div>
-<th:block th:fragment="scripts">
-    <script>
-     console.log('Script cargado');
-    </script>
-
 
 <script th:if="${!soloLectura}">
     // Actualizar puntuación máxima según la capacidad seleccionada
@@ -227,4 +222,3 @@
         actualizarPuntuacionMaxima();
     });
 </script>
-</th:block>

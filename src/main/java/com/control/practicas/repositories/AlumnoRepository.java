@@ -19,12 +19,16 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
     Optional<Alumno> findById(Long id);
     List<Alumno> findByCurso(Curso curso);
     List<Alumno> findByEmpresa(Empresa empresa);
-    List<Alumno> findByTutorPracticas_Id(Long tutorPracticasId);
+    List<Alumno> findByTutorPracticas_Id(Long tutorPracticasId); //filtro para dinamica de seleccion en base a otro select
     List<Alumno> findByCurso_Id(Long cursoId);
     List<Alumno> findByEmpresa_Id(Long empresaId);
     Optional<Alumno> findByDni(String dni);
 	Optional<Alumno> findByEmail(String email);
 	List<Alumno> findByCursoIn(List<Curso> cursos);
+	
+	@Query("SELECT a FROM Alumno a WHERE a.tutorPracticas.id = :tutorId")
+	List<Alumno> findByTutorPracticasId(@Param("tutorId") Long tutorId);
+
 
 	//List<Alumno> findByCursoIdIn(List<Long> cursoIds);
 	 @Query("SELECT a FROM Alumno a WHERE a.curso.id IN :cursoIds")

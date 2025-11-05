@@ -1,0 +1,203 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="content">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Gestión de Incidencias
+            </h2>
+            
+            <!-- Nueva Incidencia: ADMIN y TUTOR_PRACTICAS -->
+            <a th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') 
+                       or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"
+               th:href="@{/incidencia/nueva}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nueva Incidencia
+            </a>
+        </div>
+
+        <!-- Mensajes de feedback -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <form class="row g-3">
+                    <div class="col-md-3">
+                        <label for="filtroEstado" class="form-label">Estado</label>
+                        <select class="form-select" id="filtroEstado" name="estado">
+                            <option value="">Todos</option>
+                            <option value="ABIERTA">Abierta</option>
+                            <option value="EN_PROCESO">En Proceso</option>
+                            <option value="RESUELTA">Resuelta</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filtroTipo" class="form-label">Tipo</label>
+                        <select class="form-select" id="filtroTipo" name="tipo">
+                            <option value="">Todos</option>
+                            <option value="FALTA">Falta</option>
+                            <option value="RETRASO">Retraso</option>
+                            <option value="PROBLEMA_ACTITUD">Problema de Actitud</option>
+                            <option value="OTROS">Otros</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="filtroAlumno" class="form-label">Alumno</label>
+                        <input type="text" class="form-control" id="filtroAlumno" name="alumno" placeholder="Buscar por nombre...">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de incidencias -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Alumno</th>
+                                <th>Tutor Prácticas</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${incidencias == null || incidencias.isEmpty()}">
+                                <td colspan="8" class="text-center text-muted">
+                                    <i class="bi bi-inbox"></i> No hay incidencias registradas
+                                </td>
+                            </tr>
+                            <tr th:each="incidencia : ${incidencias}">
+                                <td th:text="${incidencia.id}">#001</td>
+                                <td>
+                                    <span th:if="${incidencia.alumno != null}" 
+                                          th:text="${incidencia.alumno.nombre + ' ' + incidencia.alumno.apellidos}">Alumno</span>
+                                    <span th:if="${incidencia.alumno == null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${incidencia.tutorPracticas != null}" 
+                                          th:text="${incidencia.tutorPracticas.nombre + ' ' + incidencia.tutorPracticas.apellidos}">Tutor</span>
+                                    <span th:if="${incidencia.tutorPracticas == null}" class="text-muted">-</span>
+                                </td>
+                                <td th:text="${incidencia.fecha != null ? #temporals.format(incidencia.fecha, 'dd/MM/yyyy') : '-'}">15/01/2025</td>
+                                <td>
+                                    <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).FALTA}" 
+                                          class="badge bg-danger">Falta</span>
+                                    <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).RETRASO}" 
+                                          class="badge bg-warning text-dark">Retraso</span>
+                                    <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).PROBLEMA_ACTITUD}" 
+                                          class="badge bg-info text-dark">Problema de Actitud</span>
+                                    <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).OTROS}" 
+                                          class="badge bg-secondary">Otros</span>
+                                </td>
+                                <td>
+                                    <span th:if="${incidencia.descripcion != null && !incidencia.descripcion.isEmpty()}" 
+                                          th:text="${#strings.abbreviate(incidencia.descripcion, 60)}"
+                                          th:title="${incidencia.descripcion}">Descripción</span>
+                                    <span th:if="${incidencia.descripcion == null || incidencia.descripcion.isEmpty()}" 
+                                          class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${incidencia.estado == T(com.control.practicas.models.Incidencia.Estado).ABIERTA}" 
+                                          class="badge bg-danger">
+                                        <i class="bi bi-exclamation-circle"></i> Abierta
+                                    </span>
+                                    <span th:if="${incidencia.estado == T(com.control.practicas.models.Incidencia.Estado).EN_PROCESO}" 
+                                          class="badge bg-warning text-dark">
+                                        <i class="bi bi-hourglass-split"></i> En Proceso
+                                    </span>
+                                    <span th:if="${incidencia.estado == T(com.control.practicas.models.Incidencia.Estado).RESUELTA}" 
+                                          class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Resuelta
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                        <!-- Botón Editar para ADMIN y TUTOR_PRACTICAS -->
+                                        <a th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') 
+                                                   or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}"
+                                           th:href="@{/incidencia/editar/{id}(id=${incidencia.id})}"
+                                           class="btn btn-sm btn-warning"
+                                           title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <!-- Eliminar: solo ADMIN -->
+                                        <a th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}"
+                                           th:href="@{/incidencia/eliminar/{id}(id=${incidencia.id})}" 
+                                           class="btn btn-sm btn-danger" 
+                                           title="Eliminar"
+                                           onclick="return confirm('¿Está seguro de eliminar esta incidencia?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5>Total Incidencias</h5>
+                        <h2 th:text="${incidencias != null ? #lists.size(incidencias) : 0}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <h5>Abiertas</h5>
+                        <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado == T(com.control.practicas.models.Incidencia.Estado).ABIERTA]) : 0}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body">
+                        <h5>En Proceso</h5>
+                        <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado == T(com.control.practicas.models.Incidencia.Estado).EN_PROCESO]) : 0}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5>Resueltas</h5>
+                        <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado == T(com.control.practicas.models.Incidencia.Estado).RESUELTA]) : 0}">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:fragment="scripts">
+    <script>
+     console.log('Script cargado');
+    </script>
+</th:block>
+</html>

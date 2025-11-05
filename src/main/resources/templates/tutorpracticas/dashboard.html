@@ -1,5 +1,3 @@
-<!-- src/main/resources/templates/tutor-practicas/dashboard.html -->
-
 <div th:fragment="content">
     <div class="container mt-5">
         <h1 class="mb-4">
@@ -67,12 +65,12 @@
     							</a>
 							</div>
                             <div class="col-md-4 mb-3">
-                                <a href="#" class="btn btn-lg btn-outline-success w-100">
+                                <a th:href="@{/enconstruccion}" class="btn btn-lg btn-outline-success w-100">
                                     <i class="bi bi-clipboard-check"></i><br>Evaluar Alumno
                                 </a>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <a href="#" class="btn btn-lg btn-outline-danger w-100">
+                                <a th:href="@{/enconstruccion}	" class="btn btn-lg btn-outline-danger w-100">
                                     <i class="bi bi-exclamation-triangle"></i><br>Reportar Incidencia
                                 </a>
                             </div>
@@ -82,7 +80,7 @@
             </div>
         </div>
 
-        <div class="row mt-4">
+       <!--  <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
@@ -100,13 +98,13 @@
                                     <th>Horas Restantes</th>
                                     <th>Acciones</th>
                                 </tr>
-                                <!-- <tr>
+                                 <tr>
                                 <p th:each="alumno : ${alumnos}">
     								<span th:text="${alumno.nombre + ' ' + alumno.apellidos}"></span> - 
    									 Horas realizadas: <span th:text="${horasPorAlumno[alumno.id.toString()]}"></span> h
 								</p>
                                 
-                                </tr> -->
+                                </tr> 
 
                             </thead>
                             <tbody>
@@ -131,6 +129,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </div>

@@ -2,21 +2,23 @@ package com.control.practicas.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.control.practicas.dto.AlumnoDTO;
+import com.control.practicas.dto.TutorPracticasDTO;
 import com.control.practicas.models.*;
 import com.control.practicas.repositories.*;
 import com.control.practicas.services.*;
 
 import java.beans.PropertyEditorSupport;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/alumno")
@@ -102,8 +104,66 @@ public class AlumnoController {
         return "layout";
     }
     
-
+    @GetMapping("/tutores-por-empresa/{empresaId}")
+    @ResponseBody
+    public List<TutorPracticasDTO> obtenerTutoresPorEmpresa(@PathVariable Long empresaId) {
+        List<TutorPracticas> tutorP = tutorPracticasService.listarPorEmpresa(empresaId);
+        
+        return tutorP.stream()
+            .map(t -> new TutorPracticasDTO(t.getId(), t.getNombre()))
+            .collect(Collectors.toList());
+    } 
     
+    @GetMapping({"/nuevo", "/editar/{id}"})
+    public String formIncidencia(@PathVariable(required = false) Long id,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
+
+        if (id != null) {
+            // 🟡 Modo edición
+            return alumnoService.buscarPorId(id)
+                    .map(alumno -> {
+                        model.addAttribute("alumno", alumno);
+                        List<Curso> cursos = cursoService.listarTodos();
+                        List<Empresa> empresas = empresaService.listarTodas();
+                        var tutores = alumno.getTutorPracticas();
+                        List<TutorPracticas> tutorPracticas = (tutores != null)
+                                ? tutorPracticasService.listarPorEmpresa(tutores.getId())
+                                : Collections.emptyList();
+                        if (alumno.getCurso() != null) {
+                            alumno.setCursoId(alumno.getCurso().getId());
+                        }
+                        if (alumno.getEmpresa() != null) {
+                            alumno.setEmpresaId(alumno.getEmpresa().getId());
+                        }
+                        if (alumno.getTutorPracticas() != null) {
+                            alumno.setTutorPracticasId(alumno.getTutorPracticas().getId());
+                        }
+                        model.addAttribute("alumno", alumno);
+                        model.addAttribute("cursos", cursos);
+                        model.addAttribute("empresas", empresas);
+                        model.addAttribute("tutorPracticas", tutorPracticas);
+                       // model.addAttribute("esTutorPracticas", false);
+                        model.addAttribute("viewName", "admin/alumno/form");
+                        return "layout";
+                    })
+                    .orElseGet(() -> {
+                        redirectAttributes.addFlashAttribute("error", "Alumno no encontrado");
+                        return "redirect:/admin/alumno/listar";
+                    });
+
+        } else {
+            // 🟢 Modo nuevo
+        	
+        	 model.addAttribute("alumno", new Alumno());
+             model.addAttribute("cursos", cursoRepository.findAll());
+             model.addAttribute("empresas", empresaRepository.findAll());
+             model.addAttribute("tutores",  Collections.emptyList());
+             model.addAttribute("viewName", "admin/alumno/form");
+             return "layout";
+        }
+    }
+    /*
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("alumno", new Alumno());
@@ -113,6 +173,46 @@ public class AlumnoController {
         model.addAttribute("viewName", "admin/alumno/form");
         return "layout";
     }
+    
+    *
+    *
+    *
+     @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model) {
+        // Cargar primero las listas
+        List<Curso> cursos = cursoService.listarTodos();
+        List<Empresa> empresas = empresaService.listarTodas();
+        List<TutorPracticas> tutores = tutorPracticasService.listarTodos();
+        
+        // Después cargar y modificar el alumno
+        Alumno alumno = alumnoService.buscarPorId(id)
+            .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
+
+        if (alumno.getCurso() != null) {
+            alumno.setCursoId(alumno.getCurso().getId());
+        }
+        if (alumno.getEmpresa() != null) {
+            alumno.setEmpresaId(alumno.getEmpresa().getId());
+        }
+        if (alumno.getTutorPracticas() != null) {
+            alumno.setTutorPracticasId(alumno.getTutorPracticas().getId());
+        }
+        System.out.println("fechaNacimiento controlador = " + alumno.getFechaNacimiento());
+        model.addAttribute("esVistaAlumno", true);
+
+        model.addAttribute("alumno", alumno);
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("empresas", empresas);
+        model.addAttribute("tutores", tutores);
+        model.addAttribute("esTutorPracticas", false);
+        model.addAttribute("viewName", "admin/alumno/form");
+        return "layout";
+    }
+    *
+    *
+    *
+    */
+   
     
     @GetMapping("/observaciondiaria")
     public String MostrarObservacionExistente(Model model) {
@@ -203,37 +303,7 @@ public class AlumnoController {
     }
     
     
-    @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
-        // Cargar primero las listas
-        List<Curso> cursos = cursoService.listarTodos();
-        List<Empresa> empresas = empresaService.listarTodas();
-        List<TutorPracticas> tutores = tutorPracticasService.listarTodos();
-        
-        // Después cargar y modificar el alumno
-        Alumno alumno = alumnoService.buscarPorId(id)
-            .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
-
-        if (alumno.getCurso() != null) {
-            alumno.setCursoId(alumno.getCurso().getId());
-        }
-        if (alumno.getEmpresa() != null) {
-            alumno.setEmpresaId(alumno.getEmpresa().getId());
-        }
-        if (alumno.getTutorPracticas() != null) {
-            alumno.setTutorPracticasId(alumno.getTutorPracticas().getId());
-        }
-        System.out.println("fechaNacimiento controlador = " + alumno.getFechaNacimiento());
-        model.addAttribute("esVistaAlumno", true);
-
-        model.addAttribute("alumno", alumno);
-        model.addAttribute("cursos", cursos);
-        model.addAttribute("empresas", empresas);
-        model.addAttribute("tutores", tutores);
-        model.addAttribute("esTutorPracticas", false);
-        model.addAttribute("viewName", "admin/alumno/form");
-        return "layout";
-    }
+    
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Alumno alumno, RedirectAttributes redirectAttributes) {
         try {
@@ -316,6 +386,23 @@ public class AlumnoController {
         return "redirect:/admin/alumno/listar";
     }
     
-    
+    @PostMapping("/cambiar-estado/{id}")
+    public String cambiarEstado(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<Alumno> alumnoOpt = alumnoService.buscarPorId(id);
+            if (alumnoOpt.isPresent()) {
+                Alumno alumno = alumnoOpt.get();
+                alumno.setActivo(!alumno.getActivo());
+                alumnoService.guardar(alumno);
+                redirectAttributes.addFlashAttribute("success", 
+                    alumno.getActivo() ? "Alumno activado" : "Alumno desactivado");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Alumno no encontrado");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cambiar el estado del alumno: " + e.getMessage());
+        }
+        return "redirect:/admin/alumno/listar";
+    }
     
 }

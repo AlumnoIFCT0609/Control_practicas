@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<body>
+    <div th:fragment="content">
+        <div class="container-fluid">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-clipboard-data me-2"></i>
+                    Criterios de Evaluación
+                    <a th:href="@{/admin/evaluacion/criterios/nuevo}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nuevo Criterio
+                </a>
+                </h2>
+                
+                <a th:href="@{/admin/evaluacion/listar}" class="btn btn-secondary">
+    					<i class="bi bi-arrow-left"></i> Volver
+				</a>
+            </div>
+
+            <!-- Mensajes de éxito -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Mensajes de error -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Tabla de criterios -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div th:if="${criterios.isEmpty()}" class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No hay criterios de evaluación registrados.
+                        <a th:href="@{/admin/evaluacion/criterio/nuevo}" class="alert-link">Crear el primero</a>
+                    </div>
+
+                    <div th:if="${!criterios.isEmpty()}" class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Peso (%)</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Creación</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="crit : ${criterios}">
+                                    <td th:text="${crit.id}">1</td>
+                                    <td>
+                                        <strong th:text="${crit.nombre}">Competencias Técnicas</strong>
+                                    </td>
+                                    <td>
+                                        <span th:text="${crit.descripcion != null && !crit.descripcion.isEmpty() ? 
+                                                        (crit.descripcion.length() > 50 ? crit.descripcion.substring(0, 50) + '...' : crit.descripcion) 
+                                                        : 'Sin descripción'}"
+                                              class="text-muted">
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info" th:text="${crit.peso + '%'}">25%</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${crit.activo ? 'bg-success' : 'bg-secondary'}"
+                                              th:text="${crit.activo ? 'Activo' : 'Inactivo'}">
+                                            Activo
+                                        </span>
+                                    </td>
+                                    <td th:text="${crit.fechaCreacion != null ? #temporals.format(crit.fechaCreacion, 'dd/MM/yyyy HH:mm') : '-'}">
+                                        01/11/2024 10:30
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <!-- Botón Editar -->
+                                            <a th:href="@{/admin/evaluacion/criterios/editar/{id}(id=${crit.id})}" 
+                                               class="btn btn-sm btn-warning"
+                                               title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            
+                                            <!-- Botón Activar/Desactivar -->
+                                            <form th:action="@{/admin/evaluacion/criterios/activar/{id}(id=${crit.id})}" 
+                                                  method="post" 
+                                                  style="display: inline;">
+                                                <button type="submit" 
+                                                        class="btn btn-sm"
+                                                        th:classappend="${crit.activo ? 'btn-secondary' : 'btn-success'}"
+                                                        th:title="${crit.activo ? 'Desactivar' : 'Activar'}">
+                                                    <i th:class="${crit.activo ? 'bi bi-toggle-off' : 'bi bi-toggle-on'}"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            <!-- Botón Eliminar -->
+                                            <form th:action="@{/admin/evaluacion/criterios/eliminar/{id}(id=${crit.id})}" 
+                                                  method="post" 
+                                                  onsubmit="return confirm('¿Estás seguro de eliminar este criterio?')"
+                                                  style="display: inline;">
+                                                <button type="submit" 
+                                                        class="btn btn-sm btn-danger"
+                                                        title="Eliminar">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+			<div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5>Total Capacidades</h5>
+                            <h2 th:text="${#lists.size(criterios)}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5>Activas</h5>
+                            <h2 th:text="${#lists.size(criterios.?[activo == true])}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body">
+                            <h5>Inactivas</h5>
+                            <h2 th:text="${#lists.size(criterios.?[activo == false])}">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Información adicional -->
+            <div class="card shadow-sm mt-4 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-info-circle"></i> Información</h5>
+                    <ul class="mb-0">
+                        <li>Los criterios de evaluación definen los aspectos a valorar en las prácticas</li>
+                        <li>El peso indica la importancia relativa de cada criterio (la suma debería ser 100%)</li>
+                        <li>Los criterios inactivos no aparecerán en nuevas evaluaciones</li>
+                        <li>Puedes editar, activar/desactivar o eliminar criterios según sea necesario</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -88,14 +88,7 @@
 										   onclick="return confirm('¿Crear usuario de acceso para este tutor?')">
 										    <i class="bi bi-person-plus"></i>
 										</a>
-										<!-- Botón Crear Usuario - Solo visible si no tiene usuario
-										    <a th:if="${!tutorCurso.tieneUsuario}" 
-										    th:href="@{/admin/tutorcurso/crear-usuario/{id}(id=${tutorCurso.id})}" 
-										    class="btn btn-sm btn-info" 
-										    title="Crear Usuario"
-										    onclick="return confirm('¿Crear usuario de acceso para este tutor?')">
-										    <i class="bi bi-person-plus"></i>
-										    </a> -->
+										
                                         <!-- Botón Editar -->
                                         <a th:href="@{/admin/tutorcurso/editar/{id}(id=${tutor.id})}" 
                                            class="btn btn-sm btn-warning" 
@@ -103,17 +96,17 @@
                                             
                                         </a>
                                         
-                                        <!-- Botón Activar/Desactivar 
+                                         <!-- Botón Activar/Desactivar -->
                                         <form th:action="@{/admin/tutorcurso/cambiar-estado/{id}(id=${tutor.id})}" 
                                               method="post" 
                                               style="display: inline;">
                                             <button type="submit" 
                                                     class="btn btn-sm"
-                                                    th:classappend="${tutor.activo} ? 'btn-secondary' : 'btn-success'"
+                                                    th:classappend="${tutor.activo} ? 'btn-success' : 'btn-secondary'"
                                                     th:title="${tutor.activo} ? 'Desactivar' : 'Activar'">
-                                                <i th:class="${tutor.activo} ? 'fas fa-toggle-off' : 'fas fa-toggle-on'"></i>
+                                                <i th:class="${tutor.activo} ? 'bi bi-toggle-off' : 'bi bi-toggle-on'"></i>
                                             </button>
-                                        </form>-->
+                                        </form>
                                         
                                         <!-- Botón Eliminar -->
                                         <a th:href="@{/admin/tutorcurso/eliminar/{id}(id=${tutor.id})}" 

@@ -107,8 +107,7 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="empresa" class="form-label">Empresa</label>
+                                    <!--  
                                     <select class="form-select" id="empresa" th:field="*{empresaId}"
                                             th:disabled="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')
                                                           or #lists.contains(#authentication.authorities.![authority], 'ALUMNO')
@@ -122,8 +121,28 @@
                                                 th:text="${empresa.nombre}"
                                                 th:selected="${alumno.empresa != null and alumno.empresa.id == empresa.id}">
                                         </option>
+                                    </select> -->
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="empresa" class="form-label">Empresa</label>     
+                                <select class="form-select"
+                                            id="empresaId"
+                                            th:field="*{empresaId}"
+                                            required
+                                            onchange="cargarTutoresPorEmpresa()"
+                                            th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')
+                                            			or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')
+                                            			or #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}">
+                                        <option value="">Seleccione una Empresa</option>
+                                        <option th:each="empresa : ${empresas}"
+                                                th:value="${empresa.id}"
+                                                th:text="${empresa.nombre}">
+                                        </option>
                                     </select>
                                 </div>
+                                
+                                
+                                
                             </div>
 
                             <div class="row">
@@ -136,7 +155,7 @@
 										<option value="" th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
 										    Seleccione un tutor
 										</option>                   
-										<option th:each="tutor : ${tutores}"
+										<option th:each="tutor : ${tutorPracticas}"
                                                 th:value="${tutor.id}"
                                                 th:text="${tutor.nombre + ' ' + tutor.apellidos}"
                                                 th:selected="${alumno.tutorPracticas != null and alumno.tutorPracticas.id == tutor.id}">
@@ -204,5 +223,58 @@
         </div>
     </div>
 </div>
+<th:block th:fragment="scripts">
+    <script>
+    function cargarTutoresPorEmpresa() {
+        const empresaId = document.getElementById('empresaId').value;
+        const tutorSelect = document.getElementById('tutorPracticas');
+        
+        console.log('Función llamada. Empresa ID:', idempresa);
+        
+        tutorSelect.innerHTML = '<option value="">Cargando...</option>';
+        
+        if (!empresaId) {
+        	 tutorSelect.innerHTML = '<option value="">Primero seleccione una empresa</option>';
+            return;
+        }
+        
+        const url = `/admin/alumno/tutores-por-empresa/${empresaId}`;
+        console.log('Haciendo fetch a:', url);
+        
+        fetch(url)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(alumnos => {
+                console.log('Tutores de practicas recibidos:', tutoresPracticas);
+                
+                alumnoSelect.innerHTML = '<option value="">Seleccione un Tutor de Practicas</option>';
+                
+                alumnos.forEach(alumno => {
+                    const option = document.createElement('option');
+                    option.value = tutorPracticas.id;
+                    option.textContent = tutorPracticas.nombre;
+                    TutorSelect.appendChild(option);
+                });
+                
+                if (alumnos.length === 0) {
+                    alumnoSelect.innerHTML = '<option value="">No hay Tutores de practicas para esta empresa</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alumnoSelect.innerHTML = '<option value="">Error al cargar Tutores de practicas</option>';
+            });
+    }
+    
+    console.log('Script cargado');
+    </script>
+</th:block>
+
+
 </html>
 

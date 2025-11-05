@@ -1,0 +1,300 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span th:text="${incidencia.id == null ? 'Nueva Incidencia' : 'Editar Incidencia'}">Nueva Incidencia</span>
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <form th:object="${incidencia}" 
+                              th:action="@{/incidencia/guardar}" 
+                              method="post">
+
+                            <input type="hidden" th:field="*{id}">
+                            <input type="hidden" th:field="*{fechaCreacion}">
+
+                            <!-- Información de la incidencia -->
+                            <h5 class="border-bottom pb-2 mb-3">Información de la Incidencia</h5>
+
+                            <div class="row">
+                                <!-- Tutor de Prácticas -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="tutorPracticas" class="form-label">
+                                        Tutor de Prácticas <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select"
+                                            id="tutorPracticas"
+                                            th:field="*{tutorPracticas.id}"
+                                            required
+                                            onchange="cargarAlumnosPorTutor()"
+                                            th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+                                        <option value="">Seleccione un tutor</option>
+                                        <option th:each="tutor : ${tutoresPracticas}"
+                                                th:value="${tutor.id}"
+                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}">
+                                        </option>
+                                    </select>
+                                </div>
+								<div class="col-md-6 mb-3">
+    								<label for="alumno" class="form-label">
+									        Alumno <span class="text-danger">*</span>
+    								</label>
+    								<select class="form-select"
+            										id="alumno"
+            										th:field="*{alumno.id}"
+           											required
+            										th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+        											<option value="">Primero seleccione un tutor</option>
+        											<option th:each="alumno : ${alumnos}"
+                											th:value="${alumno.id}"
+                											th:text="${alumno.nombreCompleto}">
+       												</option>
+    								</select>
+								</div>
+								
+                               
+                            </div>
+
+                            <div class="row">
+                                <!-- Fecha -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="fecha" class="form-label">
+                                        Fecha de la Incidencia <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" class="form-control" id="fecha"
+										   name="fecha"
+										   required
+                                           th:value="${incidencia.fecha != null ? incidencia.fecha.toString() : ''}"
+                                           th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}" />
+                                   </div>
+
+                                <!-- Tipo -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="tipo" class="form-label">
+                                        Tipo de Incidencia <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select"
+                                            id="tipo"
+                                            th:field="*{tipo}"
+                                            required
+                                            th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+                                        <option value="">Seleccione un tipo</option>
+                                        <option th:value="${T(com.control.practicas.models.Incidencia.Tipo).FALTA}">
+                                            Falta
+                                        </option>
+                                        <option th:value="${T(com.control.practicas.models.Incidencia.Tipo).RETRASO}">
+                                            Retraso
+                                        </option>
+                                        <option th:value="${T(com.control.practicas.models.Incidencia.Tipo).PROBLEMA_ACTITUD}">
+                                            Problema de Actitud
+                                        </option>
+                                        <option th:value="${T(com.control.practicas.models.Incidencia.Tipo).OTROS}">
+                                            Otros
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Estado -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="estado" class="form-label">
+                                        Estado <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select"
+                                            id="estado"
+                                            th:field="*{estado}"
+                                            required
+                                            th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+                                        <option th:value="${T(com.control.practicas.models.Incidencia.Estado).ABIERTA}">
+                                            Abierta
+                                        </option>
+                                        <option th:value="${T(com.control.practicas.models.Incidencia.Estado).EN_PROCESO}">
+                                            En Proceso
+                                        </option>
+                                        <option th:value="${T(com.control.practicas.models.Incidencia.Estado).RESUELTA}">
+                                            Resuelta
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">
+                                    Descripción de la Incidencia <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control"
+                                          id="descripcion"
+                                          th:field="*{descripcion}"
+                                          rows="4"
+                                          placeholder="Describa detalladamente la incidencia..."
+                                          required
+                                          th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"></textarea>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> 
+                                    Incluya todos los detalles relevantes sobre la incidencia.
+                                </div>
+                            </div>
+
+                            <!-- Resolución -->
+                            <h5 class="border-bottom pb-2 mb-3 mt-4">
+                                <i class="bi bi-check-circle"></i> Resolución
+                            </h5>
+                            
+                            <div class="mb-3">
+                                <label for="resolucion" class="form-label">
+                                    Descripción de la Resolución
+                                </label>
+                                <textarea class="form-control"
+                                          id="resolucion"
+                                          th:field="*{resolucion}"
+                                          rows="4"
+                                          placeholder="Describa cómo se resolvió la incidencia..."
+                                          th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"></textarea>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> 
+                                    Este campo es opcional. Complete solo cuando la incidencia haya sido resuelta.
+                                </div>
+                            </div>
+
+                            <!-- Fecha de resolución -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaResolucion" class="form-label">
+                                        Fecha de Resolución
+                                    </label>
+                                    <input type="datetime-local"
+                                           class="form-control"
+                                           id="fechaResolucion"
+                                           th:field="*{fechaResolucion}"
+                                           th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle"></i> 
+                                        Se registrará automáticamente si no se especifica.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Información de auditoría (solo lectura) -->
+                            <div th:if="${incidencia.id != null}" class="alert alert-info">
+                                <h6 class="alert-heading">
+                                    <i class="bi bi-info-circle"></i> Información de Auditoría
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Fecha de Creación:</strong>
+                                        <span th:text="${incidencia.fechaCreacion != null ? #temporals.format(incidencia.fechaCreacion, 'dd/MM/yyyy HH:mm:ss') : '-'}"></span>
+                                    </div>
+                                    <div class="col-md-6" th:if="${incidencia.fechaResolucion != null}">
+                                        <strong>Fecha de Resolución:</strong>
+                                        <span th:text="${#temporals.format(incidencia.fechaResolucion, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/incidencia/listar}"
+                                   class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+
+                                <!-- Botón Guardar visible solo para roles con permiso -->
+                                <button type="submit"
+                                        class="btn btn-primary"
+                                        th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') 
+                                                or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')}">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+
+                                <!-- Alumnos no pueden guardar -->
+                                <button type="button"
+                                        class="btn btn-outline-secondary"
+                                        th:if="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"
+                                        disabled>
+                                    <i class="bi bi-lock"></i> Solo lectura
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de ayuda -->
+                <div class="card mt-3 border-primary">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="bi bi-lightbulb"></i> Ayuda
+                        </h6>
+                        <ul class="mb-0">
+                            <li><strong>Tipo FALTA:</strong> Para ausencias no justificadas del alumno.</li>
+                            <li><strong>Tipo RETRASO:</strong> Cuando el alumno llega tarde.</li>
+                            <li><strong>Tipo PROBLEMA_ACTITUD:</strong> Para comportamientos inapropiados.</li>
+                            <li><strong>Tipo OTROS:</strong> Para cualquier otra incidencia no categorizada.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script FUERA del fragmento -->
+<th:block th:fragment="scripts">
+    <script>
+    function cargarAlumnosPorTutor() {
+        const tutorId = document.getElementById('tutorPracticas').value;
+        const alumnoSelect = document.getElementById('alumno');
+        
+        console.log('Función llamada. Tutor ID:', tutorId);
+        
+        alumnoSelect.innerHTML = '<option value="">Cargando...</option>';
+        
+        if (!tutorId) {
+            alumnoSelect.innerHTML = '<option value="">Primero seleccione un tutor</option>';
+            return;
+        }
+        
+        const url = `/incidencia/alumnos-por-tutor/${tutorId}`;
+        console.log('Haciendo fetch a:', url);
+        
+        fetch(url)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(alumnos => {
+                console.log('Alumnos recibidos:', alumnos);
+                
+                alumnoSelect.innerHTML = '<option value="">Seleccione un alumno</option>';
+                
+                alumnos.forEach(alumno => {
+                    const option = document.createElement('option');
+                    option.value = alumno.id;
+                    option.textContent = alumno.nombre;
+                    alumnoSelect.appendChild(option);
+                });
+                
+                if (alumnos.length === 0) {
+                    alumnoSelect.innerHTML = '<option value="">No hay alumnos para este tutor</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alumnoSelect.innerHTML = '<option value="">Error al cargar alumnos</option>';
+            });
+    }
+    
+    console.log('Script cargado');
+    </script>
+</th:block>
+
+</html>

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.control.practicas.models.Curso;
+import com.control.practicas.models.Empresa;
 import com.control.practicas.models.TutorCurso;
 import com.control.practicas.repositories.TutorCursoRepository;
 import com.control.practicas.services.CursoService;
@@ -15,6 +16,7 @@ import com.control.practicas.services.TutorCursoService;
 import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin/curso")
@@ -154,4 +156,26 @@ public class CursoController {
         }
         return "redirect:/admin/curso/listar";
     }
+    
+    @PostMapping("/cambiar-estado/{id}")
+    public String cambiarEstado(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<Curso> cursoOpt = cursoService.buscarPorId(id);
+            if (cursoOpt.isPresent()) {
+                Curso curso = cursoOpt.get();
+                curso.setActivo(!curso.getActivo());
+                cursoService.guardar(curso);
+                redirectAttributes.addFlashAttribute("success", 
+                    curso.getActivo() ? "Curso activado" : "Curso desactivado");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Curso no encontrado");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cambiar el estado del curso: " + e.getMessage());
+        }
+        return "redirect:/admin/curso/listar";
+    }
+    
+    
+    
 }

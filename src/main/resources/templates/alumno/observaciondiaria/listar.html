@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <!-- Alertas -->
             <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                <i class="bi bi-exclamation-circle"></i> <span th:text="${error}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             
             <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle"></i> <span th:text="${mensaje}"></span>
+                <i class="bi bi-check-circle"></i> <span th:text="${mensaje}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             
@@ -100,7 +100,7 @@
                                                            th:href="@{/alumno/observaciondiaria/editar/{id}(id=${obs.id})}" 
                                                            class="btn btn-sm btn-warning" 
                                                            title="Editar (solo disponible el día de creación)">
-                                                            <i class="fas fa-edit"></i>
+                                                            <i class="bi bi-pencil"></i>
                                                         </a>
                                                         
                                                         <!-- Icono bloqueado si no es editable -->
@@ -109,7 +109,7 @@
                                                                 class="btn btn-sm btn-secondary" 
                                                                 disabled
                                                                 title="No editable (solo se puede editar el día de creación)">
-                                                            <i class="fas fa-lock"></i>
+                                                            <i class="bi bi-lock"></i>
                                                         </button>
                                                     </div>
                                                 </td>
