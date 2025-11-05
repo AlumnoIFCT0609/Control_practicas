@@ -77,6 +77,10 @@ public class AlumnoService {
         
         return alumnoRepository.save(alumno);
     }
+    
+    
+    
+    
     public Alumno obtenerPorEmail(String email) {
         return alumnoRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("No se encontró el alumno con email: " + email));

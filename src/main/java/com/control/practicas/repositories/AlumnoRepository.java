@@ -25,6 +25,10 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
     Optional<Alumno> findByDni(String dni);
 	Optional<Alumno> findByEmail(String email);
 	List<Alumno> findByCursoIn(List<Curso> cursos);
+	
+	@Query("SELECT a FROM Alumno a WHERE a.tutorPracticas.id = :tutorId")
+	List<Alumno> findByTutorPracticasId(@Param("tutorId") Long tutorId);
+
 
 	//List<Alumno> findByCursoIdIn(List<Long> cursoIds);
 	 @Query("SELECT a FROM Alumno a WHERE a.curso.id IN :cursoIds")

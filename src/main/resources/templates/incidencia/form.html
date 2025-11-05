@@ -22,9 +22,9 @@
 
                             <!-- Información de la incidencia -->
                             <h5 class="border-bottom pb-2 mb-3">Información de la Incidencia</h5>
-                            <!-- 
+
                             <div class="row">
-                                 <!-- Tutor de Prácticas -->
+                                <!-- Tutor de Prácticas -->
                                 <div class="col-md-6 mb-3">
                                     <label for="tutorPracticas" class="form-label">
                                         Tutor de Prácticas <span class="text-danger">*</span>
@@ -33,6 +33,7 @@
                                             id="tutorPracticas"
                                             th:field="*{tutorPracticas.id}"
                                             required
+                                            onchange="cargarAlumnosPorTutor()"
                                             th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
                                         <option value="">Seleccione un tutor</option>
                                         <option th:each="tutor : ${tutoresPracticas}"
@@ -41,67 +42,36 @@
                                         </option>
                                     </select>
                                 </div>
-                                
-                                <!-- Alumno -->
+								<div class="col-md-6 mb-3">
+    								<label for="alumno" class="form-label">
+									        Alumno <span class="text-danger">*</span>
+    								</label>
+    								<select class="form-select"
+            										id="alumno"
+            										th:field="*{alumno.id}"
+           											required
+            										th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+        											<option value="">Primero seleccione un tutor</option>
+        											<option th:each="alumno : ${alumnos}"
+                											th:value="${alumno.id}"
+                											th:text="${alumno.nombreCompleto}">
+       												</option>
+    								</select>
+								</div>
+								
+                                <!-- Alumno 
                                 <div class="col-md-6 mb-3">
                                     <label for="alumno" class="form-label">
-                                        Alumno <span cl="alumno : ${alumnos}"
-                                                th:valuass="text-danger">*</span>
+                                        Alumno <span class="text-danger">*</span>
                                     </label>
                                     <select class="form-select"
                                             id="alumno"
                                             th:field="*{alumno.id}"
                                             required
                                             th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
-                                        <option value="">Seleccione un alumno</option>
-                                        <option th:each="alumno : ${alumnos}" 
-        										th:if="${alumno != null}"
-        										th:value="${alumno.id}"
-        										th:text="${alumno.nombre + ' ' + alumno.apellidos}">
-										</option>
+                                        <option value="">Primero seleccione un tutor</option>
                                     </select>
-                                </div>
-								-->
-								<div class="row">
-    <!-- Tutor de Prácticas -->
-    <div class="col-md-6 mb-3">
-        <label for="tutorPracticas" class="form-label">
-            Tutor de Prácticas <span class="text-danger">*</span>
-        </label>
-        <select class="form-select"
-                id="tutorPracticas"
-                th:field="*{tutorPracticas.id}"
-                required
-                onchange="cargarAlumnosPorTutor()"
-                th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
-            <option value="">Seleccione un tutor</option>
-            <option th:each="tutor : ${tutoresPracticas}"
-                    th:value="${tutor.id}"
-                    th:text="${tutor.nombre + ' ' + tutor.apellidos}">
-            </option>
-        </select>
-    </div>
-
-    <!-- Alumno -->
-    <div class="col-md-6 mb-3">
-        <label for="alumno" class="form-label">
-            Alumno <span class="text-danger">*</span>
-        </label>
-        <select class="form-select"
-                id="alumno"
-                th:field="*{alumno.id}"
-                required
-                th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
-            <option value="">Primero seleccione un tutor</option>
-        </select>
-    </div>
-</div>
-
-
-								
-								
-								
-                               
+                                </div> -->
                             </div>
 
                             <div class="row">
@@ -110,20 +80,12 @@
                                     <label for="fecha" class="form-label">
                                         Fecha de la Incidencia <span class="text-danger">*</span>
                                     </label>
-                                   <!--  <input type="date"
-                                           class="form-control"
-                                           id="fecha"
-                                           th:field="*{fecha}"
-                                           required
-                                           th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}"> -->
-                                      <input type="date"
-       													class="form-control"
-       													id="fecha"
-       													name="fecha"
-       													th:value="${incidencia != null ? incidencia.fecha : ''}"
-       													required
-       													th:readonly="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">     
-                                </div>
+                                    <input type="date" class="form-control" id="fecha"
+										   name="fecha"
+										   required
+                                           th:value="${incidencia.fecha != null ? incidencia.fecha.toString() : ''}"
+                                           th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}" />
+                                   </div>
 
                                 <!-- Tipo -->
                                 <div class="col-md-4 mb-3">
@@ -250,7 +212,7 @@
 
                             <!-- Botones de acción -->
                             <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/incidencias/listar}"
+                                <a th:href="@{/incidencia/listar}"
                                    class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Cancelar
                                 </a>
@@ -293,40 +255,58 @@
         </div>
     </div>
 </div>
-<script th:inline="javascript">
-function cargarAlumnosPorTutor() {
-    const tutorId = document.getElementById('tutorPracticas').value;
-    const alumnoSelect = document.getElementById('alumno');
-    
-    // Limpiar opciones
-    alumnoSelect.innerHTML = '<option value="">Cargando...</option>';
-    
-    if (!tutorId) {
-        alumnoSelect.innerHTML = '<option value="">Primero seleccione un tutor</option>';
-        return;
+
+<!-- Script FUERA del fragmento -->
+<th:block th:fragment="scripts">
+    <script>
+    function cargarAlumnosPorTutor() {
+        const tutorId = document.getElementById('tutorPracticas').value;
+        const alumnoSelect = document.getElementById('alumno');
+        
+        console.log('Función llamada. Tutor ID:', tutorId);
+        
+        alumnoSelect.innerHTML = '<option value="">Cargando...</option>';
+        
+        if (!tutorId) {
+            alumnoSelect.innerHTML = '<option value="">Primero seleccione un tutor</option>';
+            return;
+        }
+        
+        const url = `/incidencia/alumnos-por-tutor/${tutorId}`;
+        console.log('Haciendo fetch a:', url);
+        
+        fetch(url)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(alumnos => {
+                console.log('Alumnos recibidos:', alumnos);
+                
+                alumnoSelect.innerHTML = '<option value="">Seleccione un alumno</option>';
+                
+                alumnos.forEach(alumno => {
+                    const option = document.createElement('option');
+                    option.value = alumno.id;
+                    option.textContent = alumno.nombre;
+                    alumnoSelect.appendChild(option);
+                });
+                
+                if (alumnos.length === 0) {
+                    alumnoSelect.innerHTML = '<option value="">No hay alumnos para este tutor</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alumnoSelect.innerHTML = '<option value="">Error al cargar alumnos</option>';
+            });
     }
     
-    // Petición AJAX
-    fetch(`/incidencia/alumnos-por-tutor/${tutorId}`)
-        .then(response => response.json())
-        .then(alumnos => {
-            alumnoSelect.innerHTML = '<option value="">Seleccione un alumno</option>';
-            
-            alumnos.forEach(alumno => {
-                const option = document.createElement('option');
-                option.value = alumno.id;
-                option.textContent = alumno.nombre;
-                alumnoSelect.appendChild(option);
-            });
-            
-            if (alumnos.length === 0) {
-                alumnoSelect.innerHTML = '<option value="">No hay alumnos para este tutor</option>';
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alumnoSelect.innerHTML = '<option value="">Error al cargar alumnos</option>';
-        });
-}
-</script>
+    console.log('Script cargado');
+    </script>
+</th:block>
+
 </html>

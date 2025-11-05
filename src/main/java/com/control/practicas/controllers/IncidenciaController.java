@@ -13,6 +13,7 @@ import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.TutorPracticasService;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ public class IncidenciaController {
         model.addAttribute("viewName", "incidencia/listar");
         return "layout";
     }
-
+/*
     // Mostrar formulario para nueva incidencia
     @GetMapping("/nueva")
     public String nuevaIncidencia(Model model) {
@@ -60,7 +61,7 @@ public class IncidenciaController {
         model.addAttribute("viewName", "incidencia/form");
         return "layout";
     }
-
+*/
  /*   @GetMapping("/alumnos-por-tutor/{tutorId}")
     @ResponseBody
     public List<Map<String, Object>> obtenerAlumnosPorTutor(@PathVariable Long tutorId) {
@@ -77,21 +78,56 @@ public class IncidenciaController {
     
     @GetMapping("/alumnos-por-tutor/{tutorId}")
     @ResponseBody
-   // public List<AlumnoDTO> obtenerAlumnosPorTutor(@PathVariable Long tutorId, Model model) {
-    	public String obtenerAlumnosPorTutor(@PathVariable Long tutorId, Model model) {
+    public List<AlumnoDTO> obtenerAlumnosPorTutor(@PathVariable Long tutorId) {
         List<Alumno> alumnos = alumnoService.listarPorTutorPracticas(tutorId);
-         model.addAttribute("alumnos", alumnos);
-         return "incidencia/form :: selectAlumnosFragment";
         
-       /* return alumnos.stream()
+        return alumnos.stream()
             .map(a -> new AlumnoDTO(a.getId(), a.getNombre() + " " + a.getApellidos()))
-            .collect(Collectors.toList());*/
+            .collect(Collectors.toList());
+    } 
+    
+    @GetMapping({"/nuevo", "/editar/{id}"})
+    public String formIncidencia(@PathVariable(required = false) Long id,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
+
+        if (id != null) {
+            // 🟡 Modo edición
+            return incidenciaService.buscarPorId(id)
+                    .map(incidencia -> {
+                        model.addAttribute("incidencia", incidencia);
+
+                        var tutor = incidencia.getTutorPracticas();
+                        List<Alumno> alumnos = (tutor != null)
+                                ? alumnoService.listarPorTutorPracticas(tutor.getId())
+                                : Collections.emptyList();
+
+                        model.addAttribute("alumnos", alumnos);
+                        model.addAttribute("tutoresPracticas", tutorPracticasService.listarTodos());
+                        model.addAttribute("viewName", "incidencia/form");
+                        return "layout";
+                    })
+                    .orElseGet(() -> {
+                        redirectAttributes.addFlashAttribute("error", "Incidencia no encontrada");
+                        return "redirect:/incidencia/listar";
+                    });
+
+        } else {
+            // 🟢 Modo nuevo
+            model.addAttribute("incidencia", new Incidencia());
+            model.addAttribute("alumnos", Collections.emptyList()); // inicialmente vacío
+            model.addAttribute("tutoresPracticas", tutorPracticasService.listarTodos());
+            model.addAttribute("viewName", "incidencia/form");
+            return "layout";
+        }
     }
+
+    
     
     
     
     // Mostrar formulario para editar incidencia
-    @GetMapping("/editar/{id}")
+   /* @GetMapping("/editar/{id}")
     public String editarIncidencia(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         return incidenciaService.buscarPorId(id)
                 .map(incidencia -> {
@@ -105,7 +141,7 @@ public class IncidenciaController {
                     redirectAttributes.addFlashAttribute("error", "Incidencia no encontrada");
                     return "redirect:/incidencia/listar";
                 });
-    }
+    }*/
     // Guardar incidencia (crear o actualizar)
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Incidencia incidencia, RedirectAttributes redirectAttributes) {
