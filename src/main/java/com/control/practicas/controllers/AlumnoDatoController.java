@@ -111,7 +111,7 @@ public class AlumnoDatoController {
         model.addAttribute("alumno", alumno);
         model.addAttribute("cursos", cursos);
         model.addAttribute("empresas", empresas);
-        model.addAttribute("tutores", tutores);
+        model.addAttribute("tutorPracticas", tutores);
 
         // Flags para la vista
         model.addAttribute("esTutorPracticas", false);
