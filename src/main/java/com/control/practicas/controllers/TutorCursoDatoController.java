@@ -534,7 +534,8 @@ public class TutorCursoDatoController {
             redirectAttributes.addFlashAttribute("error", "Error al guardar las observaciones: " + e.getMessage());
             e.printStackTrace();
         }
-        return "redirect:/admin/alumno/observaciondiaria/observaciones";
+       // return "redirect:/admin/alumno/observaciondiaria/observaciones";
+        return "redirect:/tutorcurso/observaciondiaria/listar";
     }
 
 
