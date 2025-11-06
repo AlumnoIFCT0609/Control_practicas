@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/admin/empresa")
+@RequestMapping("/empresa")
 public class EmpresaController {
     
     private final EmpresaRepository empresaRepository;
@@ -29,14 +29,14 @@ public class EmpresaController {
     public String listar(Model model) {
         List<Empresa> empresas = empresaService.listarTodas();
         model.addAttribute("empresas", empresas);
-        model.addAttribute("viewName", "admin/empresa/listar");
+        model.addAttribute("viewName", "empresa/listar");
         return "layout";
     }
     
     @GetMapping("/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("empresa", new Empresa());
-        model.addAttribute("viewName", "admin/empresa/form");
+        model.addAttribute("viewName", "empresa/form");
         return "layout";
     }
     
@@ -46,11 +46,11 @@ public class EmpresaController {
         
         if (empresaOpt.isPresent()) {
             model.addAttribute("empresa", empresaOpt.get());
-            model.addAttribute("viewName", "admin/empresa/form");
+            model.addAttribute("viewName", "empresa/form");
             return "layout";
         } else {
             redirectAttributes.addFlashAttribute("error", "Empresa no encontrada");
-            return "redirect:/admin/empresa/listar";
+            return "redirect:/empresa/listar";
         }
     }
     
@@ -60,19 +60,19 @@ public class EmpresaController {
             // Validaciones básicas
             if (empresa.getNombre() == null || empresa.getNombre().trim().isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "El nombre de la empresa es obligatorio");
-                return "redirect:/admin/empresa/nuevo";
+                return "redirect:/empresa/nuevo";
             }
             
             if (empresa.getCif() == null || empresa.getCif().trim().isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "El CIF es obligatorio");
-                return "redirect:/admin/empresa/nuevo";
+                return "redirect:/empresa/nuevo";
             }
             
             // Verificar si el CIF ya existe (excepto si es la misma empresa)
             Optional<Empresa> empresaExistente = empresaRepository.findByCif(empresa.getCif());
             if (empresaExistente.isPresent() && !empresaExistente.get().getId().equals(empresa.getId())) {
                 redirectAttributes.addFlashAttribute("error", "Ya existe una empresa con ese CIF");
-                return empresa.getId() == null ? "redirect:/admin/empresa/nuevo" : "redirect:/admin/empresa/editar/" + empresa.getId();
+                return empresa.getId() == null ? "redirect:/empresa/nuevo" : "redirect:/empresa/editar/" + empresa.getId();
             }
             
             // Verificar si el email ya existe (excepto si es la misma empresa)
@@ -80,7 +80,7 @@ public class EmpresaController {
                 Optional<Empresa> empresaExistenteEmail = empresaRepository.findByEmail(empresa.getEmail());
                 if (empresaExistenteEmail.isPresent() && !empresaExistenteEmail.get().getId().equals(empresa.getId())) {
                     redirectAttributes.addFlashAttribute("error", "Ya existe una empresa con ese email");
-                    return empresa.getId() == null ? "redirect:/admin/empresa/nuevo" : "redirect:/admin/empresa/editar/" + empresa.getId();
+                    return empresa.getId() == null ? "redirect:/empresa/nuevo" : "redirect:/empresa/editar/" + empresa.getId();
                 }
             }
             
@@ -92,7 +92,7 @@ public class EmpresaController {
             redirectAttributes.addFlashAttribute("error", "Error al guardar la empresa: " + e.getMessage());
             e.printStackTrace();
         }
-        return "redirect:/admin/empresa/listar";
+        return "redirect:/empresa/listar";
     }
     
     @GetMapping("/eliminar/{id}")
@@ -106,7 +106,7 @@ public class EmpresaController {
                 if (!empresa.getAlumnos().isEmpty() || !empresa.getTutoresPracticas().isEmpty()) {
                     redirectAttributes.addFlashAttribute("error", 
                         "No se puede eliminar la empresa porque tiene alumnos o tutores asociados. Desactívela en su lugar.");
-                    return "redirect:/admin/empresa/listar";
+                    return "redirect:/empresa/listar";
                 }
                 
                 empresaService.eliminar(id);
@@ -117,7 +117,7 @@ public class EmpresaController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar la empresa: " + e.getMessage());
         }
-        return "redirect:/admin/empresa/listar";
+        return "redirect:/empresa/listar";
     }
     
     @PostMapping("/cambiar-estado/{id}")
@@ -136,6 +136,6 @@ public class EmpresaController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al cambiar el estado de la empresa: " + e.getMessage());
         }
-        return "redirect:/admin/empresa/listar";
+        return "redirect:/empresa/listar";
     }
 }

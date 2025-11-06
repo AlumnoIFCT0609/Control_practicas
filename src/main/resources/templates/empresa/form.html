@@ -18,7 +18,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
 
-                        <form th:action="@{/admin/empresa/guardar}" th:object="${empresa}" method="post">
+                        <form th:action="@{/empresa/guardar}" th:object="${empresa}" method="post">
                             <!-- ID oculto para edición -->
                             <input type="hidden" th:field="*{id}">
                             
@@ -36,7 +36,6 @@
                                            class="form-control" 
                                            id="nombre" 
                                            th:field="*{nombre}"
-                                           placeholder="Ej: Tecnologías Avanzadas S.L."
                                            required>
                                 </div>
 
@@ -48,7 +47,6 @@
                                            class="form-control" 
                                            id="cif" 
                                            th:field="*{cif}"
-                                           placeholder="Ej: B12345678"
                                            maxlength="20"
                                            required>
                                 </div>
@@ -62,8 +60,7 @@
                                     <input type="text" 
                                            class="form-control" 
                                            id="sector" 
-                                           th:field="*{sector}"
-                                           placeholder="Ej: Tecnología, Hostelería, etc.">
+                                           th:field="*{sector}">
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -73,8 +70,7 @@
                                     <input type="text" 
                                            class="form-control" 
                                            id="personaContacto" 
-                                           th:field="*{personaContacto}"
-                                           placeholder="Ej: Juan Pérez">
+                                           th:field="*{personaContacto}">
                                 </div>
                             </div>
 
@@ -92,8 +88,7 @@
                                 <input type="text" 
                                        class="form-control" 
                                        id="direccion" 
-                                       th:field="*{direccion}"
-                                       placeholder="Calle, número, ciudad, código postal">
+                                       th:field="*{direccion}">
                             </div>
 
                             <div class="row">
@@ -105,7 +100,6 @@
                                            class="form-control" 
                                            id="telefono" 
                                            th:field="*{telefono}"
-                                           placeholder="Ej: 954123456"
                                            maxlength="15">
                                 </div>
 
@@ -116,8 +110,7 @@
                                     <input type="email" 
                                            class="form-control" 
                                            id="email" 
-                                           th:field="*{email}"
-                                           placeholder="contacto@empresa.com">
+                                           th:field="*{email}">
                                 </div>
                             </div>
 
@@ -149,7 +142,7 @@
 
                             <!-- Botones -->
                             <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/admin/empresa/listar}" class="btn btn-secondary">
+                                <a th:href="@{/empresa/listar}" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left"></i> Cancelar
                                 </a>
                                 <button type="submit" class="btn btn-primary">

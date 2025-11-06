@@ -122,7 +122,7 @@
                 <div class="col-md-4">
                     <div class="card bg-primary text-white">
                         <div class="card-body">
-                            <h5>Total Capacidades</h5>
+                            <h5>Total Criterios</h5>
                             <h2 th:text="${#lists.size(criterios)}">0</h2>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
                 <div class="col-md-4">
                     <div class="card bg-success text-white">
                         <div class="card-body">
-                            <h5>Activas</h5>
+                            <h5>Activos</h5>
                             <h2 th:text="${#lists.size(criterios.?[activo == true])}">0</h2>
                         </div>
                     </div>
@@ -138,7 +138,7 @@
                 <div class="col-md-4">
                     <div class="card bg-secondary text-white">
                         <div class="card-body">
-                            <h5>Inactivas</h5>
+                            <h5>Inactivos</h5>
                             <h2 th:text="${#lists.size(criterios.?[activo == false])}">0</h2>
                         </div>
                     </div>

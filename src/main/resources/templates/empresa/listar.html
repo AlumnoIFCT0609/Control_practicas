@@ -1,10 +1,10 @@
-<html xmlns:th="http://www.thymeleaf.org"> -->
+<html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="content">
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Gestión de Empresas</h2>
-            <a th:href="@{/admin/empresa/nuevo}" class="btn btn-primary">
+            <a th:href="@{/empresa/nuevo}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Nueva Empresa
             </a>
         </div>
@@ -68,14 +68,14 @@
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
                                         <!-- Botón Editar -->
-                                        <a th:href="@{/admin/empresa/editar/{id}(id=${empresa.id})}" 
+                                        <a th:href="@{/empresa/editar/{id}(id=${empresa.id})}" 
                                            class="btn btn-sm btn-warning" 
                                            title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         
                                         <!-- Botón Activar/Desactivar -->
-                                        <form th:action="@{/admin/empresa/cambiar-estado/{id}(id=${empresa.id})}" 
+                                        <form th:action="@{/empresa/cambiar-estado/{id}(id=${empresa.id})}" 
                                               method="post" 
                                               style="display: inline;">
                                             <button type="submit" 
@@ -87,7 +87,7 @@
                                         </form>
                                         
                                         <!-- Botón Eliminar -->
-                                        <a th:href="@{/admin/empresa/eliminar/{id}(id=${empresa.id})}" 
+                                        <a th:href="@{/empresa/eliminar/{id}(id=${empresa.id})}" 
                                            class="btn btn-sm btn-danger" 
                                            title="Eliminar"
                                            onclick="return confirm('¿Está seguro de eliminar esta empresa?');">
