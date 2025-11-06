@@ -110,7 +110,7 @@ public class AlumnoController {
         List<TutorPracticas> tutorP = tutorPracticasService.listarPorEmpresa(empresaId);
         
         return tutorP.stream()
-            .map(t -> new TutorPracticasDTO(t.getId(), t.getNombre()))
+            .map(t -> new TutorPracticasDTO(t.getId(), t.getNombre(),t.getApellidos()))
             .collect(Collectors.toList());
     } 
     
@@ -143,7 +143,7 @@ public class AlumnoController {
                         model.addAttribute("cursos", cursos);
                         model.addAttribute("empresas", empresas);
                         model.addAttribute("tutorPracticas", tutorPracticas);
-                       // model.addAttribute("esTutorPracticas", false);
+                       
                         model.addAttribute("viewName", "admin/alumno/form");
                         return "layout";
                     })

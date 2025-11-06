@@ -228,19 +228,19 @@
     function cargarTutoresPorEmpresa() {
         const empresaId = document.getElementById('empresaId').value;
         const tutorSelect = document.getElementById('tutorPracticas');
-        
-        console.log('Función llamada. Empresa ID:', idempresa);
-        
+
+        console.log('Función llamada. Empresa ID:', empresaId);
+
         tutorSelect.innerHTML = '<option value="">Cargando...</option>';
-        
+
         if (!empresaId) {
-        	 tutorSelect.innerHTML = '<option value="">Primero seleccione una empresa</option>';
+            tutorSelect.innerHTML = '<option value="">Primero seleccione una empresa</option>';
             return;
         }
-        
+
         const url = `/admin/alumno/tutores-por-empresa/${empresaId}`;
         console.log('Haciendo fetch a:', url);
-        
+
         fetch(url)
             .then(response => {
                 console.log('Response status:', response.status);
@@ -249,32 +249,32 @@
                 }
                 return response.json();
             })
-            .then(alumnos => {
-                console.log('Tutores de practicas recibidos:', tutoresPracticas);
-                
-                alumnoSelect.innerHTML = '<option value="">Seleccione un Tutor de Practicas</option>';
-                
-                alumnos.forEach(alumno => {
-                    const option = document.createElement('option');
-                    option.value = tutorPracticas.id;
-                    option.textContent = tutorPracticas.nombre;
-                    TutorSelect.appendChild(option);
-                });
-                
-                if (alumnos.length === 0) {
-                    alumnoSelect.innerHTML = '<option value="">No hay Tutores de practicas para esta empresa</option>';
+            .then(tutores => {
+                console.log('Tutores de prácticas recibidos:', tutores);
+
+                tutorSelect.innerHTML = '<option value="">Seleccione un Tutor de Prácticas</option>';
+
+                if (tutores.length === 0) {
+                    tutorSelect.innerHTML = '<option value="">No hay tutores disponibles para esta empresa</option>';
+                    return;
                 }
+
+                tutores.forEach(tutor => {
+                    const option = document.createElement('option');
+                    option.value = tutor.id;
+                    option.textContent = tutor.nombre + ' ' + tutor.apellidos;
+                    tutorSelect.appendChild(option);
+                });
             })
             .catch(error => {
-                console.error('Error:', error);
-                alumnoSelect.innerHTML = '<option value="">Error al cargar Tutores de practicas</option>';
+                console.error('Error al cargar tutores:', error);
+                tutorSelect.innerHTML = '<option value="">Error al cargar tutores</option>';
             });
     }
-    
+
     console.log('Script cargado');
     </script>
-</th:block>
-
+    </th:block>
 
 </html>
 
