@@ -1,4 +1,4 @@
-package com.control.practicas.models;
+	package com.control.practicas.models;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -108,5 +108,22 @@ public class EvaluacionTutor {
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
+    
+    @Transient // ← importante, para que JPA no lo persista
+    public Long getTutorCursoId() {
+        return tutorCurso != null ? tutorCurso.getId() : null;
+    }
+
+    @Transient
+    public void setTutorCursoId(Long id) {
+        if (id != null) {
+            this.tutorCurso = new TutorCurso();
+            this.tutorCurso.setId(id);
+        } else {
+            this.tutorCurso = null;
+        }
+    }
+
+    
 }
 

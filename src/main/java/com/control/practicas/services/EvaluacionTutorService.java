@@ -12,7 +12,6 @@ public class EvaluacionTutorService {
 
     private final EvaluacionTutorRepository evaluacionTutorRepository;
 
-    // 🔹 Inyección de dependencias por constructor
     public EvaluacionTutorService(EvaluacionTutorRepository evaluacionTutorRepository) {
         this.evaluacionTutorRepository = evaluacionTutorRepository;
     }
@@ -36,5 +35,20 @@ public class EvaluacionTutorService {
     public boolean existePorId(Long id) {
         return evaluacionTutorRepository.existsById(id);
     }
+
+    public List<EvaluacionTutor> listarPorTutorCurso(Long tutorCursoId) {
+        return evaluacionTutorRepository.findByTutorCursoId(tutorCursoId);
+    }
+
+    public List<EvaluacionTutor> listarPorTutorPracticas(Long tutorPracticasId) {
+        return evaluacionTutorRepository.findByTutorPracticasId(tutorPracticasId);
+    }
+
+    // ✅ Nuevo método correcto
+    public Optional<EvaluacionTutor> buscarPorTutorPracticasId(Long tutorPracticasId) {
+        return evaluacionTutorRepository.findByTutorPracticas_Id(tutorPracticasId);
+    }
 }
+
+
 

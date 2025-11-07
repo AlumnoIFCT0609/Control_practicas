@@ -1,0 +1,198 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="content">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-clipboard-check me-2"></i> Gestión de Evaluaciones de Tutores</h2>
+
+            <!-- Solo ADMIN puede crear evaluaciones -->
+            <div th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
+                <a th:href="@{/evaluaciontutor/nuevo}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nueva Evaluación
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Tutor Curso</th>
+                                <th>Tutor Prácticas</th>
+                                <th>Fecha</th>
+                                <th>Puntuación</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${evaluaciones == null || evaluaciones.isEmpty()}">
+                                <td colspan="6" class="text-center text-muted">
+                                    <i class="bi bi-inbox"></i> No hay evaluaciones registradas
+                                </td>
+                            </tr>
+
+                            <tr th:each="evaluacion : ${evaluaciones}">
+                                <td th:text="${evaluacion.id}"></td>
+                                <td>
+                                    <span th:if="${evaluacion.tutorCurso != null}" 
+                                          th:text="${evaluacion.tutorCurso.nombre + ' ' + evaluacion.tutorCurso.apellidos}"></span>
+                                    <span th:if="${evaluacion.tutorCurso == null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${evaluacion.tutorPracticas != null}" 
+                                          th:text="${evaluacion.tutorPracticas.nombre + ' ' + evaluacion.tutorPracticas.apellidos}"></span>
+                                    <span th:if="${evaluacion.tutorPracticas == null}" class="text-muted">-</span>
+                                </td>
+                                <td th:text="${#temporals.format(evaluacion.fecha, 'dd/MM/yyyy')}"></td>
+                                <td>
+                                    <span th:if="${evaluacion.puntuacion >= 9}" class="badge bg-success">
+                                        <span th:text="${evaluacion.puntuacion}"></span> - Excelente
+                                    </span>
+                                    <span th:if="${evaluacion.puntuacion >= 7 && evaluacion.puntuacion < 9}" class="badge bg-info">
+                                        <span th:text="${evaluacion.puntuacion}"></span> - Bueno
+                                    </span>
+                                    <span th:if="${evaluacion.puntuacion >= 5 && evaluacion.puntuacion < 7}" class="badge bg-warning">
+                                        <span th:text="${evaluacion.puntuacion}"></span> - Regular
+                                    </span>
+                                    <span th:if="${evaluacion.puntuacion < 5}" class="badge bg-danger">
+                                        <span th:text="${evaluacion.puntuacion}"></span> - Deficiente
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <!-- ADMIN -->
+                                        <div th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-info"
+                                                    data-bs-toggle="modal"
+                                                    th:data-bs-target="'#detalleModal' + ${evaluacion.id}"
+                                                    title="Ver detalle">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <a th:href="@{/evaluaciontutor/editar/{id}(id=${evaluacion.id})}"
+                                               class="btn btn-sm btn-warning"
+                                               title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a th:href="@{/evaluaciontutor/eliminar/{id}(id=${evaluacion.id})}"
+                                               class="btn btn-sm btn-danger"
+                                               title="Eliminar"
+                                               onclick="return confirm('¿Está seguro de eliminar esta evaluación?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5>Total Evaluaciones</h5>
+                        <h2 th:text="${#lists.size(evaluaciones)}"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5>Promedio General</h5>
+                        <h2 th:text="${promedioGeneral != null ? #numbers.formatDecimal(promedioGeneral, 1, 2) : '0.00'}"></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h5>Mejor Puntuación</h5>
+                        <h2 th:text="${mejorPuntuacion != null ? #numbers.formatDecimal(mejorPuntuacion, 1, 2) : '0.00'}"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales de detalle para cada evaluación -->
+    <div th:each="evaluacion : ${evaluaciones}">
+        <div class="modal fade" th:id="'detalleModal' + ${evaluacion.id}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                            <i class="bi bi-info-circle"></i> Detalle de Evaluación
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>ID:</strong> <span th:text="${evaluacion.id}"></span></p>
+                                <p><strong>Tutor Curso:</strong> 
+                                    <span th:text="${evaluacion.tutorCurso != null ? evaluacion.tutorCurso.nombre + ' ' + evaluacion.tutorCurso.apellidos : 'N/A'}"></span>
+                                </p>
+                                <p><strong>Tutor Prácticas:</strong> 
+                                    <span th:text="${evaluacion.tutorPracticas != null ? evaluacion.tutorPracticas.nombre + ' ' + evaluacion.tutorPracticas.apellidos : 'N/A'}"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Fecha:</strong> <span th:text="${#temporals.format(evaluacion.fecha, 'dd/MM/yyyy')}"></span></p>
+                                <p><strong>Puntuación:</strong> <span th:text="${evaluacion.puntuacion}"></span></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <h6><strong>Aspectos Positivos:</strong></h6>
+                                <p th:text="${evaluacion.aspectosPositivos != null && !#strings.isEmpty(evaluacion.aspectosPositivos) ? evaluacion.aspectosPositivos : 'N/A'}"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h6><strong>Aspectos a Mejorar:</strong></h6>
+                                <p th:text="${evaluacion.aspectosMejorar != null && !#strings.isEmpty(evaluacion.aspectosMejorar) ? evaluacion.aspectosMejorar : 'N/A'}"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h6><strong>Observaciones:</strong></h6>
+                                <p th:text="${evaluacion.observaciones != null && !#strings.isEmpty(evaluacion.observaciones) ? evaluacion.observaciones : 'N/A'}"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:fragment="scripts">
+    <script>
+     console.log('Script cargado');
+    </script>
+</th:block>
+
+</html>
