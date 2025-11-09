@@ -101,14 +101,24 @@
                                 </td>
                                 <td th:text="${incidencia.fecha != null ? #temporals.format(incidencia.fecha, 'dd/MM/yyyy') : '-'}">15/01/2025</td>
                                 <td>
-                                    <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).FALTA}" 
+                                  <!--  <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).FALTA}" 
                                           class="badge bg-danger">Falta</span>
                                     <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).RETRASO}" 
                                           class="badge bg-warning text-dark">Retraso</span>
                                     <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).PROBLEMA_ACTITUD}" 
                                           class="badge bg-info text-dark">Problema de Actitud</span>
                                     <span th:if="${incidencia.tipo == T(com.control.practicas.models.Incidencia.Tipo).OTROS}" 
-                                          class="badge bg-secondary">Otros</span>
+                                          class="badge bg-secondary">Otros</span> -->
+                                          
+    <span th:if="${incidencia.tipo?.name() == 'FALTA'}" 
+          class="badge bg-danger">Falta</span>
+    <span th:if="${incidencia.tipo?.name() == 'RETRASO'}" 
+          class="badge bg-warning text-dark">Retraso</span>
+    <span th:if="${incidencia.tipo?.name() == 'PROBLEMA_ACTITUD'}" 
+          class="badge bg-info text-dark">Problema de Actitud</span>
+    <span th:if="${incidencia.tipo?.name() == 'OTROS'}" 
+          class="badge bg-secondary">Otros</span>     
+                                          
                                 </td>
                                 <td>
                                     <span th:if="${incidencia.descripcion != null && !incidencia.descripcion.isEmpty()}" 
@@ -118,7 +128,7 @@
                                           class="text-muted">-</span>
                                 </td>
                                 <td>
-                                    <span th:if="${incidencia.estado == T(com.control.practicas.models.Incidencia.Estado).ABIERTA}" 
+                                 <!--    <span th:if="${incidencia.estado == T(com.control.practicas.models.Incidencia.Estado).ABIERTA}" 
                                           class="badge bg-danger">
                                         <i class="bi bi-exclamation-circle"></i> Abierta
                                     </span>
@@ -129,7 +139,23 @@
                                     <span th:if="${incidencia.estado == T(com.control.practicas.models.Incidencia.Estado).RESUELTA}" 
                                           class="badge bg-success">
                                         <i class="bi bi-check-circle"></i> Resuelta
-                                    </span>
+                                    </span> -->
+                                    
+ <span th:if="${incidencia.estado?.name() == 'ABIERTA'}" 
+          class="badge bg-danger">
+        <i class="bi bi-exclamation-circle"></i> Abierta
+    </span>
+    <span th:if="${incidencia.estado?.name() == 'EN_PROCESO'}" 
+          class="badge bg-warning text-dark">
+        <i class="bi bi-hourglass-split"></i> En Proceso
+    </span>
+    <span th:if="${incidencia.estado?.name() == 'RESUELTA'}" 
+          class="badge bg-success">
+        <i class="bi bi-check-circle"></i> Resuelta
+    </span>                                    
+                                    
+                                    
+                                    
                                 </td>
                                 <td class="text-center">
                                         <!-- Botón Editar para ADMIN y TUTOR_PRACTICAS -->
@@ -160,39 +186,43 @@
 
         <!-- Estadísticas -->
         <div class="row mt-4">
-            <div class="col-md-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <h5>Total Incidencias</h5>
-                        <h2 th:text="${incidencias != null ? #lists.size(incidencias) : 0}">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-danger text-white">
-                    <div class="card-body">
-                        <h5>Abiertas</h5>
-                        <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado == T(com.control.practicas.models.Incidencia.Estado).ABIERTA]) : 0}">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-warning text-dark">
-                    <div class="card-body">
-                        <h5>En Proceso</h5>
-                        <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado == T(com.control.practicas.models.Incidencia.Estado).EN_PROCESO]) : 0}">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <h5>Resueltas</h5>
-                        <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado == T(com.control.practicas.models.Incidencia.Estado).RESUELTA]) : 0}">0</h2>
-                    </div>
-                </div>
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Total Incidencias</h5>
+                <h2 th:text="${incidencias != null ? #lists.size(incidencias) : 0}">0</h2>
             </div>
         </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5>Abiertas</h5>
+                <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado?.name() == 'ABIERTA']) : 0}">0</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5>En Proceso</h5>
+                <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado?.name() == 'EN_PROCESO']) : 0}">0</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5>Resueltas</h5>
+                <h2 th:text="${incidencias != null ? #lists.size(incidencias.?[estado?.name() == 'RESUELTA']) : 0}">0</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
     </div>
 </div>
 <th:block th:fragment="scripts">

@@ -1,151 +1,76 @@
+<html xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="content">
-    <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i class="bi bi-clipboard-check-fill me-2"></i>
-                Gestión de Evaluaciones
-                 <a th:href="@{/admin/evaluacion/nuevo}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Nueva Evaluación
-            </a>
-            </h2>
-			<a th:href="@{/admin/evaluacion/capacidades}" class="btn btn-success me-2">
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0" th:text="${titulo}">Listado de Evaluaciones</h3>
+                <a th:href="@{/admin/evaluaciones/nueva}" class="btn btn-light">
+                    <i class="bi bi-plus-circle"></i> Nueva Evaluación
+                </a>
+                <a th:href="@{/admin/evaluacion/capacidades}" class="btn btn-success me-2">
 			            <i class="bi bi-award"></i> Capacidades
-			</a>
-			<a th:href="@{/admin/evaluacion/criterios}" class="btn btn-info me-2">
+				</a>
+				<a th:href="@{/admin/evaluacion/criterios}" class="btn btn-info me-2">
 			            <i class="bi bi-list-check"></i> Criterios
-			</a>
-           
-        </div>
-
-        <!-- Mensajes de feedback -->
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-
-        <!-- Filtros -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <form th:action="@{/admin/evaluacion/listar}" method="get" class="row g-3">
-                    <div class="col-md-3">
-                        <label for="alumnoId" class="form-label">Alumno</label>
-                        <select class="form-select" id="alumnoId" name="alumnoId">
-                            <option value="">Todos</option>
-                            <option th:each="alumno : ${alumnos}" 
-                                    th:value="${alumno.id}" 
-                                    th:text="${alumno.nombre + ' ' + alumno.apellidos}">
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="tutorId" class="form-label">Tutor de Prácticas</label>
-                        <select class="form-select" id="tutorId" name="tutorId">
-                            <option value="">Todos</option>
-                            <option th:each="tutor : ${tutores}" 
-                                    th:value="${tutor.id}" 
-                                    th:text="${tutor.nombre + ' ' + tutor.apellidos}">
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="fechaFin" class="form-label">Fecha Fin</label>
-                        <input type="date" class="form-control" id="fechaFin" name="fechaFin">
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-secondary w-100">
-                            <i class="bi bi-funnel"></i> Filtrar
-                        </button>
-                    </div>
-                </form>
+				</a>
             </div>
-        </div>
-
-        <!-- Tabla de evaluaciones -->
-        <div class="card shadow-sm">
             <div class="card-body">
+                <!-- Mensajes de feedback -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Tabla de evaluaciones -->
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped">
+                    <table class="table table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
                                 <th>ID</th>
                                 <th>Alumno</th>
                                 <th>Tutor</th>
-                                <th>Capacidad</th>
                                 <th>Criterio</th>
+                                <th>Capacidad</th>
                                 <th>Puntuación</th>
                                 <th>Fecha</th>
-                                <th class="text-center">Acciones</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:if="${evaluaciones == null || evaluaciones.isEmpty()}">
-                                <td colspan="8" class="text-center text-muted">
-                                    <i class="bi bi-inbox"></i> No hay evaluaciones registradas
+                            <tr th:if="${evaluaciones.empty}">
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox fs-1"></i>
+                                    <p class="mt-2">No hay evaluaciones registradas</p>
                                 </td>
                             </tr>
                             <tr th:each="evaluacion : ${evaluaciones}">
                                 <td th:text="${evaluacion.id}">1</td>
+                                <td th:text="${evaluacion.alumno.nombre + ' ' + evaluacion.alumno.apellidos}">Juan Pérez</td>
+                                <td th:text="${evaluacion.tutorPracticas.nombre + ' ' + evaluacion.tutorPracticas.apellidos}">María García</td>
+                                <td th:text="${evaluacion.capacidad.criterio.nombre}">Competencias Técnicas</td>
+                                <td th:text="${evaluacion.capacidad.nombre}">Dominio de herramientas</td>
                                 <td>
-                                    <span th:if="${evaluacion.alumno != null}" 
-                                          th:text="${evaluacion.alumno.nombre + ' ' + evaluacion.alumno.apellidos}">
-                                        Alumno
-                                    </span>
-                                    <span th:if="${evaluacion.alumno == null}" class="text-muted">-</span>
-                                </td>
-                                <td>
-                                    <span th:if="${evaluacion.tutorPracticas != null}" 
-                                          th:text="${evaluacion.tutorPracticas.nombre + ' ' + evaluacion.tutorPracticas.apellidos}">
-                                        Tutor
-                                    </span>
-                                    <span th:if="${evaluacion.tutorPracticas == null}" class="text-muted">-</span>
-                                </td>
-                                <td>
-                                    <span th:if="${evaluacion.capacidad != null}" 
-                                          th:text="${evaluacion.capacidad.nombre}">
-                                        Capacidad
-                                    </span>
-                                    <span th:if="${evaluacion.capacidad == null}" class="text-muted">-</span>
-                                </td>
-                                <td>
-                                    <span th:if="${evaluacion.capacidad != null && evaluacion.capacidad.criterio != null}" 
-                                          th:text="${evaluacion.capacidad.criterio.nombre}">
-                                        Criterio
-                                    </span>
-                                    <span th:if="${evaluacion.capacidad == null || evaluacion.capacidad.criterio == null}" 
-                                          class="text-muted">-</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info" th:text="${evaluacion.puntuacion}">0</span>
-                                    <span th:if="${evaluacion.capacidad != null}">
-                                        / <span th:text="${evaluacion.capacidad.puntuacionMaxima}">10</span>
+                                    <span class="badge" 
+                                          th:classappend="${evaluacion.puntuacion >= 7} ? 'bg-success' : ${evaluacion.puntuacion >= 5} ? 'bg-warning' : 'bg-danger'"
+                                          th:text="${evaluacion.puntuacion + '/' + evaluacion.capacidad.puntuacionMaxima}">
+                                        8.5/10
                                     </span>
                                 </td>
-                                <td th:text="${#temporals.format(evaluacion.fecha, 'dd/MM/yyyy')}">01/01/2024</td>
-                                <td class="text-center">
+                                <td th:text="${#temporals.format(evaluacion.fecha, 'dd/MM/yyyy')}">01/11/2024</td>
+                                <td>
                                     <div class="btn-group" role="group">
-                                        <a th:href="@{/admin/evaluacion/ver/{id}(id=${evaluacion.id})}" 
-                                           class="btn btn-sm btn-info" 
-                                           title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a th:href="@{/admin/evaluacion/editar/{id}(id=${evaluacion.id})}" 
-                                           class="btn btn-sm btn-warning" 
-                                           title="Editar">
+                                        <a th:href="@{/admin/evaluaciones/editar/{id}(id=${evaluacion.id})}" 
+                                           class="btn btn-sm btn-warning" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a th:href="@{/admin/evaluacion/eliminar/{id}(id=${evaluacion.id})}" 
-                                           class="btn btn-sm btn-danger" 
-                                           title="Eliminar"
-                                           onclick="return confirm('¿Está seguro de eliminar esta evaluación?')">
+                                        <a th:href="@{/admin/evaluaciones/eliminar/{id}(id=${evaluacion.id})}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('¿Está seguro de eliminar esta evaluación?')"
+                                           title="Eliminar">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -156,48 +81,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Estadísticas -->
-        <div class="row mt-4">
-            <div class="col-md-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <h5>Total Evaluaciones</h5>
-                        <h2 th:text="${#lists.size(evaluaciones)}">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <h5>Alumnos Evaluados</h5>
-                        <h2 th:text="${#sets.size(evaluaciones.![alumno.id])}">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body">
-                        <h5>Promedio General</h5>
-                        <h2 th:if="${!evaluaciones.isEmpty()}" 
-                            th:text="${#numbers.formatDecimal(#aggregates.avg(evaluaciones.![puntuacion]), 1, 2)}">
-                            0.00
-                        </h2>
-                        <h2 th:if="${evaluaciones.isEmpty()}">-</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-warning text-white">
-                    <div class="card-body">
-                        <h5>Este Mes</h5>
-                        <h2 th:text="${#lists.size(evaluaciones.?[fecha.monthValue == #temporals.month(#temporals.createNow())])}">
-                            0
-                        </h2>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 <th:block th:fragment="scripts">
@@ -205,3 +88,4 @@
      console.log('Script cargado');
     </script>
 </th:block>
+</html>

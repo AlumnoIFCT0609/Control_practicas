@@ -1,0 +1,230 @@
+<div th:fragment="content">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i th:class="${soloLectura ? 'bi bi-eye-fill me-2' : 'bi bi-clipboard-check me-2'}"></i>
+                <span th:if="${soloLectura}">Ver Evaluación</span>
+                <span th:if="${!soloLectura && evaluacion.id != null}">Editar Evaluación</span>
+                <span th:if="${!soloLectura && evaluacion.id == null}">Nueva Evaluación</span>
+            </h2>
+            <div>
+                <a th:if="${soloLectura}" 
+                   th:href="@{/admin/evaluacion/editar/{id}(id=${evaluacion.id})}" 
+                   class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a th:href="@{/admin/evaluacion/listar}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al listado
+                </a>
+            </div>
+        </div>
+
+        <!-- Mensajes de error -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form th:action="@{${evaluacion.id != null ? '/admin/evaluacion/editar/' + evaluacion.id : '/admin/evaluacion/nuevo'}}" 
+                      th:object="${evaluacion}" 
+                      method="post">
+                    
+                    <!-- ID oculto para edición -->
+                    <input type="hidden" th:field="*{id}" th:if="${evaluacion.id != null}">
+                    
+                    <div class="row">
+                        <!-- Alumno -->
+                        <div class="col-md-6 mb-3">
+                            <label for="alumno" class="form-label">
+                                <i class="bi bi-person-fill"></i> Alumno <span class="text-danger" th:if="${!soloLectura}">*</span>
+                            </label>
+                            <select class="form-select" 
+                                    id="alumno" 
+                                    th:field="*{alumno.id}" 
+                                    th:required="${!soloLectura}"
+                                    th:disabled="${soloLectura}">
+                                <option value="">Seleccione un alumno</option>
+                                <option th:each="alumno : ${alumnos}" 
+                                        th:value="${alumno.id}" 
+                                        th:text="${alumno.dni + ' - ' + alumno.nombre + ' ' + alumno.apellidos}">
+                                </option>
+                            </select>
+                            <div class="form-text" th:if="${!soloLectura}">Seleccione el alumno a evaluar</div>
+                        </div>
+
+                        <!-- Tutor de Prácticas -->
+                        <div class="col-md-6 mb-3">
+                            <label for="tutorPracticas" class="form-label">
+                                <i class="bi bi-person-badge-fill"></i> Tutor de Prácticas <span class="text-danger" th:if="${!soloLectura}">*</span>
+                            </label>
+                            <select class="form-select" 
+                                    id="tutorPracticas" 
+                                    th:field="*{tutorPracticas.id}" 
+                                    th:required="${!soloLectura}"
+                                    th:disabled="${soloLectura}">
+                                <option value="">Seleccione un tutor</option>
+                                <option th:each="tutor : ${tutores}" 
+                                        th:value="${tutor.id}" 
+                                        th:text="${tutor.nombre + ' ' + tutor.apellidos + (tutor.empresa != null ? ' - ' + tutor.empresa.nombre : '')}">
+                                </option>
+                            </select>
+                            <div class="form-text" th:if="${!soloLectura}">Tutor que realiza la evaluación</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Capacidad de Evaluación -->
+                        <div class="col-md-8 mb-3">
+                            <label for="capacidad" class="form-label">
+                                <i class="bi bi-clipboard-data"></i> Capacidad a Evaluar <span class="text-danger" th:if="${!soloLectura}">*</span>
+                            </label>
+                            <select class="form-select" 
+                                    id="capacidad" 
+                                    th:field="*{capacidad.id}" 
+                                    th:required="${!soloLectura}"
+                                    th:disabled="${soloLectura}"
+                                    onchange="actualizarPuntuacionMaxima()">
+                                <option value="">Seleccione una capacidad</option>
+                                <option th:each="capacidad : ${capacidades}" 
+                                        th:value="${capacidad.id}" 
+                                        th:text="${capacidad.criterio.nombre + ' - ' + capacidad.nombre + ' (Máx: ' + capacidad.puntuacionMaxima + ')'}"
+                                        th:attr="data-max=${capacidad.puntuacionMaxima}">
+                                </option>
+                            </select>
+                            <div class="form-text" th:if="${!soloLectura}">Capacidad que se está evaluando</div>
+                        </div>
+
+                        <!-- Puntuación -->
+                        <div class="col-md-4 mb-3">
+                            <label for="puntuacion" class="form-label">
+                                <i class="bi bi-star-fill"></i> Puntuación <span class="text-danger" th:if="${!soloLectura}">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="puntuacion" 
+                                       th:field="*{puntuacion}" 
+                                       step="0.01" 
+                                       min="0" 
+                                       max="10" 
+                                       th:required="${!soloLectura}"
+                                       th:readonly="${soloLectura}">
+                                <span class="input-group-text" id="puntuacionMax">/ 10</span>
+                            </div>
+                            <div class="form-text" th:if="${!soloLectura}">Puntuación obtenida</div>
+                            
+                            <!-- Indicador visual solo en modo ver -->
+                            <div th:if="${soloLectura && evaluacion.puntuacion != null && evaluacion.capacidad != null}" class="mt-2">
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-info" 
+                                         role="progressbar" 
+                                         th:style="${'width: ' + (evaluacion.puntuacion * 100 / evaluacion.capacidad.puntuacionMaxima) + '%'}">
+                                        <span th:text="${#numbers.formatDecimal((evaluacion.puntuacion * 100 / evaluacion.capacidad.puntuacionMaxima), 1, 1) + '%'}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Fecha -->
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha" class="form-label">
+                                <i class="bi bi-calendar-event"></i> Fecha de Evaluación <span class="text-danger" th:if="${!soloLectura}">*</span>
+                            </label>
+                            <input type="date" 
+                                   class="form-control" 
+                                   id="fecha" 
+                                   th:field="*{fecha}" 
+                                   th:required="${!soloLectura}"
+                                   th:readonly="${soloLectura}">
+                            <div class="form-text" th:if="${!soloLectura}">Fecha en que se realizó la evaluación</div>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">
+                            <i class="bi bi-card-text"></i> Observaciones
+                        </label>
+                        <textarea class="form-control" 
+                                  id="observaciones" 
+                                  th:field="*{observaciones}" 
+                                  rows="4" 
+                                  th:readonly="${soloLectura}"
+                                  placeholder="Comentarios adicionales sobre la evaluación..."></textarea>
+                        <div class="form-text" th:if="${!soloLectura}">Comentarios o notas sobre el desempeño del alumno</div>
+                    </div>
+
+                    <!-- Información adicional solo en modo ver -->
+                    <div th:if="${soloLectura && evaluacion.fechaCreacion != null}" class="alert alert-info">
+                        <i class="bi bi-clock"></i> Fecha de registro: 
+                        <strong th:text="${#temporals.format(evaluacion.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></strong>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-2 justify-content-end mt-4" th:if="${!soloLectura}">
+                        <a th:href="@{/admin/evaluacion/listar}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> 
+                            <span th:text="${evaluacion.id != null ? 'Actualizar' : 'Guardar'}">Guardar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card shadow-sm mt-4 bg-light" th:if="${!soloLectura}">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Información</h5>
+                <ul class="mb-0">
+                    <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+                    <li>La puntuación debe estar entre 0 y el valor máximo de la capacidad seleccionada</li>
+                    <li>Las observaciones son opcionales pero recomendadas para justificar la puntuación</li>
+                    <li>La fecha de evaluación debe ser igual o anterior a la fecha actual</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:fragment="scripts">
+    <script>
+     console.log('Script cargado');
+    </script>
+
+
+<script th:if="${!soloLectura}">
+    // Actualizar puntuación máxima según la capacidad seleccionada
+    function actualizarPuntuacionMaxima() {
+        const select = document.getElementById('capacidad');
+        const selectedOption = select.options[select.selectedIndex];
+        const maxPuntuacion = selectedOption.getAttribute('data-max') || 10;
+        
+        const inputPuntuacion = document.getElementById('puntuacion');
+        const spanMax = document.getElementById('puntuacionMax');
+        
+        inputPuntuacion.setAttribute('max', maxPuntuacion);
+        spanMax.textContent = '/ ' + maxPuntuacion;
+    }
+    
+    // Establecer fecha máxima como hoy
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.getElementById('fecha');
+        const today = new Date().toISOString().split('T')[0];
+        fechaInput.setAttribute('max', today);
+        
+        // Si no hay fecha establecida, poner la fecha de hoy
+        if (!fechaInput.value) {
+            fechaInput.value = today;
+        }
+        
+        // Actualizar puntuación máxima al cargar si hay una capacidad seleccionada
+        actualizarPuntuacionMaxima();
+    });
+</script>
+</th:block>

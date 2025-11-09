@@ -37,17 +37,17 @@ public class EvaluacionTutorService {
     }
 
     public List<EvaluacionTutor> listarPorTutorCurso(Long tutorCursoId) {
-        return evaluacionTutorRepository.findByTutorCursoId(tutorCursoId);
+        return evaluacionTutorRepository.findByTutorCurso_Id(tutorCursoId);
     }
 
     public List<EvaluacionTutor> listarPorTutorPracticas(Long tutorPracticasId) {
-        return evaluacionTutorRepository.findByTutorPracticasId(tutorPracticasId);
-    }
-
-    // ✅ Nuevo método correcto
-    public Optional<EvaluacionTutor> buscarPorTutorPracticasId(Long tutorPracticasId) {
         return evaluacionTutorRepository.findByTutorPracticas_Id(tutorPracticasId);
     }
+
+    /* ✅ Nuevo método correcto
+    public Optional<EvaluacionTutor> buscarPorTutorPracticasId(Long tutorPracticasId) {
+        return evaluacionTutorRepository.findByTutorPracticas_Id(tutorPracticasId);
+    }*/
 }
 
 

@@ -1,13 +1,17 @@
 package com.control.practicas.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.control.practicas.models.CapacidadEvaluacion;
+import com.control.practicas.models.CriterioEvaluacion;
 import com.control.practicas.repositories.CapacidadEvaluacionRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CapacidadEvaluacionService {
 
     private final CapacidadEvaluacionRepository capacidadEvaluacionRepository;
@@ -35,6 +39,13 @@ public class CapacidadEvaluacionService {
 
     public boolean existePorId(Long id) {
         return capacidadEvaluacionRepository.existsById(id);
+    }
+    public List<CapacidadEvaluacion> listarActivas() {
+        return capacidadEvaluacionRepository.findByActivoTrue();
+    }
+    
+    public List<CapacidadEvaluacion> listarPorCriterio(CriterioEvaluacion criterio) {
+        return capacidadEvaluacionRepository.findByCriterioAndActivoTrue(criterio);
     }
 }
 

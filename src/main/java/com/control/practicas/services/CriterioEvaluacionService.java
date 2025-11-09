@@ -3,11 +3,15 @@ package com.control.practicas.services;
 import org.springframework.stereotype.Service;
 import com.control.practicas.models.CriterioEvaluacion;
 import com.control.practicas.repositories.CriterioEvaluacionRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+//import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CriterioEvaluacionService {
 
     private final CriterioEvaluacionRepository criterioEvaluacionRepository;
@@ -24,7 +28,10 @@ public class CriterioEvaluacionService {
     public Optional<CriterioEvaluacion> buscarPorId(Long id) {
         return criterioEvaluacionRepository.findById(id);
     }
-
+    
+    public List<CriterioEvaluacion> listarActivos() {
+        return criterioEvaluacionRepository.findByActivoTrue();
+    }
     public CriterioEvaluacion guardar(CriterioEvaluacion criterio) {
         return criterioEvaluacionRepository.save(criterio);
     }

@@ -65,8 +65,8 @@ public class EvaluacionTutor {
         return tutorCurso;
     }
 
-    public void setTutorCurso(TutorCurso tutorCursoId) {
-        this.tutorCurso = tutorCursoId;
+    public void setTutorCurso(TutorCurso tutorCurso) {
+        this.tutorCurso = tutorCurso;
     }
 
     public BigDecimal getPuntuacion() {
@@ -124,6 +124,23 @@ public class EvaluacionTutor {
         }
     }
 
+ // Métodos @Transient para tutorPracticasId
+    @Transient
+    public Long getTutorPracticasId() {
+        return tutorPracticas != null ? tutorPracticas.getId() : null;
+    }
+
+    @Transient
+    public void setTutorPracticasId(Long id) {
+        if (id != null) {
+            this.tutorPracticas = new TutorPracticas();
+            this.tutorPracticas.setId(id);
+        } else {
+            this.tutorPracticas = null;
+        }
+    }
+    
+    
     
 }
 

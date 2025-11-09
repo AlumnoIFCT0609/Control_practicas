@@ -167,10 +167,14 @@ public class AlumnoDatoController {
         if (alumno.getTutorPracticas() == null) {
             alumno.setTutorPracticas(new TutorPracticas());
         }
-
+        List<ObservacionDiaria> observaciones = observacionDiariaService.listarPorAlumnoOrdenadas(alumno.getId());
+        int totalObservaciones = (observaciones != null) ? observaciones.size() : 0;
         // Pasar los datos al modelo
+        
         model.addAttribute("alumno", alumno);
+        model.addAttribute("totalObservaciones", totalObservaciones);
         model.addAttribute("pageTitle", "Dashboard Alumno");
+        
         model.addAttribute("viewName", "alumno/dashboard"); // tu fragmento principal
 
         return "layout"; // layout principal que incluye header y contenido

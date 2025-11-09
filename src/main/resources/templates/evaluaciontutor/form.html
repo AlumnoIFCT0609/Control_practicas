@@ -23,39 +23,54 @@
 
                             <!-- DATOS DE LA EVALUACIÓN -->
                             <h5 class="border-bottom pb-2 mb-3">Datos de la Evaluación</h5>
+ <div class="row">
+    <!-- Tutor de Curso    th:field="*{tutorCurso}" -->
+    <div class="col-md-6 mb-3">
+        <label for="tutorCurso" class="form-label">Tutor de Curso <span class="text-danger">*</span></label>
+       <select  th:readonly="${soloLectura}" 
+       			th:id="tutorCurso" 
+       			th:name="tutorCursoId" 
+        th:onchange="cargarTutoresPorCurso()" class="form-select">
+        <option th:each="tutor : ${tutoresCurso}" 
+        	th:value="${tutor.id}" 
+        	th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+        	th:selected="${evaluacion.tutorCurso != null and tutor.id == evaluacion.tutorCurso.id}">
+		</option>
+        
+        
+        <!--  th:onchange="${!soloLectura} ? 'cargarTutoresPorCurso()' : null" class="form-select"> 
+    		<option th:each="tutor : ${tutoresCurso}" 
+            th:value="${tutor}" 
+            th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+            th:selected="${tutor.equals(evaluacion.tutorCurso)}">
+    		</option>-->
+		</select>
+   </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="tutorCurso" class="form-label">Tutor de Curso <span class="text-danger">*</span></label>
-                                    <select class="form-select" 
-                                            id="tutorCurso" 
-                                            th:field="*{tutorCursoId}" 
-                                            required
-                                            onchange="cargarTutoresPorCurso()">
-                                        <option value="">Seleccione un tutor de curso</option>
-                                        <option th:each="tutor : ${tutoresCurso}"
-        										th:value="${tutor.id}"
-        										th:text="${tutor.nombre}"
-        										th:selected="${evaluacion.tutorCursoId != null and evaluacion.tutorCursoId == tutor.id}">
-										</option>
-                                    </select>
-                                </div>
+    <!-- Tutor de Prácticas th:field="*{tutorPracticas}" -->
+    <div class="col-md-6 mb-3">
+        <label for="tutorPracticas" class="form-label">Tutor de Prácticas <span class="text-danger">*</span></label>
+    <select  th:readonly="${soloLectura}" 
+    		th:id="tutorPracticas"  
+    		th:name="tutorPracticasId" 
+    		class="form-select"> 
+   <!--   <option th:each="tutor : ${tutoresPracticas}" 
+            th:value="${tutor}" 
+            th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+            th:selected="${tutor.equals(evaluacion.tutorPracticas)}"> -->
+           <option 	th:each="tutor : ${tutoresPracticas}" 
+        			th:value="${tutor.id}" 
+        			th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+        			th:selected="${evaluacion.tutorPracticas != null and tutor.id == evaluacion.tutorPracticas.id}">
+			</option> 
+            
+            
+    </option>
+</select>
+ </div>   
+    
+</div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="tutorPracticas" class="form-label">Tutor de Prácticas <span class="text-danger">*</span></label>
-                                    <select class="form-select" 
-                                            id="tutorPracticas" 
-                                            th:field="*{tutorPracticasId}" 
-                                            required>
-                                        <option value="">Primero seleccione un tutor de curso</option>
-                                        <option th:each="tutor : ${tutoresPracticas}"
-        										th:value="${tutor.id}"
-        										th:text="${tutor.nombre}"
-        										th:selected="${evaluacion.tutorPracticasId != null and evaluacion.tutorPracticasId == tutor.id}">
-										</option>                                        
-                                    </select>
-                                </div>
-                            </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -115,10 +130,15 @@
 
                             <!-- BOTONES -->
                             <div class="d-flex justify-content-between mt-4">
-                                <a th:href="@{/evaluaciontutor/listar}"
-                                   class="btn btn-secondary">
-                                    <i class="bi bi-arrow-left"></i> Cancelar
-                                </a>
+                                <div th:switch="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+    									<a th:case="true" th:href="@{/alumno/dashboard}" class="btn btn-secondary">
+        									<i class="bi bi-arrow-left"></i> Cancelar
+    									</a>
+    									<a th:case="false" th:href="@{/evaluaciontutor/listar}" class="btn btn-secondary">
+        									<i class="bi bi-arrow-left"></i> Cancelar
+    									</a>
+								</div>
+
 
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-save"></i> Guardar
@@ -140,22 +160,22 @@ function cargarTutoresPorCurso() {
     const tutorPracticasSelect = document.getElementById('tutorPracticas');
 
     if (!tutorCursoSelect || !tutorPracticasSelect) {
-        console.error('No se encontraron los selects tutorCurso o tutorPracticas en el DOM.');
+        console.error('❌ No se encontraron los selects tutorCurso o tutorPracticas en el DOM.');
         return;
     }
 
-    const tutorCursoId = tutorCursoSelect.value;
-    console.log('Función llamada. Tutor Curso ID:', tutorCursoId);
+    const idTutorCurso = tutorCursoSelect.value;
+    console.log('✅ Función llamada. Tutor Curso ID:', idTutorCurso);
 
     tutorPracticasSelect.innerHTML = '<option value="">Cargando...</option>';
 
-    if (!tutorCursoId) {
+    if (!idTutorCurso) {
         tutorPracticasSelect.innerHTML = '<option value="">Primero seleccione un tutor de curso</option>';
         return;
     }
 
-    const url = `/evaluaciontutor/tutores-por-curso/${tutorCursoId}`;
-    console.log('Haciendo fetch a:', url);
+    const url = `/evaluaciontutor/tutores-por-curso/${idTutorCurso}`;
+    console.log('🌐 Haciendo fetch a:', url);
 
     fetch(url)
         .then(response => {
@@ -166,11 +186,11 @@ function cargarTutoresPorCurso() {
             return response.json();
         })
         .then(tutores => {
-            console.log('Tutores de prácticas recibidos:', tutores);
+            console.log('👨‍🏫 Tutores de prácticas recibidos:', tutores);
 
             tutorPracticasSelect.innerHTML = '<option value="">Seleccione un Tutor de Prácticas</option>';
 
-            if (tutores.length === 0) {
+            if (!tutores || tutores.length === 0) {
                 tutorPracticasSelect.innerHTML = '<option value="">No hay tutores disponibles para este tutor de curso</option>';
                 return;
             }
@@ -178,19 +198,20 @@ function cargarTutoresPorCurso() {
             tutores.forEach(tutor => {
                 const option = document.createElement('option');
                 option.value = tutor.id;
-                option.textContent = tutor.nombre + ' ' + (tutor.apellidos || '');
+                option.textContent = `${tutor.nombre} ${tutor.apellidos || ''}`;
                 tutorPracticasSelect.appendChild(option);
             });
         })
         .catch(error => {
-            console.error('Error al cargar tutores:', error);
+            console.error('⚠️ Error al cargar tutores:', error);
             tutorPracticasSelect.innerHTML = '<option value="">Error al cargar tutores</option>';
         });
 }
 
-console.log('Script cargado correctamente');
+console.log('🟢 Script de carga de tutores cargado correctamente');
 </script>
 </th:block>
+
 
 
 

@@ -145,5 +145,33 @@ public class Incidencia {
     public void setFechaResolucion(LocalDateTime fechaResolucion) {
         this.fechaResolucion = fechaResolucion;
     }
+    public String getTipoBadge() {
+        switch (this.tipo) {
+            case FALTA:
+                return "Falta";
+            case RETRASO:
+                return "Retraso";
+            case PROBLEMA_ACTITUD:
+                return "Problema de Actitud";
+            case OTROS:
+            default:
+                return "Otros";
+        }
+    }
+
+    public String getTipoBadgeClass() {
+        switch (this.tipo) {
+            case FALTA:
+                return "bg-danger";
+            case RETRASO:
+                return "bg-warning text-dark";
+            case PROBLEMA_ACTITUD:
+                return "bg-info text-dark";
+            case OTROS:
+            default:
+                return "bg-secondary";
+        }
+    }
+
 }
 

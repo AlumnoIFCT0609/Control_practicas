@@ -10,6 +10,11 @@ public class TutorPracticasDTO {
         this.nombre = nombre;
         this.apellidos = apellidos;  }
     
+    public TutorPracticasDTO(Long id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+         }
+    
     
     public Long getId() { return id; }
     public String getNombre() { return nombre; }

@@ -1,54 +1,117 @@
 package com.control.practicas.controllers;
 
-import org.springframework.http.ResponseEntity;
+import com.control.practicas.models.*;
+import com.control.practicas.services.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import com.control.practicas.models.Evaluacion;
-import com.control.practicas.services.EvaluacionService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/evaluaciones")
+@Controller
+@RequestMapping("admin/evaluaciones")
 public class EvaluacionController {
     
     private final EvaluacionService evaluacionService;
-
-    public EvaluacionController(EvaluacionService evaluacionService) {
+    private final CapacidadEvaluacionService capacidadService;
+    private final CriterioEvaluacionService criterioService;
+    // Asumiendo que tienes estos servicios
+    private final AlumnoService alumnoService;
+    private final TutorPracticasService tutorService;
+    
+    public EvaluacionController(
+            EvaluacionService evaluacionService,
+            CapacidadEvaluacionService capacidadService,
+            CriterioEvaluacionService criterioService,
+            AlumnoService alumnoService,
+            TutorPracticasService tutorService) {
         this.evaluacionService = evaluacionService;
+        this.capacidadService = capacidadService;
+        this.criterioService = criterioService;
+        this.alumnoService = alumnoService;
+        this.tutorService = tutorService;
     }
-
-    @GetMapping
-    public List<Evaluacion> listarTodas() {
-        return evaluacionService.listarTodas();
+    
+    @GetMapping("/listar")
+    public String listar(Model model) {
+        List<Evaluacion> evaluaciones = evaluacionService.listarTodas();
+        model.addAttribute("evaluaciones", evaluaciones);
+        model.addAttribute("titulo", "Listado de Evaluaciones");
+        model.addAttribute("viewName", "admin/evaluacion/listar");
+        return "layout";
+       
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Evaluacion> obtenerPorId(@PathVariable Long id) {
-        return evaluacionService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    
+    @GetMapping("/nueva")
+    public String nuevaEvaluacion(Model model) {
+        Evaluacion evaluacion = new Evaluacion();
+        evaluacion.setFecha(LocalDate.now());
+        
+        model.addAttribute("evaluacion", evaluacion);
+        model.addAttribute("criterios", criterioService.listarActivos());
+        model.addAttribute("capacidades", capacidadService.listarActivas());
+        model.addAttribute("alumnos", alumnoService.listarTodos());
+        model.addAttribute("tutores", tutorService.listarTodos());
+        model.addAttribute("titulo", "Nueva Evaluación");
+        model.addAttribute("accion", "nueva");
+        model.addAttribute("viewName", "admin/evaluacion/form");
+        return "layout";
+        
     }
-
-    @PostMapping
-    public Evaluacion crear(@RequestBody Evaluacion evaluacion) {
-        return evaluacionService.guardar(evaluacion);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Evaluacion> actualizar(@PathVariable Long id, @RequestBody Evaluacion evaluacion) {
-        return evaluacionService.buscarPorId(id)
-                .map(e -> {
-                    evaluacion.setId(id);
-                    return ResponseEntity.ok(evaluacionService.guardar(evaluacion));
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (evaluacionService.existePorId(id)) {
-            evaluacionService.eliminar(id);
-            return ResponseEntity.noContent().build();
+    
+    @GetMapping("/editar/{id}")
+    public String editarEvaluacion(@PathVariable Long id, Model model, RedirectAttributes flash) {
+        Evaluacion evaluacion = evaluacionService.buscarPorId(id).orElse(null);
+        
+        if (evaluacion == null) {
+            flash.addFlashAttribute("error", "La evaluación no existe");
+            return "redirect:/admin/evaluaciones/listar";
         }
-        return ResponseEntity.notFound().build();
+        
+        model.addAttribute("evaluacion", evaluacion);
+        model.addAttribute("criterios", criterioService.listarActivos());
+        model.addAttribute("capacidades", capacidadService.listarActivas());
+        model.addAttribute("alumnos", alumnoService.listarTodos());
+        model.addAttribute("tutores", tutorService.listarTodos());
+        model.addAttribute("titulo", "Editar Evaluación");
+        model.addAttribute("accion", "editar");
+        
+        model.addAttribute("viewName", "admin/evaluacion/form");
+        return "layout";
+    }
+    
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Evaluacion evaluacion, RedirectAttributes flash) {
+        try {
+            evaluacionService.guardar(evaluacion);
+            flash.addFlashAttribute("success", "Evaluación guardada correctamente");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "Error al guardar la evaluación: " + e.getMessage());
+        }
+        return "redirect:/admin/evaluaciones/listar";
+    }
+    
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id, RedirectAttributes flash) {
+        try {
+            evaluacionService.eliminar(id);
+            flash.addFlashAttribute("success", "Evaluación eliminada correctamente");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "Error al eliminar la evaluación");
+        }
+        return "redirect:/admin/evaluaciones/listar";
+    }
+    
+    // Endpoint AJAX para obtener capacidades por criterio
+    @GetMapping("/capacidades/{criterioId}")
+    @ResponseBody
+    public List<CapacidadEvaluacion> obtenerCapacidadesPorCriterio(@PathVariable Long criterioId) {
+        CriterioEvaluacion criterio = criterioService.buscarPorId(criterioId).orElse(null);
+        if (criterio != null) {
+            return capacidadService.listarPorCriterio(criterio);
+        }
+        return List.of();
     }
 }

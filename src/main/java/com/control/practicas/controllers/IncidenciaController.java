@@ -45,7 +45,7 @@ public class IncidenciaController {
                         @RequestParam(required = false) String tipo,
                         @RequestParam(required = false) String alumno) {
         
-        // TODO: Implementar filtros cuando sea necesario
+    	List<Incidencia> incidencias = incidenciaService.listarTodas();
         model.addAttribute("incidencias", incidenciaService.listarTodas());
         System.out.println("****************************************************************"+incidenciaService.listarTodas());
         model.addAttribute("viewName", "incidencia/listar");

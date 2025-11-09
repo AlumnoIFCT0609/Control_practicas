@@ -54,7 +54,7 @@
         											<option value="">Primero seleccione un tutor</option>
         											<option th:each="alumno : ${alumnos}"
                 											th:value="${alumno.id}"
-                											th:text="${alumno.nombreCompleto}">
+                											th:text="${alumno.nombre}+' '+${alumno.apellidos}">
        												</option>
     								</select>
 								</div>

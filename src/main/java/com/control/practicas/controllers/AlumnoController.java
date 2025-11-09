@@ -163,55 +163,6 @@ public class AlumnoController {
              return "layout";
         }
     }
-    /*
-    @GetMapping("/nuevo")
-    public String mostrarFormularioNuevo(Model model) {
-        model.addAttribute("alumno", new Alumno());
-        model.addAttribute("cursos", cursoRepository.findAll());
-        model.addAttribute("empresas", empresaRepository.findAll());
-        model.addAttribute("tutores", tutorPracticasRepository.findAll());
-        model.addAttribute("viewName", "admin/alumno/form");
-        return "layout";
-    }
-    
-    *
-    *
-    *
-     @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
-        // Cargar primero las listas
-        List<Curso> cursos = cursoService.listarTodos();
-        List<Empresa> empresas = empresaService.listarTodas();
-        List<TutorPracticas> tutores = tutorPracticasService.listarTodos();
-        
-        // Después cargar y modificar el alumno
-        Alumno alumno = alumnoService.buscarPorId(id)
-            .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
-
-        if (alumno.getCurso() != null) {
-            alumno.setCursoId(alumno.getCurso().getId());
-        }
-        if (alumno.getEmpresa() != null) {
-            alumno.setEmpresaId(alumno.getEmpresa().getId());
-        }
-        if (alumno.getTutorPracticas() != null) {
-            alumno.setTutorPracticasId(alumno.getTutorPracticas().getId());
-        }
-        System.out.println("fechaNacimiento controlador = " + alumno.getFechaNacimiento());
-        model.addAttribute("esVistaAlumno", true);
-
-        model.addAttribute("alumno", alumno);
-        model.addAttribute("cursos", cursos);
-        model.addAttribute("empresas", empresas);
-        model.addAttribute("tutores", tutores);
-        model.addAttribute("esTutorPracticas", false);
-        model.addAttribute("viewName", "admin/alumno/form");
-        return "layout";
-    }
-    *
-    *
-    *
-    */
    
     
     @GetMapping("/observaciondiaria")
@@ -239,7 +190,7 @@ public class AlumnoController {
     }
     
     
-    @GetMapping("/observaciondiaria/{id}/editar")
+    @GetMapping("/observaciondiaria/editar/{id}")
     public String EditarObservacion(@PathVariable Long id, Model model) {
         // Buscar la observación
         ObservacionDiaria observacion = observacionDiariaRepository.findById(id)

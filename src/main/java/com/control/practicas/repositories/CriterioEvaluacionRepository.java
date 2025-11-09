@@ -12,6 +12,7 @@ import com.control.practicas.models.CriterioEvaluacion;
 @Repository
 public interface CriterioEvaluacionRepository extends JpaRepository<CriterioEvaluacion, Long> {
    
+	 List<CriterioEvaluacion> findByActivoTrue();
 	 //no tiene nada que hacer un criterio, ya que el no conoce evaluacion ni capacidad , son ellos los que le conocen a él
 }
 

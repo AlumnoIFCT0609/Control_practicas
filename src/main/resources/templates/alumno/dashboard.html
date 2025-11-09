@@ -86,9 +86,9 @@
             <div class="col-md-3">
                 <div class="card text-white bg-info">
                     <div class="card-body text-center">
-                        <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
+                        <i class="bi bi-clock-history"></i>
                         <h3 th:text="${alumno != null and alumno.duracionPracticas != null ? alumno.duracionPracticas : 0}">0</h3>
-                        <p>Duración Prácticas (Horas)</p>
+                        <h6>Duración (en horas)</h6>
                     </div>
                 </div>
             </div>
@@ -97,9 +97,9 @@
 			    <a th:href="@{/alumno/observaciondiaria/listar}" style="text-decoration: none;">
 			        <div class="card text-white bg-success">
 			            <div class="card-body text-center">
-			                <i class="bi bi-journal-text" style="font-size: 2rem;"></i>
-			                <h3 th:text="${totalObservaciones}">0</h3>
-			                <p>Observaciones</p>
+			                <i class="bi bi-journal-text"></i>
+ 			                <h3 th:text="${totalObservaciones}">0</h3>
+			                <h6>Observaciones</h6>
 			            </div>
 			        </div>
 			    </a>
@@ -108,9 +108,9 @@
             <div class="col-md-3">
                 <div class="card text-white bg-primary">
                     <div class="card-body text-center">
-                        <i class="bi bi-clipboard-check" style="font-size: 2rem;"></i>
+                        <i class="bi bi-clipboard-check"></i>
                         <h3>0</h3>
-                        <p>Evaluaciones</p>
+                        <h6>Evaluaciones</h6>
                     </div>
                 </div>
             </div>
@@ -118,9 +118,9 @@
             <div class="col-md-3">
                 <div class="card text-white bg-warning">
                     <div class="card-body text-center">
-                        <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                        <i class="bi bi-exclamation-triangle"></i>
                         <h3 th:text="${alumno != null and alumno.activo ? 'Activo' : 'Inactivo'}">Estado</h3>
-                        <p>Estado</p>
+                        <h6>Estado</h6>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 package com.control.practicas.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.control.practicas.models.Alumno;
 import com.control.practicas.models.Evaluacion;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class EvaluacionService {
 
     private final EvaluacionRepository evaluacionRepository;
