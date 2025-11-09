@@ -23,58 +23,53 @@
 
                             <!-- DATOS DE LA EVALUACIÓN -->
                             <h5 class="border-bottom pb-2 mb-3">Datos de la Evaluación</h5>
- <div class="row">
-    <!-- Tutor de Curso    th:field="*{tutorCurso}" -->
-    <div class="col-md-6 mb-3">
-        <label for="tutorCurso" class="form-label">Tutor de Curso <span class="text-danger">*</span></label>
-       <select  th:readonly="${soloLectura}" 
-       			th:id="tutorCurso" 
-       			th:name="tutorCursoId" 
-        th:onchange="cargarTutoresPorCurso()" class="form-select">
-        <option th:each="tutor : ${tutoresCurso}" 
-        	th:value="${tutor.id}" 
-        	th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
-        	th:selected="${evaluacion.tutorCurso != null and tutor.id == evaluacion.tutorCurso.id}">
-		</option>
-        
-        
-        <!--  th:onchange="${!soloLectura} ? 'cargarTutoresPorCurso()' : null" class="form-select"> 
-    		<option th:each="tutor : ${tutoresCurso}" 
-            th:value="${tutor}" 
-            th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
-            th:selected="${tutor.equals(evaluacion.tutorCurso)}">
-    		</option>-->
-		</select>
-   </div>
 
-    <!-- Tutor de Prácticas th:field="*{tutorPracticas}" -->
-    <div class="col-md-6 mb-3">
-        <label for="tutorPracticas" class="form-label">Tutor de Prácticas <span class="text-danger">*</span></label>
-    <select  th:readonly="${soloLectura}" 
-    		th:id="tutorPracticas"  
-    		th:name="tutorPracticasId" 
-    		class="form-select"> 
-   <!--   <option th:each="tutor : ${tutoresPracticas}" 
-            th:value="${tutor}" 
-            th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
-            th:selected="${tutor.equals(evaluacion.tutorPracticas)}"> -->
-           <option 	th:each="tutor : ${tutoresPracticas}" 
-        			th:value="${tutor.id}" 
-        			th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
-        			th:selected="${evaluacion.tutorPracticas != null and tutor.id == evaluacion.tutorPracticas.id}">
-			</option> 
-            
-            
-    </option>
-</select>
- </div>   
-    
-</div>
+                            <div class="row">
+                                <!-- Tutor de Curso -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="tutorCurso" class="form-label">
+                                        <i class="bi bi-person-badge"></i> Tutor de Curso <span class="text-danger">*</span>
+                                    </label>
+                                    <select th:disabled="${soloLectura}" 
+                                            id="tutorCurso" 
+                                            name="tutorCursoId" 
+                                            class="form-select"
+                                            required>
+                                        <option value="">Seleccione un tutor de curso</option>
+                                        <option th:each="tutor : ${tutoresCurso}" 
+                                                th:value="${tutor.id}" 
+                                                th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+                                                th:selected="${evaluacion.tutorCurso != null and tutor.id == evaluacion.tutorCurso.id}">
+                                        </option>
+                                    </select>
+                                </div>
 
+                                <!-- Tutor de Prácticas -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="tutorPracticas" class="form-label">
+                                        <i class="bi bi-briefcase"></i> Tutor de Prácticas <span class="text-danger">*</span>
+                                    </label>
+                                    <select th:disabled="${soloLectura}" 
+                                            id="tutorPracticas"  
+                                            name="tutorPracticasId" 
+                                            class="form-select"
+                                            required
+                                            disabled>
+                                        <option value="">Primero seleccione un tutor de curso</option>
+                                        <option th:each="tutor : ${tutoresPracticas}" 
+                                                th:value="${tutor.id}" 
+                                                th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+                                                th:selected="${evaluacion.tutorPracticas != null and tutor.id == evaluacion.tutorPracticas.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="fecha" class="form-label">Fecha de Evaluación <span class="text-danger">*</span></label>
+                                    <label for="fecha" class="form-label">
+                                        <i class="bi bi-calendar-event"></i> Fecha de Evaluación <span class="text-danger">*</span>
+                                    </label>
                                     <input type="date" 
                                            class="form-control" 
                                            id="fecha" 
@@ -84,7 +79,9 @@
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label for="puntuacion" class="form-label">Puntuación <span class="text-danger">*</span></label>
+                                    <label for="puntuacion" class="form-label">
+                                        <i class="bi bi-star-fill"></i> Puntuación <span class="text-danger">*</span>
+                                    </label>
                                     <input type="number" 
                                            class="form-control" 
                                            id="puntuacion"
@@ -102,7 +99,9 @@
                             <h5 class="border-bottom pb-2 mb-3 mt-4">Aspectos de la Evaluación</h5>
 
                             <div class="mb-3">
-                                <label for="aspectosPositivos" class="form-label">Aspectos Positivos</label>
+                                <label for="aspectosPositivos" class="form-label">
+                                    <i class="bi bi-hand-thumbs-up"></i> Aspectos Positivos
+                                </label>
                                 <textarea class="form-control" 
                                           id="aspectosPositivos"
                                           th:field="*{aspectosPositivos}"
@@ -111,7 +110,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="aspectosMejorar" class="form-label">Aspectos a Mejorar</label>
+                                <label for="aspectosMejorar" class="form-label">
+                                    <i class="bi bi-arrow-up-circle"></i> Aspectos a Mejorar
+                                </label>
                                 <textarea class="form-control" 
                                           id="aspectosMejorar"
                                           th:field="*{aspectosMejorar}"
@@ -120,7 +121,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="observaciones" class="form-label">Observaciones Generales</label>
+                                <label for="observaciones" class="form-label">
+                                    <i class="bi bi-chat-square-text"></i> Observaciones Generales
+                                </label>
                                 <textarea class="form-control" 
                                           id="observaciones"
                                           th:field="*{observaciones}"
@@ -131,14 +134,13 @@
                             <!-- BOTONES -->
                             <div class="d-flex justify-content-between mt-4">
                                 <div th:switch="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
-    									<a th:case="true" th:href="@{/alumno/dashboard}" class="btn btn-secondary">
-        									<i class="bi bi-arrow-left"></i> Cancelar
-    									</a>
-    									<a th:case="false" th:href="@{/evaluaciontutor/listar}" class="btn btn-secondary">
-        									<i class="bi bi-arrow-left"></i> Cancelar
-    									</a>
-								</div>
-
+                                    <a th:case="true" th:href="@{/alumno/dashboard}" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Cancelar
+                                    </a>
+                                    <a th:case="false" th:href="@{/evaluaciontutor/listar}" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Cancelar
+                                    </a>
+                                </div>
 
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-save"></i> Guardar
@@ -155,64 +157,105 @@
 
 <th:block th:fragment="scripts">
 <script>
-function cargarTutoresPorCurso() {
-    const tutorCursoSelect = document.getElementById('tutorCurso');
-    const tutorPracticasSelect = document.getElementById('tutorPracticas');
 
-    if (!tutorCursoSelect || !tutorPracticasSelect) {
-        console.error('❌ No se encontraron los selects tutorCurso o tutorPracticas en el DOM.');
-        return;
-    }
 
-    const idTutorCurso = tutorCursoSelect.value;
-    console.log('✅ Función llamada. Tutor Curso ID:', idTutorCurso);
+const tutorCursoSelect = document.getElementById('tutorCurso');
+const tutorPracticasSelect = document.getElementById('tutorPracticas');
+const soloLectura = [[${soloLectura}]];
 
-    tutorPracticasSelect.innerHTML = '<option value="">Cargando...</option>';
-
-    if (!idTutorCurso) {
-        tutorPracticasSelect.innerHTML = '<option value="">Primero seleccione un tutor de curso</option>';
-        return;
-    }
-
-    const url = `/evaluaciontutor/tutores-por-curso/${idTutorCurso}`;
-    console.log('🌐 Haciendo fetch a:', url);
-
-    fetch(url)
-        .then(response => {
-            console.log('Response status:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(tutores => {
-            console.log('👨‍🏫 Tutores de prácticas recibidos:', tutores);
-
-            tutorPracticasSelect.innerHTML = '<option value="">Seleccione un Tutor de Prácticas</option>';
-
+// ============================================
+// TutorCurso → TutorPracticas
+// ============================================
+if (tutorCursoSelect) {
+    tutorCursoSelect.addEventListener('change', async function() {
+        const tutorCursoId = this.value;
+        console.log('Tutor Curso seleccionado:', tutorCursoId);
+        
+        // Si es solo lectura, no hacer nada
+        if (soloLectura) {
+            console.log('Solo lectura activo, no se recarga');
+            return;
+        }
+        
+        // Reset tutor prácticas
+        tutorPracticasSelect.innerHTML = '<option value="">Cargando...</option>';
+        
+        if (!tutorCursoId) {
+            tutorPracticasSelect.innerHTML = '<option value="">Primero seleccione un tutor de curso</option>';
+            tutorPracticasSelect.disabled = true;
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/evaluaciontutor/tutores-practicas-por-tutor/${tutorCursoId}`);
+            const tutores = await response.json();
+            console.log('👨‍💼 Tutores de prácticas recibidos:', tutores);
+            
+            tutorPracticasSelect.innerHTML = '<option value="">Seleccione un tutor de prácticas</option>';
+            
             if (!tutores || tutores.length === 0) {
-                tutorPracticasSelect.innerHTML = '<option value="">No hay tutores disponibles para este tutor de curso</option>';
+                tutorPracticasSelect.innerHTML = '<option value="">No hay tutores de prácticas para este tutor de curso</option>';
+                tutorPracticasSelect.disabled = true;
                 return;
             }
-
+            
             tutores.forEach(tutor => {
                 const option = document.createElement('option');
                 option.value = tutor.id;
-                option.textContent = `${tutor.nombre} ${tutor.apellidos || ''}`;
+                option.textContent = tutor.nombre;
                 tutorPracticasSelect.appendChild(option);
             });
-        })
-        .catch(error => {
-            console.error('⚠️ Error al cargar tutores:', error);
+            
+            tutorPracticasSelect.disabled = false;
+            
+        } catch (error) {
+            console.error('❌ Error al cargar tutores de prácticas:', error);
             tutorPracticasSelect.innerHTML = '<option value="">Error al cargar tutores</option>';
-        });
+            tutorPracticasSelect.disabled = true;
+        }
+    });
 }
 
-console.log('🟢 Script de carga de tutores cargado correctamente');
+// ============================================
+// INICIALIZACIÓN (para modo edición)
+// ============================================
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('🟢 Sistema de filtrado dinámico inicializado');
+    console.log('📋 Solo lectura:', soloLectura);
+    
+    // Guardar el valor preseleccionado de tutor prácticas (modo edición o alumno)
+    const tutorPracticasPreseleccionado = tutorPracticasSelect.value;
+    console.log('💾 Tutor prácticas preseleccionado:', tutorPracticasPreseleccionado);
+    
+    // Si hay un tutor curso preseleccionado y NO es solo lectura
+    if (tutorCursoSelect && tutorCursoSelect.value && !soloLectura) {
+        console.log('🔄 Modo edición: cargando tutores de prácticas...');
+        
+        // Cargar los tutores y luego restaurar la selección
+        tutorCursoSelect.addEventListener('change', function handler() {
+            // Esperar un poco a que se carguen las opciones
+            setTimeout(() => {
+                if (tutorPracticasPreseleccionado) {
+                    tutorPracticasSelect.value = tutorPracticasPreseleccionado;
+                    console.log('✅ Tutor prácticas restaurado:', tutorPracticasPreseleccionado);
+                }
+            }, 300);
+            // Remover el listener para que solo se ejecute una vez
+            tutorCursoSelect.removeEventListener('change', handler);
+        });
+        
+        tutorCursoSelect.dispatchEvent(new Event('change'));
+    }
+    
+    // Si es solo lectura (ALUMNO), deshabilitar ambos selects
+    if (soloLectura) {
+        tutorCursoSelect.disabled = true;
+        tutorPracticasSelect.disabled = true;
+        console.log('🔒 Modo solo lectura: selects bloqueados');
+    }
+});
+
 </script>
 </th:block>
-
-
-
 
 </html>

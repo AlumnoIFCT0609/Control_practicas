@@ -49,28 +49,23 @@ public class EvaluacionService {
         return alumnoRepository.findById(id);
     }
 
-    public List<Evaluacion> buscarPorAlumno(Long alumnoId) {
-        // TODO: Implementar búsqueda por alumno
+    public List<Evaluacion> buscarPorAlumno(Long alumnoId) { 
         return null;
     }
 
-    public List<Evaluacion> buscarPorTutor(Long tutorId) {
-        // TODO: Implementar búsqueda por tutor
+    public List<Evaluacion> buscarPorTutor(Long tutorId) {  
         return null;
     }
 
-    public List<Evaluacion> buscarPorRangoFechas(LocalDate inicio, LocalDate fin) {
-        // TODO: Implementar búsqueda por rango de fechas
+    public List<Evaluacion> buscarPorRangoFechas(LocalDate inicio, LocalDate fin) {   
         return null;
     }
 
     public Object listarTutoresPracticas() {
-        // TODO: Implementar listado de tutores
         return null;
     }
 
     public Object listarCapacidadesActivas() {
-        // TODO: Implementar listado de capacidades activas
         return null;
     }
 }

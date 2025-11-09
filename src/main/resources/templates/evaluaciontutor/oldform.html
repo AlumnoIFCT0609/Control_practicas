@@ -1,0 +1,218 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="bi bi-clipboard-check"></i>
+                            <span th:text="${evaluacion.id == null ? 'Nueva Evaluación de Tutor' : 'Editar Evaluación de Tutor'}">
+                                Nueva Evaluación de Tutor
+                            </span>
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <form th:object="${evaluacion}"
+                              method="post"
+                              th:action="@{/evaluaciontutor/guardar}">
+
+                            <input type="hidden" th:field="*{id}" />
+
+                            <!-- DATOS DE LA EVALUACIÓN -->
+                            <h5 class="border-bottom pb-2 mb-3">Datos de la Evaluación</h5>
+ <div class="row">
+    <!-- Tutor de Curso    th:field="*{tutorCurso}" -->
+    <div class="col-md-6 mb-3">
+        <label for="tutorCurso" class="form-label">Tutor de Curso <span class="text-danger">*</span></label>
+       <select  th:readonly="${soloLectura}" 
+       			th:id="tutorCurso" 
+       			th:name="tutorCursoId" 
+        th:onchange="cargarTutoresPorCurso()" class="form-select">
+        <option th:each="tutor : ${tutoresCurso}" 
+        	th:value="${tutor.id}" 
+        	th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+        	th:selected="${evaluacion.tutorCurso != null and tutor.id == evaluacion.tutorCurso.id}">
+		</option>
+        
+        
+        <!--  th:onchange="${!soloLectura} ? 'cargarTutoresPorCurso()' : null" class="form-select"> 
+    		<option th:each="tutor : ${tutoresCurso}" 
+            th:value="${tutor}" 
+            th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+            th:selected="${tutor.equals(evaluacion.tutorCurso)}">
+    		</option>-->
+		</select>
+   </div>
+
+    <!-- Tutor de Prácticas th:field="*{tutorPracticas}" -->
+    <div class="col-md-6 mb-3">
+        <label for="tutorPracticas" class="form-label">Tutor de Prácticas <span class="text-danger">*</span></label>
+    <select  th:readonly="${soloLectura}" 
+    		th:id="tutorPracticas"  
+    		th:name="tutorPracticasId" 
+    		class="form-select"> 
+   <!--   <option th:each="tutor : ${tutoresPracticas}" 
+            th:value="${tutor}" 
+            th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+            th:selected="${tutor.equals(evaluacion.tutorPracticas)}"> -->
+           <option 	th:each="tutor : ${tutoresPracticas}" 
+        			th:value="${tutor.id}" 
+        			th:text="${tutor.nombre} + ' ' + ${tutor.apellidos}"
+        			th:selected="${evaluacion.tutorPracticas != null and tutor.id == evaluacion.tutorPracticas.id}">
+			</option> 
+            
+            
+    </option>
+</select>
+ </div>   
+    
+</div>
+
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fecha" class="form-label">Fecha de Evaluación <span class="text-danger">*</span></label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           id="fecha" 
+                                           name="fecha"
+                                           th:value="${evaluacion.fecha != null ? evaluacion.fecha.toString() : ''}" 
+                                           required />
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="puntuacion" class="form-label">Puntuación <span class="text-danger">*</span></label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="puntuacion"
+                                           th:field="*{puntuacion}"
+                                           min="0" 
+                                           max="10" 
+                                           step="0.01" 
+                                           placeholder="0.00 - 10.00" 
+                                           required />
+                                    <small class="form-text text-muted">Ingrese un valor entre 0.00 y 10.00</small>
+                                </div>
+                            </div>
+
+                            <!-- ASPECTOS DE LA EVALUACIÓN -->
+                            <h5 class="border-bottom pb-2 mb-3 mt-4">Aspectos de la Evaluación</h5>
+
+                            <div class="mb-3">
+                                <label for="aspectosPositivos" class="form-label">Aspectos Positivos</label>
+                                <textarea class="form-control" 
+                                          id="aspectosPositivos"
+                                          th:field="*{aspectosPositivos}"
+                                          rows="4" 
+                                          placeholder="Describa los aspectos positivos observados..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="aspectosMejorar" class="form-label">Aspectos a Mejorar</label>
+                                <textarea class="form-control" 
+                                          id="aspectosMejorar"
+                                          th:field="*{aspectosMejorar}"
+                                          rows="4" 
+                                          placeholder="Describa los aspectos que requieren mejora..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="observaciones" class="form-label">Observaciones Generales</label>
+                                <textarea class="form-control" 
+                                          id="observaciones"
+                                          th:field="*{observaciones}"
+                                          rows="4" 
+                                          placeholder="Añada observaciones adicionales..."></textarea>
+                            </div>
+
+                            <!-- BOTONES -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <div th:switch="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+    									<a th:case="true" th:href="@{/alumno/dashboard}" class="btn btn-secondary">
+        									<i class="bi bi-arrow-left"></i> Cancelar
+    									</a>
+    									<a th:case="false" th:href="@{/evaluaciontutor/listar}" class="btn btn-secondary">
+        									<i class="bi bi-arrow-left"></i> Cancelar
+    									</a>
+								</div>
+
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:fragment="scripts">
+<script>
+function cargarTutoresPorCurso() {
+    const tutorCursoSelect = document.getElementById('tutorCurso');
+    const tutorPracticasSelect = document.getElementById('tutorPracticas');
+
+    if (!tutorCursoSelect || !tutorPracticasSelect) {
+        console.error('❌ No se encontraron los selects tutorCurso o tutorPracticas en el DOM.');
+        return;
+    }
+
+    const idTutorCurso = tutorCursoSelect.value;
+    console.log('✅ Función llamada. Tutor Curso ID:', idTutorCurso);
+
+    tutorPracticasSelect.innerHTML = '<option value="">Cargando...</option>';
+
+    if (!idTutorCurso) {
+        tutorPracticasSelect.innerHTML = '<option value="">Primero seleccione un tutor de curso</option>';
+        return;
+    }
+
+    const url = `/evaluaciontutor/tutores-por-curso/${idTutorCurso}`;
+    console.log('🌐 Haciendo fetch a:', url);
+
+    fetch(url)
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(tutores => {
+            console.log('👨‍🏫 Tutores de prácticas recibidos:', tutores);
+
+            tutorPracticasSelect.innerHTML = '<option value="">Seleccione un Tutor de Prácticas</option>';
+
+            if (!tutores || tutores.length === 0) {
+                tutorPracticasSelect.innerHTML = '<option value="">No hay tutores disponibles para este tutor de curso</option>';
+                return;
+            }
+
+            tutores.forEach(tutor => {
+                const option = document.createElement('option');
+                option.value = tutor.id;
+                option.textContent = `${tutor.nombre} ${tutor.apellidos || ''}`;
+                tutorPracticasSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('⚠️ Error al cargar tutores:', error);
+            tutorPracticasSelect.innerHTML = '<option value="">Error al cargar tutores</option>';
+        });
+}
+
+console.log('🟢 Script de carga de tutores cargado correctamente');
+</script>
+</th:block>
+
+
+
+
+</html>

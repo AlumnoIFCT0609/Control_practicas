@@ -1,5 +1,6 @@
 package com.control.practicas.controllers;
 
+import com.control.practicas.dto.TutorPracticasDTO;
 import com.control.practicas.models.*;
 import com.control.practicas.services.*;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,7 @@ public class EvaluacionController {
     private final EvaluacionService evaluacionService;
     private final CapacidadEvaluacionService capacidadService;
     private final CriterioEvaluacionService criterioService;
-    // Asumiendo que tienes estos servicios
+    
     private final AlumnoService alumnoService;
     private final TutorPracticasService tutorService;
     
@@ -114,4 +115,19 @@ public class EvaluacionController {
         }
         return List.of();
     }
+    
+ // Endpoint AJAX para obtener tutor de prácticas por alumno
+    @GetMapping("/tutor-por-alumno/{alumnoId}")
+    @ResponseBody
+    public TutorPracticasDTO obtenerTutorPorAlumno(@PathVariable Long alumnoId) {
+        Alumno alumno = alumnoService.buscarPorId(alumnoId).orElse(null);
+        if (alumno == null || alumno.getTutorPracticas() == null) {
+            return null;
+        }
+        
+        TutorPracticas tp = alumno.getTutorPracticas();
+        return new TutorPracticasDTO(tp.getId(), tp.getNombre() + " " + tp.getApellidos());
+    }
+    
+    
 }

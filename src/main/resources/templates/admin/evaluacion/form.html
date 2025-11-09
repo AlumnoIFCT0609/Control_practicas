@@ -30,8 +30,8 @@
                             <label for="tutor" class="form-label">
                                 <i class="bi bi-person-badge"></i> Tutor de Prácticas <span class="text-danger">*</span>
                             </label>
-                            <select th:field="*{tutorPracticas.id}" id="tutor" class="form-select" required>
-                                <option value="">Seleccione un tutor</option>
+                            <select th:field="*{tutorPracticas.id}" id="tutor" class="form-select" required disabled>
+                                <option value="">Primero seleccione un alumno</option>
                                 <option th:each="tutor : ${tutores}" 
                                         th:value="${tutor.id}"
                                         th:text="${tutor.nombre + ' ' + tutor.apellidos}">
@@ -107,7 +107,7 @@
 
                     <!-- Botones -->
                     <div class="d-flex justify-content-between mt-4">
-                        <a th:href="@{/admin/evaluaciones/listar}" class="btn btn-secondary">
+                        <a th:href="@{/admin/evaluacion/listar}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Volver
                         </a>
                         <button type="submit" class="btn btn-primary">
@@ -125,7 +125,7 @@
 </div>
 <th:block th:fragment="scripts">
     
-    <script>
+   <script>
         // Script para filtrar capacidades según criterio seleccionado
         document.getElementById('criterio').addEventListener('change', function() {
             const criterioId = this.value;
