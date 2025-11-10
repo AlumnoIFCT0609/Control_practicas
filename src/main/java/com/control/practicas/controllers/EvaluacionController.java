@@ -3,11 +3,16 @@ package com.control.practicas.controllers;
 import com.control.practicas.dto.TutorPracticasDTO;
 import com.control.practicas.models.*;
 import com.control.practicas.services.*;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,14 +41,79 @@ public class EvaluacionController {
     }
     
     @GetMapping("/listar")
-    public String listar(Model model) {
-        List<Evaluacion> evaluaciones = evaluacionService.listarTodas();
+    public String listar(Model model, Authentication authentication) {
+        List<Evaluacion> evaluaciones;
+
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ALUMNO"))) {
+            Alumno alumno = alumnoService.obtenerPorEmail(authentication.getName());
+            evaluaciones = evaluacionService.buscarPorAlumno(alumno.getId());
+            model.addAttribute("alumno", alumno);
+        } else {
+            evaluaciones = evaluacionService.listarTodas();
+        }
+
+        // Sumar puntos obtenidos y máximos
+        BigDecimal totalObtenido = evaluaciones.stream()
+        	    .map(Evaluacion::getPuntuacion)
+        	    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalMaximo = evaluaciones.stream()
+        	    .map(e -> BigDecimal.valueOf(e.getCapacidad().getPuntuacionMaxima()))
+        	    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        	
+        BigDecimal notaTotal = evaluaciones.stream()
+                .map(e -> {
+                    BigDecimal fraccion = e.getPuntuacion()
+                            .divide(BigDecimal.valueOf(e.getCapacidad().getPuntuacionMaxima()), 4, RoundingMode.HALF_UP);
+                    BigDecimal peso = BigDecimal.valueOf(e.getCapacidad().getCriterio().getPeso());
+                    return fraccion.multiply(peso);
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        System.out.println("===============================================================================================");
+        
+        System.out.println("========   " + notaTotal.toString() + "=====================================================");
+        
+        System.out.println("===============================================================================================");
+        notaTotal = notaTotal.setScale(2, RoundingMode.HALF_UP);
+
+        model.addAttribute("totalObtenido", totalObtenido);
+        model.addAttribute("totalMaximo", totalMaximo);
+        model.addAttribute("notaTotal", notaTotal);
+        model.addAttribute("evaluaciones", evaluaciones);
+
+        model.addAttribute("titulo", "Listado de Evaluaciones");
+        model.addAttribute("viewName", "admin/evaluacion/listar");
+        return "layout";
+    }
+
+    
+/*    @GetMapping("/listar")
+    public String listar(Model model, Authentication authentication) {
+        List<Evaluacion> evaluaciones;
+        // Si el usuario autenticado tiene el rol "ALUMNO"
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ALUMNO"))) {
+
+            String username = authentication.getName(); // nombre del usuario conectado
+
+            // Obtener el alumno asociado al usuario (ajusta según tu modelo)
+            Alumno alumno = alumnoService.obtenerPorEmail(username);
+            // Filtrar solo sus evaluaciones
+            evaluaciones = evaluacionService.buscarPorAlumno(alumno.getId());
+            	
+          } else {
+            // Si es ADMIN o TUTOR, listar todas
+            evaluaciones = evaluacionService.listarTodas();
+        }
+
         model.addAttribute("evaluaciones", evaluaciones);
         model.addAttribute("titulo", "Listado de Evaluaciones");
         model.addAttribute("viewName", "admin/evaluacion/listar");
         return "layout";
-       
-    }
+    }*/
+
+    
     
     @GetMapping("/nueva")
     public String nuevaEvaluacion(Model model) {

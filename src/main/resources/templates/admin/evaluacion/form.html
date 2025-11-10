@@ -68,7 +68,8 @@
                                 <option th:each="capacidad : ${capacidades}" 
                                         th:value="${capacidad.id}"
                                         th:text="${capacidad.nombre + ' (Máx: ' + capacidad.puntuacionMaxima + ')'}"
-                                        th:attr="data-criterio=${capacidad.criterio.id}, data-max=${capacidad.puntuacionMaxima}">
+                                        th:attr="data-criterio=${capacidad.criterio.id}, data-max=${capacidad.puntuacionMaxima}"
+                                        th:selected="${evaluacion.capacidad != null && evaluacion.capacidad.id == capacidad.id}">
                                     Dominio de herramientas (Máx: 10)
                                 </option>
                             </select>
@@ -91,7 +92,9 @@
                             <label for="fecha" class="form-label">
                                 <i class="bi bi-calendar-event"></i> Fecha de Evaluación <span class="text-danger">*</span>
                             </label>
-                            <input type="date" th:field="*{fecha}" id="fecha" class="form-control" required>
+                           <input type="date" name="fecha" id="fecha" 
+                             th:value="${evaluacion.fecha != null ? evaluacion.fecha.toString() : ''}"
+                             class="form-control" required>
                         </div>
                     </div>
 
@@ -133,7 +136,12 @@
             const options = capacidadSelect.querySelectorAll('option');
             
             capacidadSelect.disabled = !criterioId;
-            capacidadSelect.value = '';
+            
+            // Solo limpiar el valor si no estamos en carga inicial
+            if (!this.dataset.initialLoad) {
+                capacidadSelect.value = '';
+            }
+            delete this.dataset.initialLoad;
             
             options.forEach(option => {
                 if (option.value === '') {
@@ -154,12 +162,72 @@
             document.getElementById('maxPuntuacion').textContent = maxPuntuacion;
             document.getElementById('puntuacion').setAttribute('max', maxPuntuacion);
         });
-
+        
+        document.getElementById('alumno').addEventListener('change', async function() {
+            const alumnoId = this.value;
+            const tutorSelect = document.getElementById('tutor');
+            
+            console.log('👨‍🎓 Alumno seleccionado:', alumnoId);
+            
+            tutorSelect.innerHTML = '<option value="">Cargando tutor...</option>';
+            tutorSelect.disabled = true;
+            
+            if (!alumnoId) {
+                tutorSelect.innerHTML = '<option value="">Primero seleccione un alumno</option>';
+                return;
+            }
+            
+            try {
+                const url = `/admin/evaluaciones/tutor-por-alumno/${alumnoId}`;
+                console.log('🌐 Haciendo fetch a:', url);
+                
+                const response = await fetch(url);
+                console.log('📡 Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const tutor = await response.json();
+                console.log('👨‍💼 Tutor recibido:', tutor);
+                
+                if (tutor && tutor.id) {
+                    tutorSelect.innerHTML = `<option value="${tutor.id}" selected>${tutor.nombre}</option>`;
+                    tutorSelect.disabled = false;
+                    console.log('✅ Tutor cargado correctamente');
+                } else {
+                    tutorSelect.innerHTML = '<option value="">Este alumno no tiene tutor asignado</option>';
+                    console.log('⚠️ Sin tutor asignado');
+                }
+            } catch (error) {
+                console.error('❌ Error al cargar tutor:', error);
+                tutorSelect.innerHTML = '<option value="">Error al cargar tutor</option>';
+            }
+        });
+        
         // Inicializar el filtro si hay un criterio preseleccionado (modo edición)
         window.addEventListener('DOMContentLoaded', function() {
             const criterioSelect = document.getElementById('criterio');
-            if (criterioSelect.value) {
+            const capacidadSelect = document.getElementById('capacidad');
+            
+            // Si hay criterio Y capacidad seleccionados (modo edición)
+            if (criterioSelect.value && capacidadSelect.value) {
+                console.log('🔄 Modo edición detectado');
+                // Marcar como carga inicial para no limpiar la capacidad
+                criterioSelect.dataset.initialLoad = 'true';
+                // Habilitar capacidad y filtrar opciones
+                capacidadSelect.disabled = false;
                 criterioSelect.dispatchEvent(new Event('change'));
+            } else if (criterioSelect.value) {
+                // Solo hay criterio seleccionado
+                criterioSelect.dispatchEvent(new Event('change'));
+            }
+            
+            // Si hay alumno preseleccionado (modo edición), cargar su tutor
+            const alumnoSelect = document.getElementById('alumno');
+            if (alumnoSelect && alumnoSelect.value) {
+                console.log('🔄 Alumno preseleccionado');
+                alumnoSelect.dispatchEvent(new Event('change'));
             }
         });
     </script>

@@ -4,6 +4,7 @@
         <div class="card">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h3 class="mb-0" th:text="${titulo}">Listado de Evaluaciones</h3>
+                <div th:if="${!#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
                 <a th:href="@{/admin/evaluaciones/nueva}" class="btn btn-light">
                     <i class="bi bi-plus-circle"></i> Nueva Evaluación
                 </a>
@@ -13,6 +14,17 @@
 				<a th:href="@{/admin/evaluacion/criterios}" class="btn btn-info me-2">
 			            <i class="bi bi-list-check"></i> Criterios
 				</a>
+				</div>
+				<div th:if="${evaluaciones == null}">
+    ⚠️ La lista `evaluaciones` es null
+</div>
+<div th:if="${evaluaciones != null and evaluaciones.empty}">
+    ⚠️ La lista `evaluaciones` está vacía
+</div>
+<div th:if="${evaluaciones != null and !evaluaciones.empty}">
+    ✅ La lista `evaluaciones` tiene datos
+</div>
+				
             </div>
             <div class="card-body">
                 <!-- Mensajes de feedback -->
@@ -41,27 +53,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:if="${evaluaciones.empty}">
+                            <tr th:if="${evaluaciones == null or evaluaciones.empty}">
                                 <td colspan="8" class="text-center text-muted py-4">
                                     <i class="bi bi-inbox fs-1"></i>
                                     <p class="mt-2">No hay evaluaciones registradas</p>
                                 </td>
                             </tr>
                             <tr th:each="evaluacion : ${evaluaciones}">
-                                <td th:text="${evaluacion.id}">1</td>
-                                <td th:text="${evaluacion.alumno.nombre + ' ' + evaluacion.alumno.apellidos}">Juan Pérez</td>
-                                <td th:text="${evaluacion.tutorPracticas.nombre + ' ' + evaluacion.tutorPracticas.apellidos}">María García</td>
-                                <td th:text="${evaluacion.capacidad.criterio.nombre}">Competencias Técnicas</td>
-                                <td th:text="${evaluacion.capacidad.nombre}">Dominio de herramientas</td>
+                                <td th:text="${evaluacion?.id}">1</td>
+                                <td th:text="${evaluacion.alumno?.nombre + ' ' + evaluacion.alumno?.apellidos}">Juan Pérez</td>
+                                <td th:text="${evaluacion.tutorPracticas?.nombre + ' ' + evaluacion.tutorPracticas?.apellidos}">María García</td>
+                                <td th:text="${evaluacion.capacidad.criterio?.nombre}">Competencias Técnicas</td>
+                                <td th:text="${evaluacion.capacidad?.nombre}">Dominio de herramientas</td>
                                 <td>
                                     <span class="badge" 
-                                          th:classappend="${evaluacion.puntuacion >= 7} ? 'bg-success' : ${evaluacion.puntuacion >= 5} ? 'bg-warning' : 'bg-danger'"
-                                          th:text="${evaluacion.puntuacion + '/' + evaluacion.capacidad.puntuacionMaxima}">
-                                        8.5/10
+                                    th:classappend="${evaluacion?.puntuacion >= 7 ? 'bg-success' : evaluacion.puntuacion >= 5 ? 'bg-warning' : 'bg-danger'}"
+									th:text="${evaluacion?.puntuacion + '/' + evaluacion.capacidad?.puntuacionMaxima}">
+                                         8.5/10
                                     </span>
                                 </td>
                                 <td th:text="${#temporals.format(evaluacion.fecha, 'dd/MM/yyyy')}">01/11/2024</td>
-                                <td>
+                                <td th:if="${!#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
                                     <div class="btn-group" role="group">
                                         <a th:href="@{/admin/evaluaciones/editar/{id}(id=${evaluacion.id})}" 
                                            class="btn btn-sm btn-warning" title="Editar">
@@ -79,6 +91,68 @@
                         </tbody>
                     </table>
                 </div>
+               
+                
+    <div th:if="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
+    <div class="row mt-4">
+        <!-- Total Puntos -->
+        <div class="col-md-4">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-calculator"></i> Total Puntos</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Puntos obtenidos:</strong> 
+                        <span th:text="${totalObtenido}">0</span><br>
+                        <strong>Puntos máximos:</strong> 
+                        <span th:text="${totalMaximo}">0</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Media Ponderada -->
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="bi bi-bar-chart-line"></i> En total teniendo en cuenta el peso</h5>
+                </div>
+                <div class="card-body">
+                    <p th:if="${!evaluaciones.empty}">
+                        <strong>Nota:</strong> 
+                        <span th:text="${notaTotal}">0</span> 
+                    </p>
+                    <p th:if="${evaluaciones.empty}" class="text-muted">No hay evaluaciones</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalle Evaluaciones -->
+        <div class="col-md-4">
+            <div class="card border-warning">
+                <div class="card-header bg-warning">
+                    <h5><i class="bi bi-list-check"></i> Detalle Evaluaciones</h5>
+                </div>
+                <div class="card-body">
+                    <ul th:each="e : ${evaluaciones}">
+                        <li>
+                            <strong th:text="${e.capacidad.criterio.nombre}">Criterio</strong> - 
+                            <span th:text="${e.capacidad.nombre}">Capacidad</span> : 
+                            <span th:text="${e.puntuacion}">0</span> / 
+                            <span th:text="${e.capacidad.puntuacionMaxima}">0</span> 
+                            (<span th:text="${e.capacidad.criterio.peso}">0</span>%)
+                        </li>
+                    </ul>
+                    <p th:if="${evaluaciones.empty}" class="text-muted">No hay evaluaciones registradas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                    
+                
+                
             </div>
         </div>
     </div>

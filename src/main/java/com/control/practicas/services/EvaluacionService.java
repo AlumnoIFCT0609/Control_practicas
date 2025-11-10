@@ -34,8 +34,21 @@ public class EvaluacionService {
     }
 
     public Evaluacion guardar(Evaluacion evaluacion) {
+        Optional<Evaluacion> existente = evaluacionRepository
+            .findByAlumnoIdAndCapacidadIdAndFecha(
+                evaluacion.getAlumno().getId(),
+                evaluacion.getCapacidad().getId(),
+                evaluacion.getFecha()
+            );
+
+        // Solo bloqueamos si es nuevo (id nulo) y ya existe uno igual
+        if (existente.isPresent() && evaluacion.getId() == null) {
+            throw new IllegalStateException("Ya existe una evaluación para este alumno, capacidad y fecha.");
+        }
+
         return evaluacionRepository.save(evaluacion);
     }
+
 
     public void eliminar(Long id) {
         evaluacionRepository.deleteById(id);
@@ -50,7 +63,8 @@ public class EvaluacionService {
     }
 
     public List<Evaluacion> buscarPorAlumno(Long alumnoId) { 
-        return null;
+        return evaluacionRepository.findByAlumnoId(alumnoId);
+
     }
 
     public List<Evaluacion> buscarPorTutor(Long tutorId) {  

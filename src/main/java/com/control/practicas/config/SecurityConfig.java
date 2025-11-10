@@ -49,6 +49,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/login", "/error").permitAll()
+                .requestMatchers("/admin/evaluaciones/listar").hasAnyAuthority("ADMIN", "ALUMNO")
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/tutor-curso/**").hasAuthority("TUTOR_CURSO")
                 .requestMatchers("/tutor-practicas/**").hasAuthority("TUTOR_PRACTICAS")

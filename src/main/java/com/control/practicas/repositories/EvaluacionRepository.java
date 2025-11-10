@@ -12,12 +12,16 @@ import com.control.practicas.models.TutorPracticas;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EvaluacionRepository extends JpaRepository<Evaluacion, Long> {
     
     // Buscar evaluaciones por alumno
     List<Evaluacion> findByAlumno(Alumno alumno);
+    
+    List<Evaluacion> findByAlumnoId(Long alumnoId);
+
     
     // Buscar evaluaciones por tutor de prácticas
     List<Evaluacion> findByTutorPracticas(TutorPracticas tutorPracticas);
@@ -30,6 +34,9 @@ public interface EvaluacionRepository extends JpaRepository<Evaluacion, Long> {
     
     // Buscar evaluaciones por alumno y fecha
     List<Evaluacion> findByAlumnoAndFecha(Alumno alumno, LocalDate fecha);
+    // Para evitar duplicados  en evaluaciones por capacidad alumno y fecha
+    Optional<Evaluacion> findByAlumnoIdAndCapacidadIdAndFecha(Long alumnoId, Long capacidadId, LocalDate fecha);
+
     
     // Buscar evaluaciones por alumno ordenadas por fecha descendente
     List<Evaluacion> findByAlumnoOrderByFechaDesc(Alumno alumno);
