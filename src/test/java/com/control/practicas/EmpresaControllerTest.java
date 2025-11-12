@@ -10,6 +10,7 @@ import com.control.practicas.services.EmpresaService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,9 +31,9 @@ import static org.hamcrest.Matchers.*;
  * @WebMvcTest carga solo la capa web (controllers)
  */
 @WebMvcTest(EmpresaController.class)
-class EmpresaControllerTest {
-    
-	 private final MockMvc mockMvc;
+@AutoConfigureMockMvc(addFilters = false)
+class EmpresaControllerTest {    	@Autowired
+	 	private MockMvc mockMvc;
 
 	    @MockBean
 	    private EmpresaRepository empresaRepository;
@@ -43,9 +44,7 @@ class EmpresaControllerTest {
 	    private Empresa empresa;
 
 	    // ✅ Inyección de dependencias por constructor
-	    public EmpresaControllerTest(MockMvc mockMvc) {
-	        this.mockMvc = mockMvc;
-	    }
+	    
 
 	    @BeforeEach
 	    void setUp() {

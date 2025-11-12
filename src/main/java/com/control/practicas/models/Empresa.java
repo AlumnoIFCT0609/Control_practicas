@@ -11,9 +11,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "empresa")
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
 public class Empresa {
     
 

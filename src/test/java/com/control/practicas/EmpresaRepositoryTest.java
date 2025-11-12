@@ -5,6 +5,7 @@ package com.control.practicas;
 import com.control.practicas.models.Empresa;
 import com.control.practicas.repositories.EmpresaRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
@@ -24,6 +25,7 @@ class EmpresaRepositoryTest {
     private final EmpresaRepository empresaRepository;
 
     // ✅ Inyección de dependencias por constructor
+    @Autowired
     public EmpresaRepositoryTest(TestEntityManager entityManager, EmpresaRepository empresaRepository) {
         this.entityManager = entityManager;
         this.empresaRepository = empresaRepository;
