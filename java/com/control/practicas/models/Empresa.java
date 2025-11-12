@@ -45,8 +45,11 @@ public class Empresa {
     @Column(name = "fechacreacion", updatable = false)
     private LocalDate fechaCreacion;
 
+    
+    
+    
     @PrePersist
-    protected void onCreate() {
+    public void onCreate() {  // es protected lo pongo public para el test
         this.fechaCreacion = LocalDate.now();
     }
     
