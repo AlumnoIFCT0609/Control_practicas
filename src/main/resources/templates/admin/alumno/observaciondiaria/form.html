@@ -129,10 +129,10 @@
     							<div class="col-12">
         							<div class="d-flex gap-2">
 
-           				 <!-- Guardar (visible para todos los roles que pueden editar) -->
+           				 <!-- Guardar (visible para todos los roles que pueden editar) #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') or-->
            					 <button type="submit" class="btn btn-primary"
                     				th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN') or
-                            			#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') or
+                            			
                            				#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') or
                             			#lists.contains(#authentication.authorities.![authority], 'ALUMNO')}">
                 					<i class="bi bi-save"></i> Guardar
@@ -151,7 +151,7 @@
             <a class="btn btn-secondary px-4"
                th:href="
                  ${#lists.contains(#authentication.authorities.![authority], 'ADMIN') ? '/admin/alumno/observaciondiaria' :
-                   (#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') ? '/tutorcurso/observaciondiaria' :
+                   (#lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO') ? '/tutorcurso/observaciondiaria/listar' :
                    (#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS') ? '/tutorpracticas/observaciondiaria/listar' :
                    '/alumno/observaciondiaria'))}">
                 <i class="fas fa-arrow-left"></i> Volver

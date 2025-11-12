@@ -171,6 +171,10 @@ public class AlumnoDatoController {
         int totalObservaciones = (observaciones != null) ? observaciones.size() : 0;
         // Pasar los datos al modelo
         
+        List<Evaluacion> evaluacion = evaluacionService.buscarPorAlumno(alumno.getId());
+        
+        int evaluacionTotal=(evaluacion != null) ? evaluacion.size() : 0;
+        model.addAttribute("evaluacionTotal",evaluacionTotal);
         model.addAttribute("alumno", alumno);
         model.addAttribute("totalObservaciones", totalObservaciones);
         model.addAttribute("pageTitle", "Dashboard Alumno");
