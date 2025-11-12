@@ -38,17 +38,45 @@ public class IncidenciaController {
         this.commonController = commonController;
     }
 
-    // Listar todas las incidencias
+ // Listar todas las incidencias
     @GetMapping({"/listar", ""})
     public String listar(Model model,
                         @RequestParam(required = false) String estado,
                         @RequestParam(required = false) String tipo,
                         @RequestParam(required = false) String alumno) {
+
+        List<Incidencia> incidencias = incidenciaService.listarTodas();
         
-    	List<Incidencia> incidencias = incidenciaService.listarTodas();
-        model.addAttribute("incidencias", incidenciaService.listarTodas());
-        System.out.println("****************************************************************"+incidenciaService.listarTodas());
+        // Aplicar filtros
+        if (estado != null && !estado.isEmpty()) {
+            incidencias = incidencias.stream()
+                .filter(i -> i.getEstado() != null && i.getEstado().name().equals(estado))
+                .collect(Collectors.toList());
+        }
+        
+        if (tipo != null && !tipo.isEmpty()) {
+            incidencias = incidencias.stream()
+                .filter(i -> i.getTipo() != null && i.getTipo().name().equals(tipo))
+                .collect(Collectors.toList());
+        }
+        
+        if (alumno != null && !alumno.isEmpty()) {
+            String alumnoLower = alumno.toLowerCase();
+            incidencias = incidencias.stream()
+                .filter(i -> i.getAlumno() != null && 
+                    (i.getAlumno().getNombre().toLowerCase().contains(alumnoLower) ||
+                     i.getAlumno().getApellidos().toLowerCase().contains(alumnoLower)))
+                .collect(Collectors.toList());
+        }
+        
+        model.addAttribute("incidencias", incidencias);
         model.addAttribute("viewName", "incidencia/listar");
+        
+        // Mantener los valores del filtro en el formulario
+        model.addAttribute("filtroEstado", estado);
+        model.addAttribute("filtroTipo", tipo);
+        model.addAttribute("filtroAlumno", alumno);
+        
         return "layout";
     }
 /*

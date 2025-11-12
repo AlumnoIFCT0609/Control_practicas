@@ -65,7 +65,30 @@ public class EvaluacionTutorController {
             evaluaciones = List.of();
         }
 
+        // Calcular estadísticas
+        Double promedioGeneral = null;
+        Double mejorPuntuacion = null;
+        
+        if (!evaluaciones.isEmpty()) {
+        	 promedioGeneral = evaluaciones.stream()
+                     .map(EvaluacionTutor::getPuntuacion)
+                     .filter(p -> p != null)
+                     .mapToDouble(BigDecimal::doubleValue)
+                     .average()
+                     .orElse(0.0);
+             
+             // Calcular mejor puntuación
+             mejorPuntuacion = evaluaciones.stream()
+                     .map(EvaluacionTutor::getPuntuacion)
+                     .filter(p -> p != null)
+                     .mapToDouble(BigDecimal::doubleValue)
+                     .max()
+                     .orElse(0.0);
+        }
+
         model.addAttribute("evaluaciones", evaluaciones);
+        model.addAttribute("promedioGeneral", promedioGeneral);
+        model.addAttribute("mejorPuntuacion", mejorPuntuacion);
         model.addAttribute("viewName", "evaluaciontutor/listar");
         return "layout";
     }
