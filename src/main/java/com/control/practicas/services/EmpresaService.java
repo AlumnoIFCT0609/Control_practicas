@@ -88,4 +88,14 @@ public class EmpresaService {
     public List<Empresa> buscarPorNombre(String nombre) {
         return empresaRepository.findByNombreContainingIgnoreCase(nombre);
     }
+
+	public Object existeCifExcluyendoId(String string, long l) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Object existeEmailExcluyendoId(String string, long l) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
