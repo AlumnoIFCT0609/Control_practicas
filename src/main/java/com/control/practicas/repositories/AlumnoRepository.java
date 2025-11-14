@@ -28,8 +28,11 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
 	
 	@Query("SELECT a FROM Alumno a WHERE a.tutorPracticas.id = :tutorId")
 	List<Alumno> findByTutorPracticasId(@Param("tutorId") Long tutorId);
+	
+	@Query("SELECT a FROM Alumno a WHERE a.curso.tutorCurso.id = :tutorCursoId")
+	List<Alumno> findByTutorCursoId(@Param("tutorCursoId") Long tutorCursoId);
 
-
+	
 	//List<Alumno> findByCursoIdIn(List<Long> cursoIds);
 	 @Query("SELECT a FROM Alumno a WHERE a.curso.id IN :cursoIds")
 	    List<Alumno> findByCursoIds(@Param("cursoIds") List<Long> cursoIds);

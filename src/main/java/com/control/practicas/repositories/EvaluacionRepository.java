@@ -52,4 +52,8 @@ public interface EvaluacionRepository extends JpaRepository<Evaluacion, Long> {
     // Calcular promedio de puntuación por alumno
     @Query("SELECT AVG(e.puntuacion) FROM Evaluacion e WHERE e.alumno.id = :alumnoId")
     Double calcularPromedioAlumno(@Param("alumnoId") Long alumnoId);
+    
+    @Query("SELECT e FROM Evaluacion e WHERE e.alumno.curso.tutorCurso.id = :tutorCursoId")
+    List<Evaluacion> findByTutorCursoId(@Param("tutorCursoId") Long tutorCursoId);
+    
 }

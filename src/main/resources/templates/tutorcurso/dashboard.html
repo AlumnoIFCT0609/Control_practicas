@@ -53,10 +53,10 @@
                 <div class="card text-white bg-warning">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="bi bi-clipboard-check"></i> Evaluaciones
+                            <i class="bi bi-clipboard-check"></i> Evaluaciones a alumnos
                         </h5>
-                        <h2>0</h2>
-                        <p class="card-text">Pendientes de realizar</p>
+                        <h2  th:text="${evaluaciones != null ? #lists.size(evaluaciones) : 0}">0</h2>
+                        <p class="card-text">Hechas</p>
                     </div>
                 </div>
             </div>

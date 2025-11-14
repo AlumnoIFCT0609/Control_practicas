@@ -133,18 +133,17 @@
                                             th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')
                                             			or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')
                                             			or #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}">
-                                        <option value="">Seleccione una Empresa</option>
+                                        <option value="" th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
+                                        Seleccione una Empresa</option>
                                         <option th:each="empresa : ${empresas}"
                                                 th:value="${empresa.id}"
                                                 th:text="${empresa.nombre}">
                                         </option>
                                     </select>
                                 </div>
-                                
-                                
+                             
                                 
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="tutorPracticas" class="form-label">Tutor de Prácticas</label>
@@ -155,10 +154,10 @@
 										<option value="" th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
 										    Seleccione un tutor
 										</option>                   
-										<option th:each="tutor : ${tutorPracticas}"
-                                                th:value="${tutor.id}"
-                                                th:text="${tutor.nombre + ' ' + tutor.apellidos}"
-                                                th:selected="${alumno.tutorPracticas != null and alumno.tutorPracticas.id == tutor.id}">
+										<option th:each="tutorPr : ${tutorPracticas}"
+                                                th:value="${tutorPr.id}"
+                                                th:text="${tutorPr.nombre + ' ' + tutorPr.apellidos}"
+                                                th:selected="${alumno.tutorPracticas != null and alumno.tutorPracticas.id == tutorPr.id}">
                                         </option>
                                     </select>
                                 </div>

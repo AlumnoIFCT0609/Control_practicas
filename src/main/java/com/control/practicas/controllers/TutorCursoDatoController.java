@@ -19,11 +19,13 @@ import com.control.practicas.models.TutorPracticas;
 //import com.control.practicas.services.TutorCursoService;
 import com.control.practicas.models.Curso;
 import com.control.practicas.models.Empresa;
+import com.control.practicas.models.Evaluacion;
 import com.control.practicas.models.ObservacionDiaria;
 //import com.control.practicas.models.Usuario;
 import com.control.practicas.repositories.AlumnoRepository;
 import com.control.practicas.repositories.CursoRepository;
 import com.control.practicas.repositories.EmpresaRepository;
+import com.control.practicas.repositories.EvaluacionRepository;
 import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.TutorCursoRepository;
 import com.control.practicas.repositories.TutorPracticasRepository;
@@ -55,6 +57,7 @@ public class TutorCursoDatoController {
     private final AlumnoRepository alumnoRepository;
     //private final AlumnoService alumnoService;
    // private final UsuarioRepository usuarioRepository;
+    private final EvaluacionRepository evaluacionRepository;
     private final TutorPracticasRepository tutorPracticasRepository;
     private final CursoRepository cursoRepository;
     private final EmpresaRepository empresaRepository;
@@ -65,6 +68,7 @@ public class TutorCursoDatoController {
             ObservacionDiariaRepository observacionDiariaRepository,
             ObservacionDiariaService observacionDiariaService,
             AlumnoRepository alumnoRepository,
+            EvaluacionRepository evaluacionRepository,
            // TutorCursoService tutorCursoService,
            // AlumnoService alumnoService,
             CursoRepository cursoRepository,
@@ -76,6 +80,7 @@ public class TutorCursoDatoController {
     	//this.tutorCursoService = tutorCursoService;
         this.observacionDiariaRepository = observacionDiariaRepository;
         this.observacionDiariaService = observacionDiariaService;
+        this.evaluacionRepository=evaluacionRepository;
         this.alumnoRepository = alumnoRepository;
        // this.alumnoService = alumnoService;
        // this.usuarioRepository = usuarioRepository;
@@ -121,14 +126,17 @@ public class TutorCursoDatoController {
                                 .count()
                 ));
 
-        // 7️⃣ Pasar todos los datos al modelo
+        // 7️⃣ Obtener las evaluaciones de los alumnos del tutor de curso
+        List<Evaluacion> evaluacionesDelTutor = evaluacionRepository.findByTutorCursoId(tutorCurso.getId());
+
+        // 8️⃣ Pasar todos los datos al modelo
         model.addAttribute("tutorcurso", tutorCurso);
         model.addAttribute("cursos", cursosDelTutor);
         model.addAttribute("alumnos", alumnosDelTutor);
         model.addAttribute("empresa", empresasDelTutor);
         model.addAttribute("tutorp", tutoresPracticasDelTutor);
         model.addAttribute("alumnosPorCurso", alumnosPorCurso);
-
+        model.addAttribute("evaluaciones", evaluacionesDelTutor);  // <-- Añadid
         model.addAttribute("pageTitle", "Dashboard Tutor Curso");
         model.addAttribute("viewName", "tutorcurso/dashboard");
 
@@ -218,7 +226,7 @@ public class TutorCursoDatoController {
         }
     }
 
-    @GetMapping("/alumno/editar/{id}")
+   /* @GetMapping("/alumno/editar/{id}")
     public String editarAlumno(@PathVariable Long id,
                                Model model,
                                Authentication authentication,
@@ -251,6 +259,49 @@ public class TutorCursoDatoController {
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", 
+                "Error al cargar el alumno: " + e.getMessage());
+            return "redirect:/tutorcurso/alumno";
+        }
+    }*/
+    @GetMapping("/alumno/editar/{id}")
+    public String editarAlumno(@PathVariable Long id,
+                               Model model,
+                               Authentication authentication,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            TutorCurso tutorCurso = getTutorCursoAutenticado(authentication);
+            Alumno alumno = alumnoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
+
+            // Verificar que el alumno pertenece a alguno de los cursos del tutor
+            List<Curso> cursosDelTutor = cursoRepository.findByTutorCurso_Id(tutorCurso.getId());
+            boolean perteneceAlTutor = cursosDelTutor.stream()
+                .anyMatch(curso -> curso.getId().equals(alumno.getCurso().getId()));
+
+            if (!perteneceAlTutor) {
+                redirectAttributes.addFlashAttribute("error",
+                    "No tienes permiso para editar este alumno");
+                return "redirect:/tutorcurso/alumno";
+            }
+
+            // Lista con el tutor de prácticas del alumno
+            List<TutorPracticas> tutorPracticas = alumno.getTutorPracticas() != null 
+                ? List.of(alumno.getTutorPracticas()) 
+                : List.of();
+
+            model.addAttribute("alumno", alumno);
+            model.addAttribute("cursos", cursosDelTutor);
+            model.addAttribute("empresas", empresaRepository.findAll());
+            model.addAttribute("tutorPracticas", tutorPracticas);  // <-- Cambio aquí
+            model.addAttribute("modo", "editar");  // <-- Añadido para el formulario
+            model.addAttribute("esTutorCurso", true);
+            model.addAttribute("esVistaAlumno", false);
+            model.addAttribute("viewName", "admin/alumno/form");
+
+            return "layout";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error",
                 "Error al cargar el alumno: " + e.getMessage());
             return "redirect:/tutorcurso/alumno";
         }

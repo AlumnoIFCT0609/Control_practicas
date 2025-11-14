@@ -1,5 +1,7 @@
 package com.control.practicas.controllers;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +10,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.control.practicas.dto.AlumnoDTO;
 import com.control.practicas.models.Alumno;
 import com.control.practicas.models.Incidencia;
+import com.control.practicas.models.TutorCurso;
+import com.control.practicas.models.TutorPracticas;
+import com.control.practicas.repositories.AlumnoRepository;
+import com.control.practicas.repositories.TutorCursoRepository;
+import com.control.practicas.repositories.TutorPracticasRepository;
 import com.control.practicas.services.IncidenciaService;
 import com.control.practicas.services.AlumnoService;
 import com.control.practicas.services.TutorPracticasService;
@@ -27,19 +34,90 @@ public class IncidenciaController {
     private final IncidenciaService incidenciaService;
     private final AlumnoService alumnoService;
     private final TutorPracticasService tutorPracticasService;
-
+    private final TutorPracticasRepository tutorPracticasRepository;
+    private final TutorCursoRepository tutorCursoRepository;
+    private final AlumnoRepository alumnoRepository;
     // Inyección de dependencias por constructor
     public IncidenciaController(IncidenciaService incidenciaService,
                                AlumnoService alumnoService,
+                               TutorCursoRepository tutorCursoRepository,
+                               AlumnoRepository alumnoRepository,
+                               TutorPracticasRepository tutorPracticasRepository,
                                TutorPracticasService tutorPracticasService, CommonController commonController) {
         this.incidenciaService = incidenciaService;
         this.alumnoService = alumnoService;
         this.tutorPracticasService = tutorPracticasService;
         this.commonController = commonController;
+        this.alumnoRepository=alumnoRepository;
+        this.tutorPracticasRepository= tutorPracticasRepository;
+        this.tutorCursoRepository=tutorCursoRepository;
+    }
+    
+    @GetMapping({"/listar", ""})
+    public String listar(Model model,
+                        @RequestParam(required = false) String estado,
+                        @RequestParam(required = false) String tipo,
+                        @RequestParam(required = false) String alumno,
+                        Authentication authentication) {
+
+        List<Incidencia> incidencias = incidenciaService.listarTodas();
+
+        // Filtrar por rol
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("TUTOR_PRACTICAS"))) {
+            String email = authentication.getName();
+            TutorPracticas tutorP = tutorPracticasRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Tutor de prácticas no encontrado"));
+            List<Alumno> alumnosTutor = alumnoRepository.findByTutorPracticasId(tutorP.getId());
+            incidencias = incidencias.stream()
+                .filter(i -> alumnosTutor.contains(i.getAlumno()))
+                .collect(Collectors.toList());
+        } 
+        else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("TUTOR_CURSO"))) {
+            String email = authentication.getName();
+            TutorCurso tutorC = tutorCursoRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Tutor de curso no encontrado"));
+            List<Alumno> alumnosTutor = alumnoRepository.findByTutorCursoId(tutorC.getId());
+            incidencias = incidencias.stream()
+                .filter(i -> alumnosTutor.contains(i.getAlumno()))
+                .collect(Collectors.toList());
+            }
+        // Si es ADMIN o cualquier otro rol, muestra todas (no filtra)
+
+        // Aplicar filtros
+        if (estado != null && !estado.isEmpty()) {
+            incidencias = incidencias.stream()
+                .filter(i -> i.getEstado() != null && i.getEstado().name().equals(estado))
+                .collect(Collectors.toList());
+        }
+
+        if (tipo != null && !tipo.isEmpty()) {
+            incidencias = incidencias.stream()
+                .filter(i -> i.getTipo() != null && i.getTipo().name().equals(tipo))
+                .collect(Collectors.toList());
+        }
+
+        if (alumno != null && !alumno.isEmpty()) {
+            String alumnoLower = alumno.toLowerCase();
+            incidencias = incidencias.stream()
+                .filter(i -> i.getAlumno() != null &&
+                    (i.getAlumno().getNombre().toLowerCase().contains(alumnoLower) ||
+                     i.getAlumno().getApellidos().toLowerCase().contains(alumnoLower)))
+                .collect(Collectors.toList());
+        }
+
+        model.addAttribute("incidencias", incidencias);
+        model.addAttribute("viewName", "incidencia/listar");
+
+        // Mantener los valores del filtro en el formulario
+        model.addAttribute("filtroEstado", estado);
+        model.addAttribute("filtroTipo", tipo);
+        model.addAttribute("filtroAlumno", alumno);
+
+        return "layout";
     }
 
  // Listar todas las incidencias
-    @GetMapping({"/listar", ""})
+  /*  @GetMapping({"/listar", ""})
     public String listar(Model model,
                         @RequestParam(required = false) String estado,
                         @RequestParam(required = false) String tipo,
@@ -78,7 +156,7 @@ public class IncidenciaController {
         model.addAttribute("filtroAlumno", alumno);
         
         return "layout";
-    }
+    */
 /*
     // Mostrar formulario para nueva incidencia
     @GetMapping("/nueva")

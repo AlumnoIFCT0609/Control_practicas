@@ -28,6 +28,7 @@ import com.control.practicas.models.Usuario;
 import com.control.practicas.repositories.AlumnoRepository;
 import com.control.practicas.repositories.CursoRepository;
 import com.control.practicas.repositories.EmpresaRepository;
+import com.control.practicas.repositories.IncidenciaRepository;
 import com.control.practicas.repositories.ObservacionDiariaRepository;
 import com.control.practicas.repositories.TutorPracticasRepository;
 import com.control.practicas.repositories.UsuarioRepository;
@@ -50,12 +51,14 @@ public class TutorPracticasDatoController {
     private final CursoRepository cursoRepository;
     private final EmpresaRepository empresaRepository;
     private final TutorPracticasService tutorPracticasService;
+    private final IncidenciaRepository incidenciaRepository;
     
     
     public TutorPracticasDatoController(
             ObservacionDiariaRepository observacionDiariaRepository,
             ObservacionDiariaService observacionDiariaService,
             AlumnoRepository alumnoRepository,
+            IncidenciaRepository incidenciaRepository,
             AlumnoService alumnoService,
             CursoRepository cursoRepository,
             EmpresaRepository empresaRepository,
@@ -71,6 +74,7 @@ public class TutorPracticasDatoController {
         this.cursoRepository=cursoRepository;
         this.empresaRepository=empresaRepository;
         this.tutorPracticasService=tutorPracticasService;
+        this.incidenciaRepository=incidenciaRepository;
     }
     
     // Método auxiliar para obtener el tutor de prácticas autenticado
@@ -220,14 +224,17 @@ public class TutorPracticasDatoController {
                                         Authentication authentication,
                                         RedirectAttributes redirectAttributes) {
         try {
-            TutorPracticas tutor = getTutorAutenticado(authentication);
+            TutorPracticas tutorP = getTutorAutenticado(authentication);
 
             Alumno alumno = alumnoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
 
-            if (!alumno.getTutorPracticas().getId().equals(tutor.getId())) {
+            if (!alumno.getTutorPracticas().getId().equals(tutorP.getId())) {
                 throw new RuntimeException("No tiene permisos para editar este alumno");
             }
+            List<TutorPracticas> tutor = alumno.getTutorPracticas() != null ? List.of(alumno.getTutorPracticas()) : List.of();
+
+            
             
             List<Curso> cursos = alumno.getCurso() != null 
                 ? List.of(alumno.getCurso()) 
@@ -236,13 +243,19 @@ public class TutorPracticasDatoController {
             List<Empresa> empresas = alumno.getEmpresa() != null 
                 ? List.of(alumno.getEmpresa()) 
                 : List.of();
-                
-            List<TutorPracticas> tutores = List.of(tutor);
             
-            model.addAttribute("alumno", alumno); // ⚠️ CRÍTICO - debe ser "alumno" exactamente
+                
+            System.out.println("*******************************************************************************");
+          
+            System.out.println("* tutor nombre: *" +  tutor);
+            
+            System.out.println("*******************************************************************************");
+         //   List<TutorPracticas> tutor = List.of(tutorP);
+            
+            model.addAttribute("alumno", alumno); 
             model.addAttribute("cursos", cursos);
             model.addAttribute("empresas", empresas);
-            model.addAttribute("tutores", tutores);
+            model.addAttribute("tutorPracticas", tutor);
             model.addAttribute("horario", alumno.getHorario());
             model.addAttribute("modo", "editar");
             model.addAttribute("esTutorPracticas", true);
@@ -336,6 +349,14 @@ public class TutorPracticasDatoController {
         // Contar observaciones e incidencias
         long totalObservaciones = tutorPracticasService.contarObservaciones(tutor);
         long totalIncidencias = tutorPracticasService.contarIncidencias(tutor);
+        long total = incidenciaRepository.countByAlumnoIn(alumnos);
+         
+        System.out.println("**************************************************************************************");
+        System.out.println("Alumnos encontrados: " + alumnos.size());
+        alumnos.forEach(a -> System.out.println("  - Alumno ID: " + a.getId() + ", Nombre: " + a.getNombre()));
+        System.out.println("Total incidencias: " + total);
+        System.out.println("Deben salir dos incidencias, 2:   "+totalIncidencias);
+        System.out.println("**************************************************************************************");
 
         // Obtener horas por alumno desde el servicio
         Map<String, Integer> horasPorAlumno = tutorPracticasService.obtenerHorasPorAlumno(alumnos);

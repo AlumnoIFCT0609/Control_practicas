@@ -32,7 +32,7 @@
                         <h5 class="card-title">
                             <i class="bi bi-journal-text"></i> Observaciones
                         </h5>
-                        <h2>0</h2>
+                        <h2 th:text="${totalObservaciones != null ? totalObservaciones : 0}">0</h2>
                         <p class="card-text">Registradas este mes</p>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                         <h5 class="card-title">
                             <i class="bi bi-exclamation-triangle"></i> Incidencias
                         </h5>
-                        <h2>0</h2>
+                        <h2 th:text="${totalIncidencias != null ? totalIncidencias : 0}">0</h2>
                         <p class="card-text">Pendientes</p>
                     </div>
                 </div>
