@@ -68,11 +68,15 @@ public class EvaluacionService {
     }
 
     public List<Evaluacion> buscarPorTutor(Long tutorId) {  
-        return null;
+    	return evaluacionRepository.findByTutorCurso_Id(tutorId);
     }
 
     public List<Evaluacion> buscarPorRangoFechas(LocalDate inicio, LocalDate fin) {   
         return null;
+    }
+    
+    public List<Evaluacion> buscarPorTutorPracticas(Long tutorPracticasId) {
+        return evaluacionRepository.findByTutorPracticasId(tutorPracticasId);
     }
 
     public Object listarTutoresPracticas() {

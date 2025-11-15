@@ -52,6 +52,9 @@ public class TutorPracticasService {
     public Optional<TutorPracticas> buscarPorId(Long id) {
     	return tutorPracticasRepository.findById(id);
     }
+    public Optional<TutorPracticas> buscarPorEmail(String email) {
+    	return tutorPracticasRepository.findByEmail(email);
+    }
     public Optional<TutorPracticas> buscarPorDni(String dni) {
     	return tutorPracticasRepository.findByDni(dni);
     }

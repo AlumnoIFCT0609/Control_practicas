@@ -50,7 +50,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/login", "/error").permitAll()
-                .requestMatchers("/admin/evaluaciones/listar").hasAnyAuthority("ADMIN", "ALUMNO")
+                .requestMatchers("/admin/evaluaciones/listar").hasAnyAuthority("ADMIN", "ALUMNO","TUTOR_PRACTICAS","TUTOR_CURSO")
+                .requestMatchers("/admin/evaluaciones/nueva").hasAnyAuthority("ADMIN","TUTOR_PRACTICAS","TUTOR_CURSO")
+                .requestMatchers("/admin/evaluaciones/guardar").hasAnyAuthority("ADMIN","TUTOR_PRACTICAS","TUTOR_CURSO")
+                .requestMatchers("/admin/evaluaciones/editar/{id}").hasAnyAuthority("ADMIN","TUTOR_PRACTICAS","TUTOR_CURSO")
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/tutor-curso/**").hasAuthority("TUTOR_CURSO")
                 .requestMatchers("/tutor-practicas/**").hasAuthority("TUTOR_PRACTICAS")

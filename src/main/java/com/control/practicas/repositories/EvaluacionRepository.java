@@ -49,6 +49,8 @@ public interface EvaluacionRepository extends JpaRepository<Evaluacion, Long> {
            "ORDER BY e.fecha DESC")
     List<Evaluacion> findAllWithRelations();
     
+    
+    
     // Calcular promedio de puntuación por alumno
     @Query("SELECT AVG(e.puntuacion) FROM Evaluacion e WHERE e.alumno.id = :alumnoId")
     Double calcularPromedioAlumno(@Param("alumnoId") Long alumnoId);
@@ -56,4 +58,14 @@ public interface EvaluacionRepository extends JpaRepository<Evaluacion, Long> {
     @Query("SELECT e FROM Evaluacion e WHERE e.alumno.curso.tutorCurso.id = :tutorCursoId")
     List<Evaluacion> findByTutorCursoId(@Param("tutorCursoId") Long tutorCursoId);
     
-}
+    @Query("SELECT e FROM Evaluacion e " +
+            "JOIN e.alumno a " +
+            "JOIN a.curso c " +
+            "WHERE c.tutorCurso.id = :tutorId")
+     List<Evaluacion> findByTutorCurso_Id(@Param("tutorId") Long tutorId);
+    
+    @Query("SELECT e FROM Evaluacion e WHERE e.tutorPracticas.id = :tutorPracticasId")
+    List<Evaluacion> findByTutorPracticasId(@Param("tutorPracticasId") Long tutorPracticasId);
+    
+ }
+    

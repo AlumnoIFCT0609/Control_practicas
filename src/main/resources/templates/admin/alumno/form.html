@@ -107,28 +107,13 @@
                                     </select>
                                 </div>
 
-                                    <!--  
-                                    <select class="form-select" id="empresa" th:field="*{empresaId}"
-                                            th:disabled="${#lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')
-                                                          or #lists.contains(#authentication.authorities.![authority], 'ALUMNO')
-														  or #lists.contains(#authentication.authorities.![authority], 'TUTOR_CURSO')}">
-                                       
-										<option value="" th:if="${#lists.contains(#authentication.authorities.![authority], 'ADMIN')}">
-										    Seleccione una empresa
-										</option>
-                                        <option th:each="empresa : ${empresas}"
-                                                th:value="${empresa.id}"
-                                                th:text="${empresa.nombre}"
-                                                th:selected="${alumno.empresa != null and alumno.empresa.id == empresa.id}">
-                                        </option>
-                                    </select> -->
+                                   
                                 
                                 <div class="col-md-6 mb-3">
                                     <label for="empresa" class="form-label">Empresa</label>     
                                 <select class="form-select"
                                             id="empresaId"
                                             th:field="*{empresaId}"
-                                            required
                                             onchange="cargarTutoresPorEmpresa()"
                                             th:disabled="${#lists.contains(#authentication.authorities.![authority], 'ALUMNO')
                                             			or #lists.contains(#authentication.authorities.![authority], 'TUTOR_PRACTICAS')
