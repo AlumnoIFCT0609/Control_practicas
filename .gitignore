@@ -12,11 +12,13 @@ target/
 .settings
 .springBeans
 .sts4-cache
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -29,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Archivos de configuración local (IMPORTANTE) ###
+application-local.properties
+*.log
+logs/
+
+### Sistema operativo ###
+.DS_Store
+Thumbs.db
